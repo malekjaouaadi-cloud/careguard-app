@@ -1801,8 +1801,31 @@ scannerModal.classList.add('hidden');
 showToast(`Added "${name}" to schedule`);
 render();
 });
+// Read the real battery level when the browser supports the Battery Status API.
+// This updates only the device currently running CareGuard; remote family/center
+// syncing still requires an authenticated backend connection.
+async function connectDeviceBattery() {
+  if (!navigator.getBattery || !window.isSecureContext) {
+    console.info('Live battery reading is unavailable in this browser/context.');
+    return;
+  }
+  try {
+    const deviceBattery = await navigator.getBattery();
+    const updateDeviceBattery = () => {
+      state.batteryLevel = Math.max(0, Math.min(100, Math.round(deviceBattery.level * 100)));
+      render();
+    };
+    updateDeviceBattery();
+    deviceBattery.addEventListener('levelchange', updateDeviceBattery);
+    deviceBattery.addEventListener('chargingchange', updateDeviceBattery);
+  } catch (error) {
+    console.warn('Could not read device battery status:', error);
+  }
+}
+
 // Init
 render();
+connectDeviceBattery();
 })();
 </script>
 </body>
