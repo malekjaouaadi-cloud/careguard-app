@@ -40,7 +40,7 @@ transform: scale(0.97);
 </style>
 </head>
 <body class="min-h-screen antialiased">
-​<!-- Top Navigation -->
+<!-- Top Navigation -->
 <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
 <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
 <div class="flex items-center gap-2.5">
@@ -54,19 +54,19 @@ transform: scale(0.97);
 <p id="brandSubtitle" class="text-xs text-slate-500">Interactive Demo: Meds + Appointments + Safety Check-In</p>
 </div>
 </div>
-​<div class="flex flex-wrap items-center gap-2">
+<div class="flex flex-wrap items-center gap-2">
 <!-- Language Toggle -->
 <button id="btnLangToggle" type="button" class="tap-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold border border-slate-200">
 AR / EN
 </button>
-​<!-- Emergency Medical ID Button -->
+<!-- Emergency Medical ID Button -->
 <button id="btnOpenMedicalId" type="button" class="tap-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-sm">
 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
 </svg>
 <span id="medicalIdBtnLabel">Medical ID</span>
 </button>
-​<!-- Mode Switcher -->
+<!-- Mode Switcher -->
 <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
 <button id="tabSenior" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition">
 Senior View
@@ -81,15 +81,15 @@ Command Center
 </div>
 </div>
 </header>
-​<!-- Toast Banner -->
+<!-- Toast Banner -->
 <div id="toastContainer" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
-​<!-- Main Content -->
+<!-- Main Content -->
 <main class="max-w-5xl mx-auto px-4 py-6">
-​<!-- Escalation Alert Banner -->
+<!-- Escalation Alert Banner -->
 <div id="globalAlertBanner" class="hidden mb-4 rounded-2xl p-4 border shadow-sm transition-all"></div>
-​<!-- Low Battery Alert Banner -->
+<!-- Low Battery Alert Banner -->
 <div id="batteryAlertBanner" class="hidden mb-5 rounded-2xl p-4 border bg-amber-50 border-amber-300 text-amber-950 text-sm font-bold shadow-sm"></div>
-​<!-- VIEW 1: SENIOR VIEW (Ultra-Clean, Large Buttons, Minimal Clutter) -->
+<!-- VIEW 1: SENIOR VIEW (Ultra-Clean, Large Buttons, Minimal Clutter) -->
 <section id="seniorView" class="max-w-2xl mx-auto flex flex-col gap-5">
 <div class="flex flex-col gap-5">
 <!-- Big Check-In Card -->
@@ -113,20 +113,20 @@ Safe & Active
 <div class="text-2xl font-extrabold text-slate-800" id="inactivityCounterDisplay">2h / 24h</div>
 </div>
 </div>
-​<button id="btnImOk" type="button" class="tap-btn w-full py-5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xl shadow-md flex items-center justify-center gap-3">
+<button id="btnImOk" type="button" class="tap-btn w-full py-5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xl shadow-md flex items-center justify-center gap-3">
 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
 </svg>
 <span id="btnImOkLabel">I'm OK — Daily Check-In</span>
 </button>
-​<button id="btnTestVoice" type="button" class="tap-btn mt-3 w-full py-3.5 px-5 rounded-2xl bg-violet-50 hover:bg-violet-100 text-violet-900 border border-violet-200 font-extrabold text-base inline-flex items-center justify-center gap-2">
+<button id="btnTestVoice" type="button" class="tap-btn mt-3 w-full py-3.5 px-5 rounded-2xl bg-violet-50 hover:bg-violet-100 text-violet-900 border border-violet-200 font-extrabold text-base inline-flex items-center justify-center gap-2">
 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
 </svg>
 <span id="testVoiceLabel">Listen to Next Reminder</span>
 </button>
 </div>
-​<!-- Daily Medications List -->
+<!-- Daily Medications List -->
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
 <div>
@@ -141,9 +141,9 @@ Safe & Active
 <span id="scanRxBtnLabel">Scan Rx Label</span>
 </button>
 </div>
-​<div id="medsList" class="flex flex-col gap-3"></div>
+<div id="medsList" class="flex flex-col gap-3"></div>
 </div>
-​<!-- Medical Appointments List -->
+<!-- Medical Appointments List -->
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
 <div>
@@ -157,10 +157,10 @@ Safe & Active
 <span id="addApptBtnLabel">Add Appointment</span>
 </button>
 </div>
-​<div id="appointmentsList" class="flex flex-col gap-3"></div>
+<div id="appointmentsList" class="flex flex-col gap-3"></div>
 </div>
 </div>
-​<!-- Collapsible Family Setup & Demo Simulators (Hidden by default so Senior View stays calm & simple) -->
+<!-- Collapsible Family Setup & Demo Simulators (Hidden by default so Senior View stays calm & simple) -->
 <details class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5">
 <summary class="cursor-pointer font-extrabold text-sm text-slate-700 select-none flex items-center justify-between">
 <span id="setupDrawerLabel">⚙ Family Setup, Contacts & Demo Simulators</span>
@@ -192,7 +192,7 @@ Safe & Active
 <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-sm">
 <h3 id="simCardTitle" class="text-base font-extrabold mb-1">Inactivity & Low Battery Simulator</h3>
 <p id="simCardDesc" class="text-xs text-slate-300 mb-3">Test what happens when the senior stops responding or phone battery drops:</p>
-​<div class="grid grid-cols-3 gap-2 mb-4">
+<div class="grid grid-cols-3 gap-2 mb-4">
 <button type="button" data-sim-hours="19" class="sim-btn py-2.5 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 text-xs font-bold">
 <span class="sim-h1">+19 hrs</span>
 <span class="sim-l1 font-normal opacity-80">Gentle Nudge</span>
@@ -206,7 +206,7 @@ Safe & Active
 <span class="sim-l3 font-normal opacity-80">Family Alert</span>
 </button>
 </div>
-​<!-- Battery Simulator -->
+<!-- Battery Simulator -->
 <div class="pt-3 border-t border-slate-700/80 mb-3">
 <div class="flex items-center justify-between text-xs mb-2">
 <span id="simBatPrompt" class="text-slate-300 font-bold">Senior Phone Battery:</span>
@@ -224,12 +224,12 @@ Safe & Active
 </button>
 </div>
 </div>
-​<div class="bg-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center justify-between gap-2">
+<div class="bg-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center justify-between gap-2">
 <span id="simStageTitle">Escalation Status:</span>
 <span id="simStageLabel" class="font-bold text-emerald-400 text-right">Normal (No Alerts)</span>
 </div>
 </div>
-​<!-- Interactive Emergency Contacts -->
+<!-- Interactive Emergency Contacts -->
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between gap-2 mb-3">
 <div>
@@ -240,12 +240,12 @@ Safe & Active
 + Add Contact
 </button>
 </div>
-​<div id="contactsList" class="flex flex-col gap-2.5 text-sm"></div>
+<div id="contactsList" class="flex flex-col gap-2.5 text-sm"></div>
 </div>
 </div>
 </details>
 </section>
-​<!-- VIEW 2: FAMILY CAREGIVER DASHBOARD -->
+<!-- VIEW 2: FAMILY CAREGIVER DASHBOARD -->
 <section id="familyView" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
 <div class="lg:col-span-7 flex flex-col gap-5">
 <!-- Caregiver Overview -->
@@ -259,7 +259,7 @@ Safe & Active
 Safe & Active
 </span>
 </div>
-​<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
 <div id="famStatHoursLabel" class="text-xs text-slate-500 font-semibold">Inactive Hours</div>
 <div class="text-xl font-extrabold text-slate-900 mt-1" id="famHoursDisplay">2 hrs</div>
@@ -277,7 +277,7 @@ Safe & Active
 <div class="text-xs font-extrabold text-indigo-700 mt-1.5 leading-snug" id="famNextAppointmentDisplay">Dr. Karim Yusuf</div>
 </div>
 </div>
-​<!-- Sliders to Simulate Hours & Battery -->
+<!-- Sliders to Simulate Hours & Battery -->
 <div class="flex flex-col gap-3">
 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
 <div class="flex items-center justify-between mb-2">
@@ -292,7 +292,7 @@ Safe & Active
 <span id="hs24">24h+ (Family Alert)</span>
 </div>
 </div>
-​<div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
 <div class="flex items-center justify-between mb-2">
 <label id="batterySliderTitle" for="batterySlider" class="text-sm font-bold text-slate-800">Simulate Senior Phone Battery (%)</label>
 <span class="text-sm font-extrabold text-emerald-700" id="batterySliderLabel">82%</span>
@@ -307,7 +307,7 @@ Safe & Active
 </div>
 </div>
 </div>
-​<!-- Simulated SMS Preview -->
+<!-- Simulated SMS Preview -->
 <div id="smsPreviewCard" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between mb-3">
 <h3 id="smsPreviewTitle" class="text-base font-extrabold text-slate-900">Family SMS Alert Preview</h3>
@@ -318,7 +318,7 @@ Status is normal. No alerts are sent to family members while Robert checks in wi
 </div>
 </div>
 </div>
-​<!-- Activity Log -->
+<!-- Activity Log -->
 <div class="lg:col-span-5">
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-full">
 <div class="flex items-center justify-between mb-4">
@@ -329,7 +329,7 @@ Status is normal. No alerts are sent to family members while Robert checks in wi
 </div>
 </div>
 </section>
-​<!-- VIEW 3: HUMAN SUPERVISOR COMMAND CENTER -->
+<!-- VIEW 3: HUMAN SUPERVISOR COMMAND CENTER -->
 <section id="supervisorView" class="hidden flex flex-col gap-5">
 <!-- Care Home Shift & Staff Bar -->
 <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
@@ -367,7 +367,7 @@ Export Shift Report
 <div id="supKpiResVal" class="text-2xl font-extrabold text-emerald-700 mt-1">0</div>
 </div>
 </div>
-​<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 <!-- Triage Queue -->
 <div class="lg:col-span-8 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -382,9 +382,9 @@ Export Shift Report
 <button type="button" data-sup-filter="safe" class="sup-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Safe</button>
 </div>
 </div>
-​<div id="supervisorQueueList" class="flex flex-col gap-3"></div>
+<div id="supervisorQueueList" class="flex flex-col gap-3"></div>
 </div>
-​<!-- Intervention Log -->
+<!-- Intervention Log -->
 <div class="lg:col-span-4 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
 <h3 id="supLogTitle" class="text-base font-extrabold text-slate-900 mb-1">Supervisor Intervention Log</h3>
 <p id="supLogDesc" class="text-xs text-slate-500 mb-4">Every call and family notification is timestamped</p>
@@ -393,7 +393,7 @@ Export Shift Report
 </div>
 </section>
 </main>
-​<!-- MODAL: Emergency Medical ID Card -->
+<!-- MODAL: Emergency Medical ID Card -->
 <div id="medicalIdModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
 <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-rose-200 my-auto">
 <div class="bg-rose-600 text-white px-6 py-4 flex items-center justify-between">
@@ -406,7 +406,7 @@ Export Shift Report
 </div>
 <button id="btnCloseMedicalId" type="button" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold">✕</button>
 </div>
-​<div class="p-6">
+<div class="p-6">
 <div id="medicalIdReadView" class="flex flex-col gap-4">
 <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200">
 <div>
@@ -418,7 +418,7 @@ Export Shift Report
 <div class="text-xl font-extrabold text-rose-800" id="medIdBloodDisplay" dir="ltr">O+</div>
 </div>
 </div>
-​<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
 <div id="medIdAllergiesLbl" class="text-xs font-extrabold text-amber-800 mb-1">Allergies</div>
 <div class="text-sm font-bold text-slate-900" id="medIdAllergiesDisplay">Penicillin, Peanuts</div>
@@ -428,19 +428,19 @@ Export Shift Report
 <div class="text-sm font-bold text-slate-900" id="medIdConditionsDisplay">Hypertension, Type 2 Diabetes</div>
 </div>
 </div>
-​<div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+<div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
 <div id="medIdMedsLbl" class="text-xs font-extrabold text-slate-700 mb-1.5">Current Medications (Auto-Synced):</div>
 <ul id="medIdCurrentMedsList" class="text-xs font-semibold text-slate-800 flex flex-col gap-1"></ul>
 </div>
-​<div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+<div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
 <div id="medIdContactsLbl" class="text-xs font-extrabold text-emerald-800 mb-1.5">Emergency Contacts:</div>
 <ul id="medIdContactsList" class="text-xs font-bold text-slate-800 flex flex-col gap-1"></ul>
 </div>
-​<button id="btnEditMedicalId" type="button" class="tap-btn w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold">
+<button id="btnEditMedicalId" type="button" class="tap-btn w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold">
 Edit Medical Info
 </button>
 </div>
-​<form id="medicalIdEditForm" class="hidden flex flex-col gap-3 text-sm">
+<form id="medicalIdEditForm" class="hidden flex flex-col gap-3 text-sm">
 <div class="grid grid-cols-2 gap-2.5">
 <div>
 <label for="medIdNameInput" class="block text-xs font-bold text-slate-600 mb-1">Name & Age</label>
@@ -476,14 +476,14 @@ Edit Medical Info
 </div>
 </div>
 </div>
-​<!-- MODAL: Prescription Camera Scanner -->
+<!-- MODAL: Prescription Camera Scanner -->
 <div id="scannerModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
 <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-200 my-auto max-h-[92vh] overflow-y-auto">
 <div class="flex items-center justify-between mb-4">
 <h3 id="scannerModalTitle" class="text-lg font-extrabold text-slate-900">Scan Prescription Label</h3>
 <button id="btnCloseScanner" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold">✕</button>
 </div>
-​<div class="relative rounded-2xl bg-slate-900 text-white p-5 mb-4 overflow-hidden border-2 border-emerald-500/50 min-h-[160px] flex flex-col items-center justify-center text-center">
+<div class="relative rounded-2xl bg-slate-900 text-white p-5 mb-4 overflow-hidden border-2 border-emerald-500/50 min-h-[160px] flex flex-col items-center justify-center text-center">
 <img id="scanPreviewImg" alt="Prescription preview" class="hidden absolute inset-0 w-full h-full object-cover opacity-40" />
 <div id="scanLaser" class="scan-line hidden z-10"></div>
 <svg xmlns="http://www.w3.org/2000/svg" class="relative z-10 w-10 h-10 text-emerald-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -491,7 +491,7 @@ Edit Medical Info
 </svg>
 <p id="scannerStatusText" class="relative z-10 text-sm font-semibold text-slate-100">Point your camera at a pill bottle label or upload a photo</p>
 </div>
-​<div class="flex flex-col sm:flex-row gap-2.5 mb-4">
+<div class="flex flex-col sm:flex-row gap-2.5 mb-4">
 <button id="btnSimulateScan" type="button" class="tap-btn flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold">
 Simulate Rx Scan
 </button>
@@ -500,7 +500,7 @@ Simulate Rx Scan
 <input id="fileUploadScan" type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
 </label>
 </div>
-​<div id="scanResultBox" class="hidden rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
+<div id="scanResultBox" class="hidden rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
 <div id="scanExtractedTitle" class="text-xs font-bold text-emerald-700 mb-2">AI Extracted Details (Please Confirm):</div>
 <div class="flex flex-col gap-2.5 text-sm">
 <div>
@@ -536,14 +536,14 @@ Confirm & Add to Schedule
 </div>
 </div>
 </div>
-​<!-- MODAL: Add / Edit Emergency Contact -->
+<!-- MODAL: Add / Edit Emergency Contact -->
 <div id="contactModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
 <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-200">
 <div class="flex items-center justify-between mb-4">
 <h3 id="contactModalTitle" class="text-lg font-extrabold text-slate-900">Add Emergency Contact</h3>
 <button id="btnCloseContactModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold">✕</button>
 </div>
-​<form id="contactForm" class="flex flex-col gap-3 text-sm">
+<form id="contactForm" class="flex flex-col gap-3 text-sm">
 <div>
 <label for="contactNameInput" class="block text-xs font-bold text-slate-600 mb-1">Full Name</label>
 <input id="contactNameInput" type="text" required placeholder="e.g. Sarah Miller" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 outline-none font-semibold" />
@@ -569,14 +569,14 @@ Save Contact
 </form>
 </div>
 </div>
-​<!-- MODAL: Add Medical Appointment -->
+<!-- MODAL: Add Medical Appointment -->
 <div id="appointmentModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
 <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-200">
 <div class="flex items-center justify-between mb-4">
 <h3 id="apptModalTitle" class="text-lg font-extrabold text-slate-900">Add Medical Appointment</h3>
 <button id="btnCloseAppointmentModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold">✕</button>
 </div>
-​<form id="appointmentForm" class="flex flex-col gap-3 text-sm">
+<form id="appointmentForm" class="flex flex-col gap-3 text-sm">
 <div>
 <label for="apptDoctorInput" class="block text-xs font-bold text-slate-600 mb-1">Doctor or Lab Test</label>
 <input id="apptDoctorInput" type="text" required placeholder="e.g. Dr. Patel (Ophthalmologist)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 outline-none font-semibold" />
@@ -605,7 +605,7 @@ Save Appointment
 </form>
 </div>
 </div>
-​<!-- MODAL: Shift Handoff Report -->
+<!-- MODAL: Shift Handoff Report -->
 <div id="shiftReportModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
 <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-xl border border-slate-200 my-auto">
 <div class="flex items-center justify-between mb-3">
@@ -624,7 +624,7 @@ Close
 </div>
 </div>
 </div>
-​<script>
+<script>
 (function () {
 const i18n = {
 en: {
@@ -772,7 +772,7 @@ noAppts: 'لا توجد مواعيد طبية مسجلة حالياً.',
 noLogs: 'لا توجد أحداث مسجلة بعد.'
 }
 };
-​const state = {
+const state = {
 lang: 'en',
 activeTab: 'senior',
 supFilter: 'all',
@@ -816,13 +816,13 @@ logs: [
 { time: 'Yesterday 9:00 PM', text: 'Daily safety check-in completed', type: 'ok' }
 ]
 };
-​const sampleScannedMeds = [
+const sampleScannedMeds = [
 { name: 'Atorvastatin 20mg (Cholesterol)', time: '09:00 PM', note: '1 tablet at bedtime' },
 { name: 'Vitamin D3 1000 IU', time: '12:00 PM', note: '1 softgel with food' },
 { name: 'Amlodipine 5mg (Blood Pressure)', time: '09:00 AM', note: '1 tablet daily' }
 ];
 let sampleIdx = 0;
-​// Elements
+// Elements
 const btnLangToggle = document.getElementById('btnLangToggle');
 const tabSenior = document.getElementById('tabSenior');
 const tabFamily = document.getElementById('tabFamily');
@@ -864,7 +864,7 @@ const smsStatusTag = document.getElementById('smsStatusTag');
 const smsBubble = document.getElementById('smsBubble');
 const activityLogList = document.getElementById('activityLogList');
 const btnClearLog = document.getElementById('btnClearLog');
-​// Medical ID elements
+// Medical ID elements
 const btnOpenMedicalId = document.getElementById('btnOpenMedicalId');
 const medicalIdModal = document.getElementById('medicalIdModal');
 const btnCloseMedicalId = document.getElementById('btnCloseMedicalId');
@@ -882,7 +882,7 @@ const medIdNameInput = document.getElementById('medIdNameInput');
 const medIdBloodInput = document.getElementById('medIdBloodInput');
 const medIdAllergiesInput = document.getElementById('medIdAllergiesInput');
 const medIdConditionsInput = document.getElementById('medIdConditionsInput');
-​// Scanner modal elements
+// Scanner modal elements
 const scannerModal = document.getElementById('scannerModal');
 const btnOpenScanner = document.getElementById('btnOpenScanner');
 const btnCloseScanner = document.getElementById('btnCloseScanner');
@@ -895,7 +895,7 @@ const scannedMedName = document.getElementById('scannedMedName');
 const scannedMedTime = document.getElementById('scannedMedTime');
 const scannedMedNote = document.getElementById('scannedMedNote');
 const btnConfirmScannedMed = document.getElementById('btnConfirmScannedMed');
-​// Contact modal elements
+// Contact modal elements
 const contactModal = document.getElementById('contactModal');
 const contactModalTitle = document.getElementById('contactModalTitle');
 const btnCloseContactModal = document.getElementById('btnCloseContactModal');
@@ -904,7 +904,7 @@ const contactNameInput = document.getElementById('contactNameInput');
 const contactRelationInput = document.getElementById('contactRelationInput');
 const contactPhoneInput = document.getElementById('contactPhoneInput');
 const contactPrioritySelect = document.getElementById('contactPrioritySelect');
-​// Appointment modal elements
+// Appointment modal elements
 const appointmentModal = document.getElementById('appointmentModal');
 const btnCloseAppointmentModal = document.getElementById('btnCloseAppointmentModal');
 const appointmentForm = document.getElementById('appointmentForm');
@@ -913,14 +913,14 @@ const apptDateInput = document.getElementById('apptDateInput');
 const apptTimeInput = document.getElementById('apptTimeInput');
 const apptLocationInput = document.getElementById('apptLocationInput');
 const apptNotifyFamily = document.getElementById('apptNotifyFamily');
-​function t(key) {
+function t(key) {
 return i18n[state.lang][key];
 }
-​function showToast(msg, tone) {
+function showToast(msg, tone) {
 const container = document.getElementById('toastContainer');
 const el = document.createElement('div');
 const bg = tone === 'warn' ? 'bg-amber-600' : tone === 'danger' ? 'bg-rose-600' : tone === 'voice' ? 'bg-violet-700' : tone === 'indigo' ? 'bg-indigo-700' : 'bg-emerald-700';
-el.className = ${bg} text-white px-4 py-3 rounded-2xl shadow-lg text-sm font-bold pointer-events-auto transition-opacity duration-300;
+el.className = `${bg} text-white px-4 py-3 rounded-2xl shadow-lg text-sm font-bold pointer-events-auto transition-opacity duration-300`;
 el.textContent = msg;
 container.appendChild(el);
 setTimeout(() => {
@@ -928,7 +928,7 @@ el.style.opacity = '0';
 setTimeout(() => el.remove(), 300);
 }, 3400);
 }
-​function playChime() {
+function playChime() {
 try {
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 if (!AudioCtx) return;
@@ -948,7 +948,7 @@ osc.stop(ctx.currentTime + 0.45);
 // Audio playback blocked
 }
 }
-​function speakReminder(text) {
+function speakReminder(text) {
 if (!state.voiceEnabled) {
 showToast(state.lang === 'en' ? 'Voice reminders are muted. Turn them on to listen.' : 'التذكير الصوتي متوقف حالياً.', 'warn');
 return;
@@ -967,17 +967,17 @@ window.speechSynthesis.speak(utter);
 // SpeechSynthesis unavailable
 }
 }
-​function addLog(text, type) {
+function addLog(text, type) {
 const now = new Date();
 const timeStr = now.toLocaleTimeString(state.lang === 'en' ? 'en-US' : 'ar-TN', { hour: '2-digit', minute: '2-digit' });
 state.logs.unshift({ time: timeStr, text, type: type || 'ok' });
 if (state.logs.length > 20) state.logs.pop();
 }
-​function getContactNamesSummary() {
+function getContactNamesSummary() {
 if (state.contacts.length === 0) return state.lang === 'en' ? 'No contacts' : 'لا توجد جهات اتصال';
-return state.contacts.map(c => ${c.name} (${c.relation})).join(state.lang === 'en' ? ' & ' : ' و ');
+return state.contacts.map(c => `${c.name} (${c.relation})`).join(state.lang === 'en' ? ' & ' : ' و ');
 }
-​function getEscalationInfo() {
+function getEscalationInfo() {
 if (state.vacationMode) {
 return {
 level: 'vacation',
@@ -1028,7 +1028,7 @@ pillClass: 'bg-rose-100 text-rose-800',
 pillText: state.lang === 'en' ? 'Emergency Alert Sent' : 'تنبيه طارئ مرسل'
 };
 }
-​function applyLanguageLabels() {
+function applyLanguageLabels() {
 document.documentElement.lang = state.lang;
 document.documentElement.dir = t('dir');
 document.getElementById('brandTitle').textContent = t('brandTitle');
@@ -1087,37 +1087,37 @@ document.getElementById('smsPreviewTitle').textContent = t('smsPreviewTitle');
 document.getElementById('logCardTitle').textContent = t('logTitle');
 btnClearLog.textContent = t('clearLog');
 }
-​function renderMedicalId() {
+function renderMedicalId() {
 medIdNameDisplay.textContent = state.medicalId.nameAge;
 medIdBloodDisplay.textContent = state.medicalId.bloodType;
 medIdAllergiesDisplay.textContent = state.medicalId.allergies;
 medIdConditionsDisplay.textContent = state.medicalId.conditions;
-​medIdCurrentMedsList.innerHTML = '';
+medIdCurrentMedsList.innerHTML = '';
 state.meds.forEach(m => {
 const li = document.createElement('li');
-li.textContent = • ${m.name} — ${m.time};
+li.textContent = `• ${m.name} — ${m.time}`;
 medIdCurrentMedsList.appendChild(li);
 });
-​medIdContactsList.innerHTML = '';
+medIdContactsList.innerHTML = '';
 if (state.contacts.length === 0) {
-medIdContactsList.innerHTML = &lt;li class=&quot;text-slate-400&quot;&gt;${t(&#39;noContacts&#39;)}&lt;/li&gt;;
+medIdContactsList.innerHTML = `<li class="text-slate-400">${t('noContacts')}</li>`;
 } else {
 state.contacts.forEach(c => {
 const li = document.createElement('li');
-li.textContent = • ${c.name} (${c.relation}): ${c.phone};
+li.textContent = `• ${c.name} (${c.relation}): ${c.phone}`;
 medIdContactsList.appendChild(li);
 });
 }
 }
-​function render() {
+function render() {
 applyLanguageLabels();
-​seniorView.classList.add('hidden');
+seniorView.classList.add('hidden');
 familyView.classList.add('hidden');
 supervisorView.classList.add('hidden');
 tabSenior.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 tabFamily.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 tabSupervisor.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
-​if (state.activeTab === 'senior') {
+if (state.activeTab === 'senior') {
 seniorView.classList.remove('hidden');
 tabSenior.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
 } else if (state.activeTab === 'family') {
@@ -1127,111 +1127,111 @@ tabFamily.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-wh
 supervisorView.classList.remove('hidden');
 tabSupervisor.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
 }
-​const info = getEscalationInfo();
-seniorStatusBadge.className = inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${info.badgeClass};
-seniorStatusBadge.innerHTML = &lt;span class=&quot;w-2 h-2 rounded-full ${info.dotClass}&quot;&gt;&lt;/span&gt;${info.label};
-​const bat = state.batteryLevel;
+const info = getEscalationInfo();
+seniorStatusBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${info.badgeClass}`;
+seniorStatusBadge.innerHTML = `<span class="w-2 h-2 rounded-full ${info.dotClass}"></span>${info.label}`;
+const bat = state.batteryLevel;
 const isLowBattery = bat <= 15;
 if (bat <= 5) {
 seniorBatteryBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300';
-seniorBatteryBadge.textContent = 🪫 ${bat}% (${state.lang === &#39;en&#39; ? &#39;Critical!&#39; : &#39;حرج!&#39;});
+seniorBatteryBadge.textContent = `🪫 ${bat}% (${state.lang === 'en' ? 'Critical!' : 'حرج!'})`;
 simBatteryLabel.className = 'font-extrabold text-rose-400';
-simBatteryLabel.textContent = ${bat}% (${state.lang === &#39;en&#39; ? &#39;Critical — Alert Sent!&#39; : &#39;حرج — تنبيه فوري!&#39;});
+simBatteryLabel.textContent = `${bat}% (${state.lang === 'en' ? 'Critical — Alert Sent!' : 'حرج — تنبيه فوري!'})`;
 famBatteryDisplay.className = 'text-xl font-extrabold text-rose-600 mt-1';
 } else if (isLowBattery) {
 seniorBatteryBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-300';
-seniorBatteryBadge.textContent = 🪫 ${bat}% (${state.lang === &#39;en&#39; ? &#39;Low&#39; : &#39;منخفضة&#39;});
+seniorBatteryBadge.textContent = `🪫 ${bat}% (${state.lang === 'en' ? 'Low' : 'منخفضة'})`;
 simBatteryLabel.className = 'font-extrabold text-amber-400';
-simBatteryLabel.textContent = ${bat}% (${state.lang === &#39;en&#39; ? &#39;Low — Family Notified&#39; : &#39;منخفضة — تم إبلاغ العائلة&#39;});
+simBatteryLabel.textContent = `${bat}% (${state.lang === 'en' ? 'Low — Family Notified' : 'منخفضة — تم إبلاغ العائلة'})`;
 famBatteryDisplay.className = 'text-xl font-extrabold text-amber-600 mt-1';
 } else {
 seniorBatteryBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200';
-seniorBatteryBadge.textContent = 🔋 ${bat}%;
+seniorBatteryBadge.textContent = `🔋 ${bat}%`;
 simBatteryLabel.className = 'font-extrabold text-emerald-400';
-simBatteryLabel.textContent = ${bat}% (${state.lang === &#39;en&#39; ? &#39;Normal&#39; : &#39;طبيعي&#39;});
+simBatteryLabel.textContent = `${bat}% (${state.lang === 'en' ? 'Normal' : 'طبيعي'})`;
 famBatteryDisplay.className = 'text-xl font-extrabold text-emerald-600 mt-1';
 }
-​if (state.lang === 'en') {
-lastCheckInText.textContent = state.hoursInactive === 0 ? 'Last activity: Just now' : Last activity: ${state.hoursInactive} hours ago;
+if (state.lang === 'en') {
+lastCheckInText.textContent = state.hoursInactive === 0 ? 'Last activity: Just now' : `Last activity: ${state.hoursInactive} hours ago`;
 } else {
-lastCheckInText.textContent = state.hoursInactive === 0 ? 'آخر نشاط مسجل: الآن' : آخر نشاط مسجل: قبل ${state.hoursInactive} ساعة;
+lastCheckInText.textContent = state.hoursInactive === 0 ? 'آخر نشاط مسجل: الآن' : `آخر نشاط مسجل: قبل ${state.hoursInactive} ساعة`;
 }
 inactivityCounterDisplay.textContent = state.vacationMode
 ? (state.lang === 'en' ? 'Paused' : 'موقوف مؤقتاً')
-: ${state.hoursInactive}${t(&#39;hrUnit&#39;)} / 24${t(&#39;hrUnit&#39;)};
+: `${state.hoursInactive}${t('hrUnit')} / 24${t('hrUnit')}`;
 simStageLabel.textContent = info.label;
-​const dirSign = state.lang === 'en' ? 24 : -24;
+const dirSign = state.lang === 'en' ? 24 : -24;
 btnVacationToggle.setAttribute('aria-checked', String(state.vacationMode));
 if (state.vacationMode) {
 btnVacationToggle.classList.remove('bg-slate-300');
 btnVacationToggle.classList.add('bg-sky-600');
-vacationKnob.style.transform = translateX(${dirSign}px);
+vacationKnob.style.transform = `translateX(${dirSign}px)`;
 } else {
 btnVacationToggle.classList.add('bg-slate-300');
 btnVacationToggle.classList.remove('bg-sky-600');
 vacationKnob.style.transform = 'translateX(0px)';
 }
-​btnVoiceToggle.setAttribute('aria-checked', String(state.voiceEnabled));
+btnVoiceToggle.setAttribute('aria-checked', String(state.voiceEnabled));
 if (state.voiceEnabled) {
 btnVoiceToggle.classList.remove('bg-slate-300');
 btnVoiceToggle.classList.add('bg-violet-600');
-voiceKnob.style.transform = translateX(${dirSign}px);
+voiceKnob.style.transform = `translateX(${dirSign}px)`;
 } else {
 btnVoiceToggle.classList.add('bg-slate-300');
 btnVoiceToggle.classList.remove('bg-violet-600');
 voiceKnob.style.transform = 'translateX(0px)';
 }
-​const contactsNames = getContactNamesSummary();
+const contactsNames = getContactNamesSummary();
 if (info.level === 'nudge') {
 globalAlertBanner.className = 'mb-4 rounded-2xl p-4 border bg-amber-50 border-amber-200 text-amber-900 text-sm font-bold';
 globalAlertBanner.textContent = state.lang === 'en'
-? 'Gentle Nudge: It has been a while since your last check-in. Tap "I&#39;m OK" so we don&#39;t worry your family.'
+? `Gentle Nudge: It has been a while since your last check-in. Tap "I'm OK" so we don't worry your family.`
 : 'تذكير لطيف للمسن: مرّ وقت طويل دون نشاط. يرجى الضغط على "أنا بخير" لتجنب تنبيه العائلة.';
 } else if (info.level === 'grace') {
 globalAlertBanner.className = 'mb-4 rounded-2xl p-4 border bg-orange-50 border-orange-300 text-orange-900 text-sm font-bold';
 globalAlertBanner.textContent = state.lang === 'en'
-? Final Grace Period: No check-in for ${state.hoursInactive} hours. (${contactsNames}) will be notified at 24 hours.
-: فترة السماح الأخيرة: لم تسجل نشاطك منذ ${state.hoursInactive} ساعة. سيتم إبلاغ (${contactsNames}) عند إتمام 24 ساعة.;
+? `Final Grace Period: No check-in for ${state.hoursInactive} hours. (${contactsNames}) will be notified at 24 hours.`
+: `فترة السماح الأخيرة: لم تسجل نشاطك منذ ${state.hoursInactive} ساعة. سيتم إبلاغ (${contactsNames}) عند إتمام 24 ساعة.`;
 } else if (info.level === 'alert') {
 globalAlertBanner.className = 'mb-4 rounded-2xl p-4 border bg-rose-50 border-rose-300 text-rose-900 text-sm font-bold';
 globalAlertBanner.textContent = state.lang === 'en'
-? Active Family Alert: Inactivity exceeded 24 hours! Automated SMS sent to (${contactsNames}) with last known location.
-: تنبيه عائلي نشط: تجاوز الانقطاع 24 ساعة! تم إرسال رسالة SMS تلقائية إلى (${contactsNames}) مع آخر موقع معروف.;
+? `Active Family Alert: Inactivity exceeded 24 hours! Automated SMS sent to (${contactsNames}) with last known location.`
+: `تنبيه عائلي نشط: تجاوز الانقطاع 24 ساعة! تم إرسال رسالة SMS تلقائية إلى (${contactsNames}) مع آخر موقع معروف.`;
 } else {
 globalAlertBanner.className = 'hidden';
 }
-​if (isLowBattery) {
+if (isLowBattery) {
 batteryAlertBanner.classList.remove('hidden');
 batteryAlertBanner.textContent = state.lang === 'en'
-? Low Battery Alert (${bat}%): Family has been notified that Robert&#39;s phone battery is low to prevent false alarms if it powers off.
-: تنبيه البطارية (${bat}%): تم إشعار العائلة بانخفاض بطارية هاتف المسن حتى لا يسبب انطفاء الهاتف قلقاً أو إنذاراً كاذباً.;
+? `Low Battery Alert (${bat}%): Family has been notified that Robert's phone battery is low to prevent false alarms if it powers off.`
+: `تنبيه البطارية (${bat}%): تم إشعار العائلة بانخفاض بطارية هاتف المسن حتى لا يسبب انطفاء الهاتف قلقاً أو إنذاراً كاذباً.`;
 } else {
 batteryAlertBanner.classList.add('hidden');
 }
-​// Meds List
+// Meds List
 medsList.innerHTML = '';
 state.meds.forEach(med => {
 const row = document.createElement('div');
-row.className = p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${med.taken ? &#39;bg-emerald-50/60 border-emerald-200&#39; : &#39;bg-slate-50 border-slate-200&#39;};
-row.innerHTML = &lt;div class=&quot;flex items-center gap-3&quot;&gt; &lt;div class=&quot;w-10 h-10 rounded-xl flex items-center justify-center ${med.taken ? &#39;bg-emerald-600 text-white&#39; : &#39;bg-white text-slate-600 border border-slate-200&#39;}&quot;&gt; &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; class=&quot;w-5 h-5&quot; fill=&quot;none&quot; viewBox=&quot;0 0 24 24&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt; &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; d=&quot;M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z&quot; /&gt; &lt;/svg&gt; &lt;/div&gt; &lt;div&gt; &lt;div class=&quot;flex flex-wrap items-center gap-1.5&quot;&gt; &lt;span class=&quot;font-bold text-slate-900 ${med.taken ? &#39;line-through opacity-75&#39; : &#39;&#39;}&quot;&gt;${med.name}&lt;/span&gt; ${med.pharmacistVerified ?<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold">${state.lang === 'en' ? '✓ Verified by Pharmacist' : '✓ معتمد من الصيدلي'}</span>: &#39;&#39;} &lt;/div&gt; &lt;div class=&quot;text-xs text-slate-500 mt-0.5&quot;&gt;${med.time} • ${med.note}&lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;div class=&quot;flex items-center gap-2&quot;&gt; &lt;button type=&quot;button&quot; data-speak-med=&quot;${med.id}&quot; title=&quot;Read Aloud&quot; class=&quot;med-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200&quot;&gt; &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; class=&quot;w-4 h-4&quot; fill=&quot;none&quot; viewBox=&quot;0 0 24 24&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt; &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; d=&quot;M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z&quot; /&gt; &lt;/svg&gt; &lt;/button&gt; &lt;button type=&quot;button&quot; data-med-id=&quot;${med.id}&quot; class=&quot;med-toggle-btn tap-btn px-4 py-2 rounded-xl text-xs font-extrabold ${med.taken ? &#39;bg-emerald-100 text-emerald-800&#39; : &#39;bg-slate-900 hover:bg-slate-800 text-white&#39;}&quot;&gt; ${med.taken ? t(&#39;takenLabel&#39;) : t(&#39;takeNowLabel&#39;)} &lt;/button&gt; &lt;/div&gt;;
+row.className = `p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${med.taken ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200'}`;
+row.innerHTML = `<div class="flex items-center gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center ${med.taken ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /> </svg> </div> <div> <div class="flex flex-wrap items-center gap-1.5"> <span class="font-bold text-slate-900 ${med.taken ? 'line-through opacity-75' : ''}">${med.name}</span> ${med.pharmacistVerified ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold">${state.lang === 'en' ? '✓ Verified by Pharmacist' : '✓ معتمد من الصيدلي'}</span>` : ''} </div> <div class="text-xs text-slate-500 mt-0.5">${med.time} • ${med.note}</div> </div> </div> <div class="flex items-center gap-2"> <button type="button" data-speak-med="${med.id}" title="Read Aloud" class="med-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-med-id="${med.id}" class="med-toggle-btn tap-btn px-4 py-2 rounded-xl text-xs font-extrabold ${med.taken ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-900 hover:bg-slate-800 text-white'}"> ${med.taken ? t('takenLabel') : t('takeNowLabel')} </button> </div>`;
 medsList.appendChild(row);
 });
-​// Appointments List
+// Appointments List
 appointmentsList.innerHTML = '';
 if (state.appointments.length === 0) {
-appointmentsList.innerHTML = &lt;div class=&quot;text-xs text-slate-400 text-center py-5 border border-dashed border-slate-200 rounded-2xl&quot;&gt;${t(&#39;noAppts&#39;)}&lt;/div&gt;;
+appointmentsList.innerHTML = `<div class="text-xs text-slate-400 text-center py-5 border border-dashed border-slate-200 rounded-2xl">${t('noAppts')}</div>`;
 } else {
 state.appointments.forEach(appt => {
 const card = document.createElement('div');
-card.className = p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${appt.completed ? &#39;bg-indigo-50/50 border-indigo-200&#39; : &#39;bg-slate-50 border-slate-200&#39;};
-card.innerHTML = &lt;div class=&quot;flex items-start gap-3&quot;&gt; &lt;div class=&quot;w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${appt.completed ? &#39;bg-indigo-600 text-white&#39; : &#39;bg-indigo-100 text-indigo-700&#39;}&quot;&gt; &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; class=&quot;w-5 h-5&quot; fill=&quot;none&quot; viewBox=&quot;0 0 24 24&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt; &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; d=&quot;M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z&quot; /&gt; &lt;/svg&gt; &lt;/div&gt; &lt;div&gt; &lt;div class=&quot;font-bold text-slate-900 ${appt.completed ? &#39;line-through opacity-75&#39; : &#39;&#39;}&quot;&gt;${appt.doctor}&lt;/div&gt; &lt;div class=&quot;text-xs text-slate-600 mt-0.5&quot;&gt;${appt.date} — ${appt.time} • ${appt.location}&lt;/div&gt; ${appt.notifyFamily ?<span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-bold">${t('familyAlertTag')}</span>: &#39;&#39;} &lt;/div&gt; &lt;/div&gt; &lt;div class=&quot;flex items-center gap-1.5&quot;&gt; &lt;button type=&quot;button&quot; data-speak-appt=&quot;${appt.id}&quot; title=&quot;Read Aloud&quot; class=&quot;appt-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200&quot;&gt; &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; class=&quot;w-4 h-4&quot; fill=&quot;none&quot; viewBox=&quot;0 0 24 24&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt; &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; d=&quot;M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z&quot; /&gt; &lt;/svg&gt; &lt;/button&gt; &lt;button type=&quot;button&quot; data-toggle-appt=&quot;${appt.id}&quot; class=&quot;appt-toggle-btn tap-btn px-3 py-2 rounded-xl text-xs font-extrabold ${appt.completed ? &#39;bg-indigo-100 text-indigo-800&#39; : &#39;bg-indigo-600 hover:bg-indigo-700 text-white&#39;}&quot;&gt; ${appt.completed ? t(&#39;attendedLabel&#39;) : t(&#39;markAttendedLabel&#39;)} &lt;/button&gt; &lt;button type=&quot;button&quot; data-delete-appt=&quot;${appt.id}&quot; class=&quot;appt-delete-btn p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold&quot;&gt;✕&lt;/button&gt; &lt;/div&gt;;
+card.className = `p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${appt.completed ? 'bg-indigo-50/50 border-indigo-200' : 'bg-slate-50 border-slate-200'}`;
+card.innerHTML = `<div class="flex items-start gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${appt.completed ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-700'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> </svg> </div> <div> <div class="font-bold text-slate-900 ${appt.completed ? 'line-through opacity-75' : ''}">${appt.doctor}</div> <div class="text-xs text-slate-600 mt-0.5">${appt.date} — ${appt.time} • ${appt.location}</div> ${appt.notifyFamily ? `<span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-bold">${t('familyAlertTag')}</span>` : ''} </div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-speak-appt="${appt.id}" title="Read Aloud" class="appt-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-toggle-appt="${appt.id}" class="appt-toggle-btn tap-btn px-3 py-2 rounded-xl text-xs font-extrabold ${appt.completed ? 'bg-indigo-100 text-indigo-800' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}"> ${appt.completed ? t('attendedLabel') : t('markAttendedLabel')} </button> <button type="button" data-delete-appt="${appt.id}" class="appt-delete-btn p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold">✕</button> </div>`;
 appointmentsList.appendChild(card);
 });
 }
-​// Contacts List
+// Contacts List
 contactsList.innerHTML = '';
 if (state.contacts.length === 0) {
-contactsList.innerHTML = &lt;div class=&quot;text-xs text-slate-400 text-center py-5 border border-dashed border-slate-200 rounded-2xl&quot;&gt;${t(&#39;noContacts&#39;)}&lt;/div&gt;;
+contactsList.innerHTML = `<div class="text-xs text-slate-400 text-center py-5 border border-dashed border-slate-200 rounded-2xl">${t('noContacts')}</div>`;
 } else {
 state.contacts.forEach(c => {
 const card = document.createElement('div');
@@ -1239,37 +1239,37 @@ card.className = 'p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex fle
 const isPrimary = c.priority === 'Primary' || c.priority === 'أساسي';
 const badgeStyle = isPrimary ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700';
 const prioLabel = state.lang === 'en' ? (isPrimary ? 'Primary' : 'Backup') : (isPrimary ? 'أساسي' : 'ثانوي');
-card.innerHTML = &lt;div&gt; &lt;div class=&quot;flex items-center gap-2&quot;&gt; &lt;span class=&quot;font-bold text-slate-900&quot;&gt;${c.name}&lt;/span&gt; &lt;span class=&quot;text-xs text-slate-500&quot;&gt;(${c.relation})&lt;/span&gt; &lt;button type=&quot;button&quot; data-toggle-priority=&quot;${c.id}&quot; class=&quot;contact-priority-btn px-2 py-0.5 rounded-md text-[11px] font-bold ${badgeStyle}&quot;&gt;${prioLabel}&lt;/button&gt; &lt;/div&gt; &lt;div class=&quot;text-xs text-slate-500 mt-0.5&quot; dir=&quot;ltr&quot;&gt;${c.phone}&lt;/div&gt; &lt;/div&gt; &lt;div class=&quot;flex items-center gap-1.5&quot;&gt; &lt;button type=&quot;button&quot; data-edit-contact=&quot;${c.id}&quot; class=&quot;contact-edit-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700&quot;&gt;${t(&#39;editBtn&#39;)}&lt;/button&gt; &lt;button type=&quot;button&quot; data-delete-contact=&quot;${c.id}&quot; class=&quot;contact-delete-btn px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-bold text-rose-700&quot;&gt;${t(&#39;deleteBtn&#39;)}&lt;/button&gt; &lt;/div&gt;;
+card.innerHTML = `<div> <div class="flex items-center gap-2"> <span class="font-bold text-slate-900">${c.name}</span> <span class="text-xs text-slate-500">(${c.relation})</span> <button type="button" data-toggle-priority="${c.id}" class="contact-priority-btn px-2 py-0.5 rounded-md text-[11px] font-bold ${badgeStyle}">${prioLabel}</button> </div> <div class="text-xs text-slate-500 mt-0.5" dir="ltr">${c.phone}</div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-edit-contact="${c.id}" class="contact-edit-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">${t('editBtn')}</button> <button type="button" data-delete-contact="${c.id}" class="contact-delete-btn px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-bold text-rose-700">${t('deleteBtn')}</button> </div>`;
 contactsList.appendChild(card);
 });
 }
-​// Family Dashboard Updates
+// Family Dashboard Updates
 const takenCount = state.meds.filter(m => m.taken).length;
-famAdherenceDisplay.textContent = ${takenCount} / ${state.meds.length};
-famHoursDisplay.textContent = ${state.hoursInactive} ${t(&#39;hrsSuffix&#39;)};
-famBatteryDisplay.textContent = ${bat}%;
+famAdherenceDisplay.textContent = `${takenCount} / ${state.meds.length}`;
+famHoursDisplay.textContent = `${state.hoursInactive} ${t('hrsSuffix')}`;
+famBatteryDisplay.textContent = `${bat}%`;
 const nextAppt = state.appointments.find(a => !a.completed);
-famNextAppointmentDisplay.textContent = nextAppt ? ${nextAppt.doctor} (${nextAppt.date}) : (state.lang === 'en' ? 'None scheduled' : 'لا توجد مواعيد');
-​hoursSlider.value = state.hoursInactive;
-sliderValueLabel.textContent = ${state.hoursInactive} ${t(&#39;hrsSuffix&#39;)};
+famNextAppointmentDisplay.textContent = nextAppt ? `${nextAppt.doctor} (${nextAppt.date})` : (state.lang === 'en' ? 'None scheduled' : 'لا توجد مواعيد');
+hoursSlider.value = state.hoursInactive;
+sliderValueLabel.textContent = `${state.hoursInactive} ${t('hrsSuffix')}`;
 batterySlider.value = bat;
-batterySliderLabel.textContent = ${bat}%;
-​familyStatusPill.className = px-3.5 py-1.5 rounded-full text-xs font-extrabold ${info.pillClass};
+batterySliderLabel.textContent = `${bat}%`;
+familyStatusPill.className = `px-3.5 py-1.5 rounded-full text-xs font-extrabold ${info.pillClass}`;
 familyStatusPill.textContent = info.pillText;
-​if (info.level === 'alert') {
+if (info.level === 'alert') {
 smsStatusTag.className = 'text-xs font-bold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700';
-smsStatusTag.textContent = state.lang === 'en' ? Sent to ${state.contacts.length} contacts : مرسلة إلى ${state.contacts.length} جهات;
+smsStatusTag.textContent = state.lang === 'en' ? `Sent to ${state.contacts.length} contacts` : `مرسلة إلى ${state.contacts.length} جهات`;
 smsBubble.className = 'p-4 rounded-2xl bg-rose-50 text-rose-950 text-sm leading-relaxed border border-rose-200 font-semibold';
 smsBubble.textContent = state.lang === 'en'
-? CareGuard Alert to (${contactsNames}): Robert Miller has had no app activity or medication check-in for ${state.hoursInactive} hours. Phone battery: ${bat}%. Last known location: Home (Austin, TX). Please check on him.
-: تنبيه طمأنينة إلى (${contactsNames}): لم يسجل العم صالح أي نشاط منذ ${state.hoursInactive} ساعة. حالة البطارية: ${bat}%. آخر موقع معروف: المنزل. يرجى الاطمئنان عليه.;
+? `CareGuard Alert to (${contactsNames}): Robert Miller has had no app activity or medication check-in for ${state.hoursInactive} hours. Phone battery: ${bat}%. Last known location: Home (Austin, TX). Please check on him.`
+: `تنبيه طمأنينة إلى (${contactsNames}): لم يسجل العم صالح أي نشاط منذ ${state.hoursInactive} ساعة. حالة البطارية: ${bat}%. آخر موقع معروف: المنزل. يرجى الاطمئنان عليه.`;
 } else if (isLowBattery) {
 smsStatusTag.className = 'text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800';
 smsStatusTag.textContent = state.lang === 'en' ? 'Low Battery Alert' : 'تنبيه بطارية منخفضة';
 smsBubble.className = 'p-4 rounded-2xl bg-amber-50 text-amber-950 text-sm leading-relaxed border border-amber-200 font-semibold';
 smsBubble.textContent = state.lang === 'en'
-? CareGuard Notice to (${contactsNames}): Robert&#39;s phone battery is down to ${bat}%. His phone may power off soon — consider calling to remind him to charge it.
-: إشعار وقائي إلى (${contactsNames}): بطارية هاتف العم صالح انخفضت إلى ${bat}%. قد ينطفئ الهاتف قريباً — يمكنك الاتصال لتذكيره بشحنه.;
+? `CareGuard Notice to (${contactsNames}): Robert's phone battery is down to ${bat}%. His phone may power off soon — consider calling to remind him to charge it.`
+: `إشعار وقائي إلى (${contactsNames}): بطارية هاتف العم صالح انخفضت إلى ${bat}%. قد ينطفئ الهاتف قريباً — يمكنك الاتصال لتذكيره بشحنه.`;
 } else {
 smsStatusTag.className = 'text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600';
 smsStatusTag.textContent = state.lang === 'en' ? 'Not Sent' : 'لم تُرسل بعد';
@@ -1278,29 +1278,29 @@ smsBubble.textContent = state.lang === 'en'
 ? 'Status is normal. No alerts are sent to family members while Robert checks in within 24 hours and phone battery stays charged.'
 : 'الوضع طبيعي حالياً. لن يتم إرسال أي رسالة مزعجة للعائلة ما دام المسن يتفاعل مع التطبيق خلال 24 ساعة والبطارية مشحونة.';
 }
-​// Logs
+// Logs
 activityLogList.innerHTML = '';
 if (state.logs.length === 0) {
-activityLogList.innerHTML = &lt;li class=&quot;text-xs text-slate-400 text-center py-6&quot;&gt;${t(&#39;noLogs&#39;)}&lt;/li&gt;;
+activityLogList.innerHTML = `<li class="text-xs text-slate-400 text-center py-6">${t('noLogs')}</li>`;
 } else {
 state.logs.forEach(item => {
 const li = document.createElement('li');
 const dot = item.type === 'alert' ? 'bg-rose-500' : item.type === 'warn' ? 'bg-amber-500' : 'bg-emerald-500';
 li.className = 'flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100';
-li.innerHTML = &lt;span class=&quot;w-2.5 h-2.5 rounded-full ${dot} mt-1.5 shrink-0&quot;&gt;&lt;/span&gt; &lt;div class=&quot;flex-1&quot;&gt; &lt;div class=&quot;text-slate-800 font-semibold leading-snug&quot;&gt;${item.text}&lt;/div&gt; &lt;div class=&quot;text-[11px] text-slate-400 mt-0.5&quot;&gt;${item.time}&lt;/div&gt; &lt;/div&gt;;
+li.innerHTML = `<span class="w-2.5 h-2.5 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="text-slate-800 font-semibold leading-snug">${item.text}</div> <div class="text-[11px] text-slate-400 mt-0.5">${item.time}</div> </div>`;
 activityLogList.appendChild(li);
 });
 }
-​renderMedicalId();
+renderMedicalId();
 renderSupervisor();
 }
-​function getPatientSeverity(p) {
+function getPatientSeverity(p) {
 if (p.hoursInactive >= 24 || p.battery <= 5) return { tier: 'critical', rank: 3, label: state.lang === 'en' ? 'CRITICAL' : 'حرج', cardBg: 'bg-rose-50/70 border-rose-300', badge: 'bg-rose-600 text-white' };
 if (p.hoursInactive >= 18 || p.battery <= 15) return { tier: 'warning', rank: 2, label: state.lang === 'en' ? 'WARNING' : 'تنبيه', cardBg: 'bg-amber-50/70 border-amber-300', badge: 'bg-amber-500 text-white' };
 return { tier: 'safe', rank: 1, label: state.lang === 'en' ? 'SAFE' : 'آمن', cardBg: 'bg-slate-50 border-slate-200', badge: 'bg-emerald-600 text-white' };
 }
-​function renderSupervisor() {
-const primaryContact = state.contacts[0] ? ${state.contacts[0].name} (${state.contacts[0].phone}) : 'None';
+function renderSupervisor() {
+const primaryContact = state.contacts[0] ? `${state.contacts[0].name} (${state.contacts[0].phone})` : 'None';
 const robertEntry = {
 id: 'p1',
 name: 'Robert Miller',
@@ -1315,71 +1315,71 @@ phone: '+1 512-555-0100'
 };
 const allPatients = [robertEntry, ...state.otherPatients].map(p => ({ ...p, sev: getPatientSeverity(p) }));
 allPatients.sort((a, b) => b.sev.rank - a.sev.rank || b.hoursInactive - a.hoursInactive);
-​const critCount = allPatients.filter(p => p.sev.tier === 'critical').length;
+const critCount = allPatients.filter(p => p.sev.tier === 'critical').length;
 const warnCount = allPatients.filter(p => p.sev.tier === 'warning').length;
 document.getElementById('supKpiTotalVal').textContent = String(allPatients.length);
 document.getElementById('supKpiCritVal').textContent = String(critCount);
 document.getElementById('supKpiWarnVal').textContent = String(warnCount);
 document.getElementById('supKpiResVal').textContent = String(state.resolvedToday);
-​document.querySelectorAll('.sup-filter-btn').forEach(btn => {
+document.querySelectorAll('.sup-filter-btn').forEach(btn => {
 const f = btn.getAttribute('data-sup-filter');
 btn.className = f === state.supFilter
 ? 'sup-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white'
 : 'sup-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
 });
-​const filtered = state.supFilter === 'all' ? allPatients : allPatients.filter(p => p.sev.tier === state.supFilter);
+const filtered = state.supFilter === 'all' ? allPatients : allPatients.filter(p => p.sev.tier === state.supFilter);
 supervisorQueueList.innerHTML = '';
 if (filtered.length === 0) {
-supervisorQueueList.innerHTML = &lt;div class=&quot;text-xs text-slate-400 text-center py-6 border border-dashed border-slate-200 rounded-2xl&quot;&gt;${t(&#39;noPatientsMatch&#39;)}&lt;/div&gt;;
+supervisorQueueList.innerHTML = `<div class="text-xs text-slate-400 text-center py-6 border border-dashed border-slate-200 rounded-2xl">${t('noPatientsMatch')}</div>`;
 } else {
 filtered.forEach(p => {
 const row = document.createElement('div');
-row.className = p-4 rounded-2xl border flex flex-col gap-3 ${p.sev.cardBg};
-row.innerHTML = &lt;div class=&quot;flex flex-wrap items-center justify-between gap-2&quot;&gt; &lt;div class=&quot;flex items-center gap-2.5&quot;&gt; &lt;span class=&quot;px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}&quot;&gt;${p.sev.label}&lt;/span&gt; &lt;span class=&quot;font-extrabold text-slate-900&quot;&gt;${p.name} (${p.age})&lt;/span&gt; &lt;span class=&quot;px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200&quot;&gt;${p.room}&lt;/span&gt; &lt;span class=&quot;text-xs text-slate-500&quot;&gt;• ${p.city}&lt;/span&gt; &lt;/div&gt; &lt;div class=&quot;flex items-center gap-3 text-xs font-bold text-slate-700&quot;&gt; &lt;span&gt;⏱ ${p.hoursInactive}h&lt;/span&gt; &lt;span&gt;🔋 ${p.battery}%&lt;/span&gt; &lt;span&gt;💊 ${p.missedMeds} pending&lt;/span&gt; &lt;/div&gt; &lt;/div&gt; &lt;div class=&quot;flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70&quot;&gt; &lt;div class=&quot;text-xs text-slate-600&quot;&gt; &lt;span class=&quot;font-bold&quot;&gt;Family:&lt;/span&gt; ${p.contact} &lt;/div&gt; &lt;div class=&quot;flex flex-wrap items-center gap-1.5&quot;&gt; &lt;button type=&quot;button&quot; data-sup-call=&quot;${p.id}&quot; class=&quot;sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold&quot;&gt;${t(&#39;callPatient&#39;)}&lt;/button&gt; &lt;button type=&quot;button&quot; data-sup-sms=&quot;${p.id}&quot; class=&quot;sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold&quot;&gt;${t(&#39;alertFamily&#39;)}&lt;/button&gt; &lt;button type=&quot;button&quot; data-sup-resolve=&quot;${p.id}&quot; class=&quot;sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold&quot;&gt;${t(&#39;markSafe&#39;)}&lt;/button&gt; &lt;/div&gt; &lt;/div&gt;;
+row.className = `p-4 rounded-2xl border flex flex-col gap-3 ${p.sev.cardBg}`;
+row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2"> <div class="flex items-center gap-2.5"> <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}">${p.sev.label}</span> <span class="font-extrabold text-slate-900">${p.name} (${p.age})</span> <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">${p.room}</span> <span class="text-xs text-slate-500">• ${p.city}</span> </div> <div class="flex items-center gap-3 text-xs font-bold text-slate-700"> <span>⏱ ${p.hoursInactive}h</span> <span>🔋 ${p.battery}%</span> <span>💊 ${p.missedMeds} pending</span> </div> </div> <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70"> <div class="text-xs text-slate-600"> <span class="font-bold">Family:</span> ${p.contact} </div> <div class="flex flex-wrap items-center gap-1.5"> <button type="button" data-sup-call="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">${t('callPatient')}</button> <button type="button" data-sup-sms="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">${t('alertFamily')}</button> <button type="button" data-sup-resolve="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">${t('markSafe')}</button> </div> </div>`;
 supervisorQueueList.appendChild(row);
 });
 }
-​supInterventionLog.innerHTML = '';
+supInterventionLog.innerHTML = '';
 state.supLogs.forEach(item => {
 const li = document.createElement('li');
 const dot = item.type === 'alert' ? 'bg-rose-500' : item.type === 'warn' ? 'bg-amber-500' : 'bg-emerald-500';
 li.className = 'flex items-start gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100';
-li.innerHTML = &lt;span class=&quot;w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0&quot;&gt;&lt;/span&gt; &lt;div class=&quot;flex-1&quot;&gt; &lt;div class=&quot;font-semibold text-slate-800&quot;&gt;${item.text}&lt;/div&gt; &lt;div class=&quot;text-[10px] text-slate-400 mt-0.5&quot;&gt;${item.time}&lt;/div&gt; &lt;/div&gt;;
+li.innerHTML = `<span class="w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="font-semibold text-slate-800">${item.text}</div> <div class="text-[10px] text-slate-400 mt-0.5">${item.time}</div> </div>`;
 supInterventionLog.appendChild(li);
 });
 }
-​// Event Listeners
+// Event Listeners
 btnLangToggle.addEventListener('click', () => {
 state.lang = state.lang === 'en' ? 'ar' : 'en';
 showToast(state.lang === 'en' ? 'Switched to English' : 'تم التبديل إلى العربية');
 render();
 });
-​tabSenior.addEventListener('click', () => { state.activeTab = 'senior'; render(); });
+tabSenior.addEventListener('click', () => { state.activeTab = 'senior'; render(); });
 tabFamily.addEventListener('click', () => { state.activeTab = 'family'; render(); });
 tabSupervisor.addEventListener('click', () => { state.activeTab = 'supervisor'; render(); });
-​document.querySelectorAll('.sup-filter-btn').forEach(btn => {
+document.querySelectorAll('.sup-filter-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 state.supFilter = btn.getAttribute('data-sup-filter');
 render();
 });
 });
-​supervisorQueueList.addEventListener('click', (e) => {
+supervisorQueueList.addEventListener('click', (e) => {
 const callBtn = e.target.closest('[data-sup-call]');
 const smsBtn = e.target.closest('[data-sup-sms]');
 const resBtn = e.target.closest('[data-sup-resolve]');
 const targetId = (callBtn && callBtn.getAttribute('data-sup-call')) || (smsBtn && smsBtn.getAttribute('data-sup-sms')) || (resBtn && resBtn.getAttribute('data-sup-resolve'));
 if (!targetId) return;
-​const isRobert = targetId === 'p1';
+const isRobert = targetId === 'p1';
 const patient = isRobert ? { name: 'Robert Miller', contact: getContactNamesSummary(), phone: '+1 512-555-0100' } : state.otherPatients.find(p => p.id === targetId);
 if (!patient) return;
-​const staffName = document.getElementById('shiftStaffSelect').value;
+const staffName = document.getElementById('shiftStaffSelect').value;
 const nowStr = new Date().toLocaleTimeString(state.lang === 'en' ? 'en-US' : 'ar-TN', { hour: '2-digit', minute: '2-digit' });
 if (callBtn) {
-state.supLogs.unshift({ time: nowStr, text: [${staffName}] Called ${patient.name} (${patient.phone}), type: 'ok' });
-showToast(state.lang === 'en' ? Calling ${patient.name}... : جاري الاتصال بـ ${patient.name}..., 'indigo');
+state.supLogs.unshift({ time: nowStr, text: `[${staffName}] Called ${patient.name} (${patient.phone})`, type: 'ok' });
+showToast(state.lang === 'en' ? `Calling ${patient.name}...` : `جاري الاتصال بـ ${patient.name}...`, 'indigo');
 } else if (smsBtn) {
-state.supLogs.unshift({ time: nowStr, text: [${staffName}] Sent wellness SMS to ${patient.contact}, type: 'warn' });
-showToast(state.lang === 'en' ? Alert sent to ${patient.name}&#39;s family : تم إرسال تنبيه لعائلة ${patient.name}, 'warn');
+state.supLogs.unshift({ time: nowStr, text: `[${staffName}] Sent wellness SMS to ${patient.contact}`, type: 'warn' });
+showToast(state.lang === 'en' ? `Alert sent to ${patient.name}'s family` : `تم إرسال تنبيه لعائلة ${patient.name}`, 'warn');
 } else if (resBtn) {
 if (isRobert) {
 state.hoursInactive = 0;
@@ -1390,12 +1390,12 @@ patient.missedMeds = 0;
 if (patient.battery < 20) patient.battery = 85;
 }
 state.resolvedToday += 1;
-state.supLogs.unshift({ time: nowStr, text: [${staffName}] Verified ${patient.name} SAFE &amp; closed alert, type: 'ok' });
-showToast(state.lang === 'en' ? ${patient.name} marked Safe : تم تأكيد سلامة ${patient.name});
+state.supLogs.unshift({ time: nowStr, text: `[${staffName}] Verified ${patient.name} SAFE & closed alert`, type: 'ok' });
+showToast(state.lang === 'en' ? `${patient.name} marked Safe` : `تم تأكيد سلامة ${patient.name}`);
 }
 render();
 });
-​// Shift Report Export
+// Shift Report Export
 const shiftReportModal = document.getElementById('shiftReportModal');
 const shiftReportTextarea = document.getElementById('shiftReportTextarea');
 document.getElementById('btnExportShiftReport').addEventListener('click', () => {
@@ -1405,12 +1405,12 @@ const warn = document.getElementById('supKpiWarnVal').textContent;
 const res = document.getElementById('supKpiResVal').textContent;
 const lines = [
 '=== CAREGUARD SHIFT HANDOFF REPORT ===',
-Staff: ${staffName},
-Generated: ${new Date().toLocaleString(&#39;en-US&#39;)},
-Summary: Critical=${crit} | Warning=${warn} | Resolved=${res},
+`Staff: ${staffName}`,
+`Generated: ${new Date().toLocaleString('en-US')}`,
+`Summary: Critical=${crit} | Warning=${warn} | Resolved=${res}`,
 '',
 '--- Recent Interventions ---',
-...state.supLogs.slice(0, 10).map(l => [${l.time}] ${l.text})
+...state.supLogs.slice(0, 10).map(l => `[${l.time}] ${l.text}`)
 ];
 shiftReportTextarea.value = lines.join('\n');
 shiftReportModal.classList.remove('hidden');
@@ -1430,41 +1430,41 @@ document.execCommand('copy');
 }
 showToast(state.lang === 'en' ? 'Shift report copied!' : 'تم نسخ تقرير المناوبة!', 'indigo');
 });
-​btnImOk.addEventListener('click', () => {
+btnImOk.addEventListener('click', () => {
 state.hoursInactive = 0;
-addLog(state.lang === 'en' ? 'Senior tapped "I&#39;m OK" — Inactivity timer reset' : 'ضغط المسن على زر "أنا بخير" — تم تصفير المؤقت', 'ok');
+addLog(state.lang === 'en' ? `Senior tapped "I'm OK" — Inactivity timer reset` : 'ضغط المسن على زر "أنا بخير" — تم تصفير المؤقت', 'ok');
 showToast(state.lang === 'en' ? 'Check-in confirmed! Have a great day.' : 'تم تسجيل اطمئنانك بنجاح!');
 render();
 });
-​btnVacationToggle.addEventListener('click', () => {
+btnVacationToggle.addEventListener('click', () => {
 state.vacationMode = !state.vacationMode;
 addLog(state.vacationMode ? 'Vacation mode enabled (Alerts paused)' : 'Vacation mode disabled (Monitoring resumed)', 'warn');
 showToast(state.vacationMode ? 'Vacation mode enabled' : 'Monitoring resumed');
 render();
 });
-​btnVoiceToggle.addEventListener('click', () => {
+btnVoiceToggle.addEventListener('click', () => {
 state.voiceEnabled = !state.voiceEnabled;
 addLog(state.voiceEnabled ? 'Spoken voice reminders enabled' : 'Spoken voice reminders muted', 'warn');
 showToast(state.voiceEnabled ? 'Voice reminders enabled' : 'Voice reminders muted', state.voiceEnabled ? 'voice' : 'warn');
 render();
 });
-​btnTestVoice.addEventListener('click', () => {
+btnTestVoice.addEventListener('click', () => {
 const nextMed = state.meds.find(m => !m.taken) || state.meds[0];
 if (state.lang === 'en') {
 if (!nextMed) {
 speakReminder('Hello Robert, it is time for your daily safety check-in.');
 } else {
-speakReminder(Hello Robert, it is time to take ${nextMed.name}. Instructions: ${nextMed.note}.);
+speakReminder(`Hello Robert, it is time to take ${nextMed.name}. Instructions: ${nextMed.note}.`);
 }
 } else {
 if (!nextMed) {
 speakReminder('مرحباً عم صالح، حان وقت تسجيل اطمئنانك اليومي.');
 } else {
-speakReminder(مرحباً عم صالح، حان الآن موعد دواء ${nextMed.name}، الجرعة: ${nextMed.note}.);
+speakReminder(`مرحباً عم صالح، حان الآن موعد دواء ${nextMed.name}، الجرعة: ${nextMed.note}.`);
 }
 }
 });
-​// Medical ID Modal
+// Medical ID Modal
 btnOpenMedicalId.addEventListener('click', () => {
 medicalIdReadView.classList.remove('hidden');
 medicalIdEditForm.classList.add('hidden');
@@ -1496,14 +1496,14 @@ addLog('Updated Emergency Medical ID info', 'ok');
 showToast('Medical ID saved');
 render();
 });
-​// Meds Events
+// Meds Events
 medsList.addEventListener('click', (e) => {
 const speakBtn = e.target.closest('.med-speak-btn');
 if (speakBtn) {
 const id = Number(speakBtn.getAttribute('data-speak-med'));
 const med = state.meds.find(m => m.id === id);
 if (med) {
-speakReminder(${med.name}, scheduled at ${med.time}, ${med.note}.);
+speakReminder(`${med.name}, scheduled at ${med.time}, ${med.note}.`);
 }
 return;
 }
@@ -1515,14 +1515,14 @@ if (!med) return;
 med.taken = !med.taken;
 if (med.taken) {
 state.hoursInactive = 0;
-addLog(Confirmed dose: ${med.name} (Check-in timer reset), 'ok');
-showToast(Great! Logged ${med.name});
+addLog(`Confirmed dose: ${med.name} (Check-in timer reset)`, 'ok');
+showToast(`Great! Logged ${med.name}`);
 } else {
-addLog(Unchecked dose: ${med.name}, 'warn');
+addLog(`Unchecked dose: ${med.name}`, 'warn');
 }
 render();
 });
-​// Appointments Events
+// Appointments Events
 btnAddAppointment.addEventListener('click', () => {
 apptDoctorInput.value = '';
 apptDateInput.value = '';
@@ -1531,8 +1531,8 @@ apptLocationInput.value = '';
 apptNotifyFamily.checked = true;
 appointmentModal.classList.remove('hidden');
 });
-​btnCloseAppointmentModal.addEventListener('click', () => appointmentModal.classList.add('hidden'));
-​appointmentForm.addEventListener('submit', (e) => {
+btnCloseAppointmentModal.addEventListener('click', () => appointmentModal.classList.add('hidden'));
+appointmentForm.addEventListener('submit', (e) => {
 e.preventDefault();
 const doctor = apptDoctorInput.value.trim();
 const date = apptDateInput.value.trim();
@@ -1540,7 +1540,7 @@ const time = apptTimeInput.value.trim();
 const location = apptLocationInput.value.trim();
 const notifyFamily = apptNotifyFamily.checked;
 if (!doctor || !date || !time || !location) return;
-​state.appointments.unshift({
+state.appointments.unshift({
 id: Date.now(),
 doctor,
 date,
@@ -1549,18 +1549,18 @@ location,
 notifyFamily,
 completed: false
 });
-addLog(Added appointment: ${doctor} (${date} - ${time}), 'ok');
+addLog(`Added appointment: ${doctor} (${date} - ${time})`, 'ok');
 appointmentModal.classList.add('hidden');
-showToast(Added &quot;${doctor}&quot; to appointments, 'indigo');
+showToast(`Added "${doctor}" to appointments`, 'indigo');
 render();
 });
-​appointmentsList.addEventListener('click', (e) => {
+appointmentsList.addEventListener('click', (e) => {
 const speakBtn = e.target.closest('.appt-speak-btn');
 if (speakBtn) {
 const id = Number(speakBtn.getAttribute('data-speak-appt'));
 const appt = state.appointments.find(a => a.id === id);
 if (appt) {
-speakReminder(Appointment reminder: ${appt.doctor}, ${appt.date} at ${appt.time}, ${appt.location}.);
+speakReminder(`Appointment reminder: ${appt.doctor}, ${appt.date} at ${appt.time}, ${appt.location}.`);
 }
 return;
 }
@@ -1572,10 +1572,10 @@ if (!appt) return;
 appt.completed = !appt.completed;
 if (appt.completed) {
 state.hoursInactive = 0;
-addLog(Attended appointment: ${appt.doctor} (Check-in timer reset), 'ok');
-showToast(Marked ${appt.doctor} as attended, 'indigo');
+addLog(`Attended appointment: ${appt.doctor} (Check-in timer reset)`, 'ok');
+showToast(`Marked ${appt.doctor} as attended`, 'indigo');
 } else {
-addLog(Reopened appointment: ${appt.doctor}, 'warn');
+addLog(`Reopened appointment: ${appt.doctor}`, 'warn');
 }
 render();
 return;
@@ -1586,13 +1586,13 @@ const id = Number(delBtn.getAttribute('data-delete-appt'));
 const appt = state.appointments.find(a => a.id === id);
 state.appointments = state.appointments.filter(a => a.id !== id);
 if (appt) {
-addLog(Removed appointment: ${appt.doctor}, 'warn');
+addLog(`Removed appointment: ${appt.doctor}`, 'warn');
 showToast('Appointment removed', 'warn');
 }
 render();
 }
 });
-​// Contacts CRUD
+// Contacts CRUD
 function openContactModal(contact) {
 if (contact) {
 state.editingContactId = contact.id;
@@ -1611,31 +1611,31 @@ contactPrioritySelect.value = 'Primary';
 }
 contactModal.classList.remove('hidden');
 }
-​btnAddContact.addEventListener('click', () => openContactModal(null));
+btnAddContact.addEventListener('click', () => openContactModal(null));
 btnCloseContactModal.addEventListener('click', () => contactModal.classList.add('hidden'));
-​contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', (e) => {
 e.preventDefault();
 const name = contactNameInput.value.trim();
 const relation = contactRelationInput.value.trim();
 const phone = contactPhoneInput.value.trim();
 const priority = contactPrioritySelect.value;
 if (!name || !relation || !phone) return;
-​if (state.editingContactId !== null) {
+if (state.editingContactId !== null) {
 const idx = state.contacts.findIndex(c => c.id === state.editingContactId);
 if (idx !== -1) {
 state.contacts[idx] = { id: state.editingContactId, name, relation, phone, priority };
-addLog(Updated emergency contact: ${name} (${relation}), 'ok');
-showToast(Updated ${name});
+addLog(`Updated emergency contact: ${name} (${relation})`, 'ok');
+showToast(`Updated ${name}`);
 }
 } else {
 state.contacts.push({ id: Date.now(), name, relation, phone, priority });
-addLog(Added emergency contact: ${name} (${relation}), 'ok');
-showToast(Added ${name} to emergency contacts);
+addLog(`Added emergency contact: ${name} (${relation})`, 'ok');
+showToast(`Added ${name} to emergency contacts`);
 }
 contactModal.classList.add('hidden');
 render();
 });
-​contactsList.addEventListener('click', (e) => {
+contactsList.addEventListener('click', (e) => {
 const editBtn = e.target.closest('.contact-edit-btn');
 if (editBtn) {
 const id = Number(editBtn.getAttribute('data-edit-contact'));
@@ -1649,8 +1649,8 @@ const id = Number(delBtn.getAttribute('data-delete-contact'));
 const contact = state.contacts.find(c => c.id === id);
 state.contacts = state.contacts.filter(c => c.id !== id);
 if (contact) {
-addLog(Removed emergency contact: ${contact.name}, 'warn');
-showToast(Removed ${contact.name}, 'warn');
+addLog(`Removed emergency contact: ${contact.name}`, 'warn');
+showToast(`Removed ${contact.name}`, 'warn');
 }
 render();
 return;
@@ -1662,19 +1662,19 @@ const contact = state.contacts.find(c => c.id === id);
 if (contact) {
 const isPrimary = contact.priority === 'Primary' || contact.priority === 'أساسي';
 contact.priority = isPrimary ? 'Backup' : 'Primary';
-addLog(Changed ${contact.name} priority to ${contact.priority}, 'ok');
+addLog(`Changed ${contact.name} priority to ${contact.priority}`, 'ok');
 render();
 }
 }
 });
-​// Simulators
+// Simulators
 document.querySelectorAll('.sim-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 const hrs = Number(btn.getAttribute('data-sim-hours'));
 state.vacationMode = false;
 state.hoursInactive = hrs;
 const info = getEscalationInfo();
-addLog(Simulated ${hrs}h inactivity: ${info.label}, info.level === 'alert' ? 'alert' : 'warn');
+addLog(`Simulated ${hrs}h inactivity: ${info.label}, info.level === 'alert' ? 'alert' : 'warn'`);
 if (hrs >= 18 && hrs < 24 && state.voiceEnabled) {
 speakReminder('Important reminder Robert: Please tap I am OK to confirm you are safe.');
 } else {
@@ -1683,41 +1683,41 @@ showToast(info.label, info.level === 'alert' ? 'danger' : 'warn');
 render();
 });
 });
-​document.querySelectorAll('.bat-sim-btn').forEach(btn => {
+document.querySelectorAll('.bat-sim-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 const bat = Number(btn.getAttribute('data-sim-battery'));
 state.batteryLevel = bat;
 if (bat <= 15) {
-addLog(Low battery alert (${bat}%) — Preventive notice sent to family, bat <= 5 ? 'alert' : 'warn');
+addLog(`Low battery alert (${bat}%) — Preventive notice sent to family`, bat <= 5 ? 'alert' : 'warn');
 if (state.voiceEnabled) {
-speakReminder(Robert, your phone battery is at ${bat} percent. Please plug in your charger.);
+speakReminder(`Robert, your phone battery is at ${bat} percent. Please plug in your charger.`);
 } else {
-showToast(Low battery (${bat}%) — Family notified, 'warn');
+showToast(`Low battery (${bat}%) — Family notified`, 'warn');
 }
 } else {
-addLog(Phone charged (${bat}%) — Battery normal, 'ok');
-showToast(Battery charged (${bat}%));
+addLog(`Phone charged (${bat}%) — Battery normal`, 'ok');
+showToast(`Battery charged (${bat}%)`);
 }
 render();
 });
 });
-​hoursSlider.addEventListener('input', (e) => {
+hoursSlider.addEventListener('input', (e) => {
 state.vacationMode = false;
 state.hoursInactive = Number(e.target.value);
 render();
 });
-​batterySlider.addEventListener('input', (e) => {
+batterySlider.addEventListener('input', (e) => {
 state.batteryLevel = Number(e.target.value);
 render();
 });
-​btnClearLog.addEventListener('click', () => {
+btnClearLog.addEventListener('click', () => {
 state.logs = [];
 render();
 });
-​// Scanner Logic
+// Scanner Logic
 const scanPreviewImg = document.getElementById('scanPreviewImg');
 let scanTimer = null;
-​function openScanner() {
+function openScanner() {
 if (scanTimer) { clearTimeout(scanTimer); scanTimer = null; }
 scanResultBox.classList.add('hidden');
 scanLaser.classList.add('hidden');
@@ -1732,12 +1732,12 @@ scannerStatusText.textContent = state.lang === 'en'
 : 'وجّه الكاميرا نحو ملصق علبة الدواء أو ارفع صورة الوصفة';
 scannerModal.classList.remove('hidden');
 }
-​function runScanAnimation(fileNameLabel) {
+function runScanAnimation(fileNameLabel) {
 if (scanTimer) { clearTimeout(scanTimer); scanTimer = null; }
 scanResultBox.classList.add('hidden');
 scanLaser.classList.remove('hidden');
 scannerStatusText.textContent = fileNameLabel
-? (state.lang === 'en' ? Analyzing (${fileNameLabel}) with AI... : جاري تحليل (${fileNameLabel}) بالذكاء الاصطناعي...)
+? (state.lang === 'en' ? `Analyzing (${fileNameLabel}) with AI...` : `جاري تحليل (${fileNameLabel}) بالذكاء الاصطناعي...`)
 : (state.lang === 'en' ? 'Reading Rx label & extracting dosage with AI...' : 'جاري قراءة الوصفة واستخراج الجرعة بالذكاء الاصطناعي...');
 scanTimer = setTimeout(() => {
 scanLaser.classList.add('hidden');
@@ -1751,7 +1751,7 @@ scanResultBox.classList.remove('hidden');
 scanResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }, 700);
 }
-​btnOpenScanner.addEventListener('click', openScanner);
+btnOpenScanner.addEventListener('click', openScanner);
 btnCloseScanner.addEventListener('click', () => scannerModal.classList.add('hidden'));
 btnSimulateScan.addEventListener('click', () => {
 scanPreviewImg.classList.add('hidden');
@@ -1777,7 +1777,7 @@ reader.readAsDataURL(file);
 }
 runScanAnimation(file.name);
 });
-​btnConfirmScannedMed.addEventListener('click', () => {
+btnConfirmScannedMed.addEventListener('click', () => {
 const rxChk = document.getElementById('rxVerifiedCheck');
 const phChk = document.getElementById('rxPharmacistCheck');
 const famChk = document.getElementById('rxSendFamilyCheck');
@@ -1795,12 +1795,12 @@ state.meds.push({ id: Date.now(), name, time, note, taken: false, pharmacistVeri
 state.hoursInactive = 0;
 const verTag = isPharmOk ? 'Verified by Pharmacist' : 'Verified vs Prescription';
 const famNote = (famChk && famChk.checked) ? ' (+ sent to family)' : '';
-addLog(Added medication via Rx Scan (${verTag}): ${name}${famNote}, 'ok');
+addLog(`Added medication via Rx Scan (${verTag}): ${name}${famNote}`, 'ok');
 scannerModal.classList.add('hidden');
-showToast(Added &quot;${name}&quot; to schedule);
+showToast(`Added "${name}" to schedule`);
 render();
 });
-​// Init
+// Init
 render();
 })();
 </script>
