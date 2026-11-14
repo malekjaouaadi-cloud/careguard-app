@@ -71,6 +71,17 @@ transform: scale(0.97);
 #supervisorView > div:first-child,
 #supervisorView > div:nth-child(2) { display:none !important; }
 </style>
+<style id="careguard-auth-visibility">
+/* Database configuration is developer-owned; never display it to end users. */
+#cgPilotBackend > div > div:nth-child(2),
+#cgPilotSaveConnect,
+#cgPilotUrl, #cgPilotAnonKey,
+#cgPilotBackend label:has(#cgPilotUrl),
+#cgPilotBackend label:has(#cgPilotAnonKey) { display:none !important; }
+#cgPilotWorkspaces[hidden], #cgPilotCenterWorkspace[hidden], #cgPilotFamilyWorkspace[hidden] { display:none !important; }
+/* The human-supervisor console is private, not a public user role. */
+#supervisorView { display:none !important; }
+</style>
 <script id="careguard-mvp-labels">
 document.addEventListener('DOMContentLoaded', function(){
   var sub=document.getElementById('brandSubtitle');
@@ -121,7 +132,7 @@ Senior View
 Family Dashboard
 </button>
 <button id="tabSupervisor" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
-Command Center
+Care Centers
 </button>
 </div>
 </div>
@@ -129,7 +140,7 @@ Command Center
 </header>
 <script>
 (function () {
-  var AR2EN = {"نسخ بيانات CareGuard": "CareGuard data backup", "احفظ بيانات هذا الجهاز في ملف، أو استعدها من نسخة سابقة.": "Save this device's data to a file, or restore it from a previous backup.", "تنزيل نسخة احتياطية": "Download backup", "استعادة نسخة": "Restore backup", "النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.": "Backup does not send data to the internet.", "ربط الجهاز بخادم التنبيهات": "Link device to the alerts server", "لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.": "To send \"I'm OK\", vacation mode and battery level to the server that sends real SMS alerts.", "اسم المسن": "Senior name", "+216XXXXXXXX (هاتف المسن)": "+216XXXXXXXX (senior phone)", "حفظ واختبار الاتصال": "Save & test connection", "غير مربوط": "Not linked", "عرض آخر الرسائل المرسلة": "Show latest sent messages", "مساحة التجربة الحقيقية — CareGuard": "Live pilot space — CareGuard", "اتصال Supabase وتسجيل المسنين وطلبات ربط العائلة. هذه المساحة منفصلة عن المحاكي المحلي.": "Supabase connection, senior registration and family link requests. This space is separate from the local simulator.", "غير متصل": "Not connected", "رابط مشروع Supabase": "Supabase project URL", "مفتاح anon / publishable فقط": "anon / publishable key only", "مفتاح المشروع العام": "Public project key", "حفظ الاتصال والاتصال": "Save and connect", "تسجيل الخروج": "Sign out", "تسجيل الدخول": "Sign in", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "دخول إلى الحساب": "Log in", "لم يتم تسجيل الدخول.": "Not signed in.", "تسجيل مسن من مركز الرعاية": "Register a senior from the care center", "يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.": "Allowed for active managers, supervisors and staff of the selected center.", "مركز الرعاية": "Care center", "سجّل الدخول أولاً": "Sign in first", "الاسم الكامل": "Full name", "تسجيل المسن في المركز": "Register senior at the center", "تحديث قائمة مسني المركز": "Refresh center seniors list", "ستظهر هنا الملفات المسجلة في المركز.": "Files registered at the center will appear here.", "ربط العائلة بملف مسن موجود": "Link a family to an existing senior file", "يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.": "Sends a request only; the family gets no access until a center manager or supervisor approves.", "رقم تسجيل المسن في CareGuard": "Senior file — UUID", "معرّف ملف المسن": "Senior file ID", "مساحة العائلة": "Family space", "إرسال طلب الربط": "Send link request", "طلبات الربط المعلّقة": "Pending link requests", "تحديث": "Refresh", "ستظهر الطلبات التي يسمح حسابك بالاطلاع عليها.": "Requests your account is allowed to see will appear here.", "أدخل رابط المشروع والمفتاح العام anon / publishable للبدء. لا تضع مفتاح service_role هنا.": "Enter the project URL and the public anon / publishable key to start. Do not put the service_role key here."};
+  var AR2EN = {"نسخ بيانات CareGuard": "CareGuard data backup", "احفظ بيانات هذا الجهاز في ملف، أو استعدها من نسخة سابقة.": "Save this device's data to a file, or restore it from a previous backup.", "تنزيل نسخة احتياطية": "Download backup", "استعادة نسخة": "Restore backup", "النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.": "Backup does not send data to the internet.", "ربط الجهاز بخادم التنبيهات": "Link device to the alerts server", "لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.": "To send \"I'm OK\", vacation mode and battery level to the server that sends real SMS alerts.", "اسم المسن": "Senior name", "+216XXXXXXXX (هاتف المسن)": "+216XXXXXXXX (senior phone)", "حفظ واختبار الاتصال": "Save & test connection", "غير مربوط": "Not linked", "عرض آخر الرسائل المرسلة": "Show latest sent messages", "مساحة التجربة الحقيقية — CareGuard": "Live pilot space — CareGuard", "تسجيل الدخول وإدارة ملفات المسنين وطلبات ربط العائلة. البيانات محفوظة في مساحة CareGuard الخاصة بك.": "Supabase connection, senior registration and family link requests. This space is separate from the local simulator.", "غير متصل": "Not connected", "رابط مشروع Supabase": "Supabase project URL", "مفتاح anon / publishable فقط": "anon / publishable key only", "مفتاح المشروع العام": "Public project key", "حفظ الاتصال والاتصال": "Save and connect", "تسجيل الخروج": "Sign out", "تسجيل الدخول": "Sign in", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "بريد آخر": "Other email", "Gmail": "Gmail", "Outlook / Hotmail": "Outlook / Hotmail", "Yahoo": "Yahoo", "أدخل عنوان بريدك الإلكتروني كاملاً": "Enter your full email address", "التسجيل بالبريد الإلكتروني": "Sign up with email", "التسجيل برقم الهاتف": "Sign up with phone", "حساب عائلة": "Family account", "حساب مسن": "Senior account", "تاريخ الميلاد": "Date of birth", "الحالة الاجتماعية": "Marital status", "غير محدد": "Not specified", "أعزب / عزباء": "Single", "متزوج / متزوجة": "Married", "أرمل / أرملة": "Widowed", "مطلق / مطلقة": "Divorced", "الأمراض المزمنة (يمكن اختيار أكثر من مرض)": "Chronic conditions (select all that apply)", "السكري": "Diabetes", "ارتفاع ضغط الدم": "High blood pressure", "أمراض القلب": "Heart disease", "الربو": "Asthma", "أمراض الكلى": "Kidney disease", "أمراض المفاصل": "Joint disease", "ألزهايمر / الخرف": "Alzheimer's / dementia", "أخرى": "Other", "مرض آخر (اختياري)": "Other condition (optional)", "هل سبق له الإقامة بالمستشفى؟": "Has the senior previously stayed in hospital?", "نعم": "Yes", "لا": "No", "تفاصيل الإقامة (اختياري)": "Hospital stay details (optional)", "اسم الطبيب المعالج (اختياري)": "Treating doctor's name (optional)", "هاتف الطبيب (اختياري)": "Doctor's phone (optional)", "موعد الطبيب القادم": "Next doctor's appointment", "رمز التحقق عبر SMS": "SMS verification code", "تأكيد الهاتف": "Verify phone", "كلمة المرور (8 أحرف على الأقل)": "Password (at least 8 characters)", "اسم العائلة / مساحة العائلة": "Family / household name", "رقم تسجيل المسن CG-... (لحساب المسن)": "Senior registration number CG-... (for senior account)", "دخول إلى الحساب": "Log in", "لم يتم تسجيل الدخول.": "Not signed in.", "تسجيل مسن من مركز الرعاية": "Register a senior from the care center", "يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.": "Allowed for active managers, supervisors and staff of the selected center.", "مركز الرعاية": "Care center", "سجّل الدخول أولاً": "Sign in first", "الاسم الكامل": "Full name", "تسجيل المسن في المركز": "Register senior at the center", "تحديث قائمة مسني المركز": "Refresh center seniors list", "ستظهر هنا الملفات المسجلة في المركز.": "Files registered at the center will appear here.", "ربط العائلة بملف مسن موجود": "Link a family to an existing senior file", "يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.": "Sends a request to the senior. The family gets no access until the senior approves from their account.", "رقم تسجيل المسن في CareGuard": "CareGuard senior registration number", "معرّف ملف المسن": "Senior registration number", "مساحة العائلة": "Family space", "إرسال طلب الربط": "Send link request", "طلبات الربط المعلّقة": "Pending link requests", "تحديث": "Refresh", "ستظهر الطلبات التي يسمح حسابك بالاطلاع عليها.": "Requests your account is allowed to see will appear here.", "أدخل رابط المشروع والمفتاح العام anon / publishable للبدء. لا تضع مفتاح service_role هنا.": "CareGuard service is not configured. Please contact support."};
   var orig = new WeakMap();
   function isEn() { return document.documentElement.lang === 'en'; }
   window.cgL = function (ar, en) { return isEn() ? en : ar; };
@@ -237,7 +248,8 @@ Command Center
     <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
       <h3 class="font-extrabold text-sm text-slate-800">تسجيل الدخول</h3>
       <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <input id="cgPilotEmail" type="email" autocomplete="username" placeholder="البريد الإلكتروني"
+        <select id="cgPilotEmailProvider" aria-label="نوع البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="other">بريد آخر</option><option value="gmail">Gmail</option><option value="outlook">Outlook / Hotmail</option><option value="yahoo">Yahoo</option></select>
+        <input id="cgPilotEmail" type="email" autocomplete="username" placeholder="أدخل عنوان بريدك الإلكتروني كاملاً"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
         <input id="cgPilotPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
@@ -248,13 +260,14 @@ Command Center
         <button id="cgPilotLogin" type="button" class="tap-btn rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white" disabled>دخول إلى الحساب</button>
       </div>
       <p id="cgPilotUser" class="mt-2 text-xs text-slate-500" aria-live="polite">لم يتم تسجيل الدخول.</p>
-      <details class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+      <details open class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
         <summary class="cursor-pointer text-sm font-extrabold text-emerald-900">إنشاء حساب جديد</summary>
         <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input id="cgPilotSignupName" maxlength="120" placeholder="الاسم الكامل" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <select id="cgPilotSignupRole" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="family">حساب عائلة</option><option value="senior">حساب مسن</option></select>
           <select id="cgPilotSignupMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email">التسجيل بالبريد الإلكتروني</option><option value="phone">التسجيل برقم الهاتف</option></select>
-          <input id="cgPilotSignupEmail" type="email" placeholder="البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <select id="cgPilotSignupEmailProvider" aria-label="نوع البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="other">بريد آخر</option><option value="gmail">Gmail</option><option value="outlook">Outlook / Hotmail</option><option value="yahoo">Yahoo</option></select>
+          <input id="cgPilotSignupEmail" type="email" placeholder="أدخل عنوان بريدك الإلكتروني كاملاً" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotSignupPhone" type="tel" placeholder="رقم الهاتف بصيغة +216..." class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotSignupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="كلمة المرور (8 أحرف على الأقل)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotHouseholdName" maxlength="120" placeholder="اسم العائلة / مساحة العائلة" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
@@ -266,8 +279,8 @@ Command Center
       </details>
     </div>
 
-    <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <div class="rounded-2xl border border-slate-200 p-3">
+    <div id="cgPilotWorkspaces" hidden class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div id="cgPilotCenterWorkspace" hidden class="rounded-2xl border border-slate-200 p-3">
         <h3 class="font-extrabold text-sm text-slate-800">تسجيل مسن من مركز الرعاية</h3>
         <p class="mt-1 text-xs text-slate-500">يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.</p>
         <label class="mt-3 block text-xs font-bold text-slate-700">مركز الرعاية
@@ -299,7 +312,7 @@ Command Center
         </div>
       </div>
 
-      <div class="rounded-2xl border border-slate-200 p-3">
+      <div id="cgPilotFamilyWorkspace" hidden class="rounded-2xl border border-slate-200 p-3">
         <h3 class="font-extrabold text-sm text-slate-800">ربط العائلة بملف مسن موجود</h3>
         <p class="mt-1 text-xs text-slate-500">يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.</p>
         <label class="mt-3 block text-xs font-bold text-slate-700">رقم تسجيل المسن في CareGuard
@@ -880,7 +893,7 @@ brandSubtitle: 'Meds + Appointments + Safety Check-In',
 medicalIdBtn: 'Medical ID',
 tabSenior: 'Senior View',
 tabFamily: 'Family Dashboard',
-tabSupervisor: 'Command Center',
+tabSupervisor: 'Care Centers',
 supKpiTotal: 'Monitored Patients',
 supKpiCrit: 'Critical / Action Needed',
 supKpiWarn: 'Low Battery / Grace',
@@ -952,7 +965,7 @@ brandSubtitle: 'الدواء + المواعيد + الطوارئ',
 medicalIdBtn: 'بطاقة الطوارئ (Medical ID)',
 tabSenior: 'واجهة المسن',
 tabFamily: 'لوحة العائلة والمحاكي',
-tabSupervisor: 'لوحة المشرف البشري',
+tabSupervisor: 'مراكز الرعاية',
 supKpiTotal: 'إجمالي المرضى',
 supKpiCrit: 'حالات حرجة / تدخل فوري',
 supKpiWarn: 'بطارية منخفضة / فترة سماح',
@@ -1383,6 +1396,7 @@ medIdContactsList.appendChild(li);
 }
 }
 function render() {
+  if (state.activeTab === 'supervisor') state.activeTab = 'senior';
   saveState();
 applyLanguageLabels();
 seniorView.classList.add('hidden');
@@ -1630,7 +1644,7 @@ render();
 });
 tabSenior.addEventListener('click', () => { state.activeTab = 'senior'; render(); });
 tabFamily.addEventListener('click', () => { state.activeTab = 'family'; render(); });
-tabSupervisor.addEventListener('click', () => { state.activeTab = 'supervisor'; render(); });
+tabSupervisor.addEventListener('click', () => { document.getElementById('cgPilotBackend')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 document.querySelectorAll('.sup-filter-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 state.supFilter = btn.getAttribute('data-sup-filter');
@@ -2284,6 +2298,8 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (signupBtn) signupBtn.disabled = !client || isConnected;
     logoutBtn.disabled = !isConnected;
     const canUse = !!isConnected;
+    const workspaces = $('cgPilotWorkspaces');
+    if (workspaces) workspaces.hidden = !canUse;
     registerBtn.disabled = !canUse;
     refreshSeniorsBtn.disabled = !canUse;
     requestBtn.disabled = !canUse;
@@ -2335,8 +2351,10 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (!window.supabase || !window.supabase.createClient) {
       throw new Error(cgL("تعذر تحميل مكتبة الاتصال. تحقق من الإنترنت ثم أعد فتح الصفحة.","Could not load the connection library. Check your internet and reopen the page."));
     }
-    const url = $('cgPilotUrl').value.trim().replace(/\/+$/, '');
-    const anon = $('cgPilotAnonKey').value.trim();
+    const savedConfig = (() => { try { return JSON.parse(localStorage.getItem('careguard_supabase_public_config') || 'null') || {}; } catch (_) { return {}; } })();
+    const appConfig = window.CAREGUARD_SUPABASE_CONFIG || {};
+    const url = String(appConfig.url || savedConfig.url || $('cgPilotUrl').value || '').trim().replace(/\/+$/, '');
+    const anon = String(appConfig.anon || savedConfig.anon || $('cgPilotAnonKey').value || '').trim();
     if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
       throw new Error(cgL("رابط Supabase غير صحيح. يجب أن يكون بالشكل https://project.supabase.co","Invalid Supabase URL. It must look like https://project.supabase.co"));
     }
@@ -2380,6 +2398,15 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     households = householdResult.data || [];
     fillSelect(centerSelect, centers, centers.length ? cgL("اختر مركزاً","Select a center") : cgL("لا توجد عضوية مركز نشطة","No active center membership"), x => x.name);
     fillSelect(householdSelect, households, households.length ? cgL("اختر مساحة العائلة","Select a family space") : cgL("لا توجد عائلة متاحة لهذا الحساب","No family available for this account"), x => x.name);
+    const role = String((user.user_metadata || {}).careguard_role || '').toLowerCase();
+    $('cgPilotWorkspaces').hidden = false;
+    $('cgPilotCenterWorkspace').hidden = centers.length === 0;
+    $('cgPilotFamilyWorkspace').hidden = !((role === 'family' && households.length > 0) || role === 'senior');
+    const linkForm = $('cgPilotFamilyWorkspace').querySelector('label, #cgPilotRequestLink');
+    const isSenior = role === 'senior';
+    $('cgPilotLinkSeniorId').closest('label').hidden = isSenior;
+    householdSelect.closest('label').hidden = isSenior;
+    requestBtn.hidden = isSenior;
     await Promise.all([loadCenterSeniors(), loadPendingLinks()]);
     say(cgL("تم تسجيل الدخول. البيانات المعروضة تأتي من Supabase وتخضع لصلاحيات RLS.","Signed in. Data shown comes from Supabase and is subject to RLS permissions."), 'success');
   }
@@ -2481,6 +2508,24 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   $('cgPilotLoginMethod').addEventListener('change', () => { const phone = $('cgPilotLoginMethod').value === 'phone'; $('cgPilotPhone').classList.toggle('hidden', !phone); $('cgPilotEmail').classList.toggle('hidden', phone); });
   $('cgPilotSignupMethod').addEventListener('change', () => { const phone = $('cgPilotSignupMethod').value === 'phone'; $('cgPilotSignupPhone').classList.toggle('hidden', !phone); $('cgPilotSignupEmail').classList.toggle('hidden', phone); });
   $('cgPilotSignupRole').addEventListener('change', () => { const senior = $('cgPilotSignupRole').value === 'senior'; $('cgPilotClaimCode').classList.toggle('hidden', !senior); $('cgPilotHouseholdName').classList.toggle('hidden', senior); });
+  function applyEmailProvider(inputId, providerId) {
+    const input = $(inputId), provider = $(providerId);
+    if (!input || !provider) return;
+    const domains = { gmail: 'gmail.com', outlook: 'outlook.com', yahoo: 'yahoo.com' };
+    const update = () => {
+      const domain = domains[provider.value];
+      input.placeholder = domain ? ('name@' + domain) : cgL('أدخل عنوان بريدك الإلكتروني كاملاً','Enter your full email address');
+    };
+    provider.addEventListener('change', update);
+    input.addEventListener('blur', () => {
+      const value = input.value.trim();
+      const domain = domains[provider.value];
+      if (value && !value.includes('@') && domain) input.value = value + '@' + domain;
+    });
+    update();
+  }
+  applyEmailProvider('cgPilotEmail','cgPilotEmailProvider');
+  applyEmailProvider('cgPilotSignupEmail','cgPilotSignupEmailProvider');
   $('cgPilotSaveConnect').addEventListener('click', async () => {
     try { await connectFromFields(); }
     catch (e) { setConnected(false); say(cgL("تعذر الاتصال: ","Connection failed: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
@@ -2607,7 +2652,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       if (!client) throw new Error(cgL("سجّل الدخول أولاً.","Sign in first."));
       const registrationNumber = $('cgPilotLinkSeniorId').value.trim().toUpperCase();
       const householdId = householdSelect.value;
-      if (!seniorId || !householdId) throw new Error(cgL("أدخل رقم تسجيل المسن واختر مساحة العائلة.","Enter the senior registration number and select a family space."));
+      if (!registrationNumber || !householdId) throw new Error(cgL("أدخل رقم تسجيل المسن واختر مساحة العائلة.","Enter the senior registration number and select a family space."));
       const { data, error } = await client.rpc('request_senior_household_link', {
         p_registration_number: registrationNumber,
         p_household_id: householdId
@@ -2627,7 +2672,9 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (saved && saved.url && saved.anon) {
       $('cgPilotUrl').value = saved.url;
       $('cgPilotAnonKey').value = saved.anon;
-      connectFromFields().catch(e => say(cgL("تعذر استعادة الاتصال: ","Could not restore the connection: ") + e.message, 'error'));
+      connectFromFields().catch(e => { setConnected(false); say(cgL("تعذر الاتصال بالخدمة حالياً. حاول لاحقاً أو تواصل مع الدعم.","The service is temporarily unavailable. Please try again later or contact support."), 'error'); });
+    } else {
+      say(cgL("خدمة CareGuard لم تُهيّأ بعد. يرجى التواصل مع مسؤول التطبيق.","CareGuard has not been configured yet. Please contact the app administrator."), 'error');
     }
   } catch (_) { /* ignore invalid local config */ }
 })();
