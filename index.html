@@ -20,108 +20,61 @@
 
 BEGIN;
 
--- ---------------------------------------------------------------------------
 -- 1. Allow a senior and center assignment to exist without a household.
--- ---------------------------------------------------------------------------
+ALTER TABLE public.senior_profiles ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.senior_care_assignments ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.medications ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.medication_logs ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.appointments ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.alerts ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.device_status ALTER COLUMN household_id DROP NOT NULL;
+ALTER TABLE public.safety_checkins ALTER COLUMN household_id DROP NOT NULL;
 
-ALTER TABLE public.senior_profiles
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.senior_care_assignments
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.medications
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.medication_logs
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.appointments
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.alerts
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.device_status
-  ALTER COLUMN household_id DROP NOT NULL;
-
-ALTER TABLE public.safety_checkins
-  ALTER COLUMN household_id DROP NOT NULL;
-
--- ---------------------------------------------------------------------------
 -- 2. Preserve the senior if a household is deleted.
---    When the senior household_id changes, propagate the new value to
---    existing child rows through ON UPDATE CASCADE composite foreign keys.
--- ---------------------------------------------------------------------------
-
 ALTER TABLE public.senior_profiles
   DROP CONSTRAINT senior_profiles_household_id_fkey;
-
 ALTER TABLE public.senior_profiles
   ADD CONSTRAINT senior_profiles_household_id_fkey
   FOREIGN KEY (household_id)
   REFERENCES public.households(id)
   ON DELETE SET NULL;
 
--- ---------------------------------------------------------------------------
--- 3. Keep legacy composite relationships, but support future household linking.
---    The additional single-column FKs below ensure senior_id remains validated
---    even when household_id is NULL (MATCH SIMPLE behavior of composite FKs).
--- ---------------------------------------------------------------------------
-
-ALTER TABLE public.alerts
-  DROP CONSTRAINT alerts_senior_id_household_id_fkey;
-ALTER TABLE public.alerts
-  ADD CONSTRAINT alerts_senior_id_household_id_fkey
+-- 3. Retain legacy composite relationships and allow future household linking.
+ALTER TABLE public.alerts DROP CONSTRAINT alerts_senior_id_household_id_fkey;
+ALTER TABLE public.alerts ADD CONSTRAINT alerts_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE public.appointments
-  DROP CONSTRAINT appointments_senior_id_household_id_fkey;
-ALTER TABLE public.appointments
-  ADD CONSTRAINT appointments_senior_id_household_id_fkey
+ALTER TABLE public.appointments DROP CONSTRAINT appointments_senior_id_household_id_fkey;
+ALTER TABLE public.appointments ADD CONSTRAINT appointments_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE public.device_status
-  DROP CONSTRAINT device_status_senior_id_household_id_fkey;
-ALTER TABLE public.device_status
-  ADD CONSTRAINT device_status_senior_id_household_id_fkey
+ALTER TABLE public.device_status DROP CONSTRAINT device_status_senior_id_household_id_fkey;
+ALTER TABLE public.device_status ADD CONSTRAINT device_status_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE public.medications
-  DROP CONSTRAINT medications_senior_id_household_id_fkey;
-ALTER TABLE public.medications
-  ADD CONSTRAINT medications_senior_id_household_id_fkey
+ALTER TABLE public.medications DROP CONSTRAINT medications_senior_id_household_id_fkey;
+ALTER TABLE public.medications ADD CONSTRAINT medications_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE public.medication_logs
-  DROP CONSTRAINT medication_logs_senior_id_household_id_fkey;
-ALTER TABLE public.medication_logs
-  ADD CONSTRAINT medication_logs_senior_id_household_id_fkey
+ALTER TABLE public.medication_logs DROP CONSTRAINT medication_logs_senior_id_household_id_fkey;
+ALTER TABLE public.medication_logs ADD CONSTRAINT medication_logs_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE public.safety_checkins
-  DROP CONSTRAINT safety_checkins_senior_id_household_id_fkey;
-ALTER TABLE public.safety_checkins
-  ADD CONSTRAINT safety_checkins_senior_id_household_id_fkey
+ALTER TABLE public.safety_checkins DROP CONSTRAINT safety_checkins_senior_id_household_id_fkey;
+ALTER TABLE public.safety_checkins ADD CONSTRAINT safety_checkins_senior_id_household_id_fkey
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE public.senior_care_assignments
   DROP CONSTRAINT senior_care_assignments_senior_household_fk;
@@ -129,42 +82,35 @@ ALTER TABLE public.senior_care_assignments
   ADD CONSTRAINT senior_care_assignments_senior_household_fk
   FOREIGN KEY (senior_id, household_id)
   REFERENCES public.senior_profiles(id, household_id)
-  ON DELETE RESTRICT
-  ON UPDATE CASCADE;
+  ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- Single-column senior FKs: required for rows whose household_id is NULL.
-ALTER TABLE public.alerts
-  ADD CONSTRAINT alerts_senior_id_fkey
+-- Single-column senior FKs validate senior_id when household_id is NULL.
+ALTER TABLE public.alerts ADD CONSTRAINT alerts_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.alerts VALIDATE CONSTRAINT alerts_senior_id_fkey;
 
-ALTER TABLE public.appointments
-  ADD CONSTRAINT appointments_senior_id_fkey
+ALTER TABLE public.appointments ADD CONSTRAINT appointments_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.appointments VALIDATE CONSTRAINT appointments_senior_id_fkey;
 
-ALTER TABLE public.device_status
-  ADD CONSTRAINT device_status_senior_id_fkey
+ALTER TABLE public.device_status ADD CONSTRAINT device_status_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.device_status VALIDATE CONSTRAINT device_status_senior_id_fkey;
 
-ALTER TABLE public.medications
-  ADD CONSTRAINT medications_senior_id_fkey
+ALTER TABLE public.medications ADD CONSTRAINT medications_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.medications VALIDATE CONSTRAINT medications_senior_id_fkey;
 
-ALTER TABLE public.medication_logs
-  ADD CONSTRAINT medication_logs_senior_id_fkey
+ALTER TABLE public.medication_logs ADD CONSTRAINT medication_logs_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.medication_logs VALIDATE CONSTRAINT medication_logs_senior_id_fkey;
 
-ALTER TABLE public.safety_checkins
-  ADD CONSTRAINT safety_checkins_senior_id_fkey
+ALTER TABLE public.safety_checkins ADD CONSTRAINT safety_checkins_senior_id_fkey
   FOREIGN KEY (senior_id) REFERENCES public.senior_profiles(id)
   ON DELETE CASCADE NOT VALID;
 ALTER TABLE public.safety_checkins VALIDATE CONSTRAINT safety_checkins_senior_id_fkey;
@@ -176,8 +122,7 @@ ALTER TABLE public.senior_care_assignments
 ALTER TABLE public.senior_care_assignments
   VALIDATE CONSTRAINT senior_care_assignments_senior_id_fkey;
 
--- medication_logs also needs a single-column medication FK when household_id
--- is NULL. The existing composite FK remains in place for legacy consistency.
+-- medication_logs also needs a single-column medication FK when household_id is NULL.
 ALTER TABLE public.medication_logs
   ADD CONSTRAINT medication_logs_medication_id_fkey
   FOREIGN KEY (medication_id) REFERENCES public.medications(id)
@@ -185,12 +130,7 @@ ALTER TABLE public.medication_logs
 ALTER TABLE public.medication_logs
   VALIDATE CONSTRAINT medication_logs_medication_id_fkey;
 
--- ---------------------------------------------------------------------------
--- 4. Create the separate senior-to-household relationship.
---    Existing links are migrated as active links. Direct client writes are
---    intentionally blocked until the invitation/consent workflow is ready.
--- ---------------------------------------------------------------------------
-
+-- 4. Separate senior-to-household relationship.
 CREATE TABLE public.senior_household_links (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   senior_id uuid NOT NULL
@@ -221,29 +161,17 @@ CREATE INDEX senior_household_links_household_status_idx
 
 INSERT INTO public.senior_household_links
   (senior_id, household_id, status, created_at, approved_at)
-SELECT
-  sp.id,
-  sp.household_id,
-  'active',
-  sp.created_at,
-  sp.created_at
+SELECT sp.id, sp.household_id, 'active', sp.created_at, sp.created_at
 FROM public.senior_profiles AS sp
 WHERE sp.household_id IS NOT NULL
 ON CONFLICT DO NOTHING;
 
 ALTER TABLE public.senior_household_links ENABLE ROW LEVEL SECURITY;
-
 REVOKE ALL ON TABLE public.senior_household_links FROM PUBLIC;
 REVOKE ALL ON TABLE public.senior_household_links FROM anon;
 REVOKE ALL ON TABLE public.senior_household_links FROM authenticated;
 
--- ---------------------------------------------------------------------------
--- 5. Update the existing center-access helper.
---    Keep the old two-argument signature so existing RLS policies continue
---    to call it, but authorize by senior_id and active center membership only.
---    household_id is intentionally no longer used for center authorization.
--- ---------------------------------------------------------------------------
-
+-- 5. Center access is authorized by senior assignment and active center membership.
 CREATE OR REPLACE FUNCTION public.is_senior_assigned_to_my_active_care_center(
   p_senior_id uuid,
   p_household_id uuid
@@ -257,10 +185,8 @@ AS $function$
   SELECT EXISTS (
     SELECT 1
     FROM public.senior_care_assignments AS sca
-    JOIN public.care_centers AS cc
-      ON cc.id = sca.care_center_id
-    JOIN public.care_center_members AS ccm
-      ON ccm.care_center_id = sca.care_center_id
+    JOIN public.care_centers AS cc ON cc.id = sca.care_center_id
+    JOIN public.care_center_members AS ccm ON ccm.care_center_id = sca.care_center_id
     WHERE sca.senior_id = p_senior_id
       AND sca.status = 'active'
       AND cc.status = 'active'
@@ -270,13 +196,7 @@ AS $function$
   );
 $function$;
 
--- ---------------------------------------------------------------------------
 -- 6. Secure center-first registration RPC.
---    All active center roles may register. The caller cannot choose a
---    household_id or create an assignment in a center where they are not
---    an active member. The function returns the new senior UUID.
--- ---------------------------------------------------------------------------
-
 CREATE OR REPLACE FUNCTION public.register_senior_for_care_center(
   p_care_center_id uuid,
   p_display_name text
@@ -299,7 +219,6 @@ BEGIN
   END IF;
 
   v_display_name := btrim(COALESCE(p_display_name, ''));
-
   IF length(v_display_name) < 1 OR length(v_display_name) > 120 THEN
     RAISE EXCEPTION 'Senior name must contain between 1 and 120 characters';
   END IF;
@@ -311,34 +230,27 @@ BEGIN
     RAISE EXCEPTION 'Active membership in this care center is required';
   END IF;
 
-  SELECT p.id
-    INTO v_created_by
+  SELECT p.id INTO v_created_by
   FROM public.profiles AS p
   WHERE p.id = v_user_id;
 
-  INSERT INTO public.senior_profiles
-    (household_id, user_id, display_name)
-  VALUES
-    (NULL, NULL, v_display_name)
+  INSERT INTO public.senior_profiles (household_id, user_id, display_name)
+  VALUES (NULL, NULL, v_display_name)
   RETURNING id INTO v_senior_id;
 
   INSERT INTO public.senior_care_assignments
     (senior_id, household_id, care_center_id, status, created_by)
-  VALUES
-    (v_senior_id, NULL, p_care_center_id, 'active', v_created_by);
+  VALUES (v_senior_id, NULL, p_care_center_id, 'active', v_created_by);
 
   RETURN v_senior_id;
 END;
 $function$;
 
-REVOKE ALL ON FUNCTION public.register_senior_for_care_center(uuid, text)
-  FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.register_senior_for_care_center(uuid, text)
-  FROM anon;
+REVOKE ALL ON FUNCTION public.register_senior_for_care_center(uuid, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.register_senior_for_care_center(uuid, text) FROM anon;
 GRANT EXECUTE ON FUNCTION public.register_senior_for_care_center(uuid, text)
   TO authenticated;
 
--- Preserve execute permissions for the existing helper used by RLS policies.
 REVOKE ALL ON FUNCTION public.is_senior_assigned_to_my_active_care_center(uuid, uuid)
   FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_senior_assigned_to_my_active_care_center(uuid, uuid)
@@ -346,14 +258,11 @@ GRANT EXECUTE ON FUNCTION public.is_senior_assigned_to_my_active_care_center(uui
 
 COMMIT;
 
--- ---------------------------------------------------------------------------
 -- POST-MIGRATION CHECKS (run separately after the transaction succeeds):
---
--- 1) Confirm household_id is nullable in the 8 relevant tables:
+-- 1) Confirm household_id is nullable:
 -- SELECT table_name, column_name, is_nullable
 -- FROM information_schema.columns
--- WHERE table_schema='public'
---   AND column_name='household_id'
+-- WHERE table_schema='public' AND column_name='household_id'
 --   AND table_name IN (
 --     'senior_profiles','senior_care_assignments','medications',
 --     'medication_logs','appointments','alerts','device_status','safety_checkins'
@@ -362,23 +271,18 @@ COMMIT;
 --
 -- 2) Confirm RLS remains enabled:
 -- SELECT tablename, rowsecurity
--- FROM pg_tables
--- WHERE schemaname='public'
--- ORDER BY tablename;
+-- FROM pg_tables WHERE schemaname='public' ORDER BY tablename;
 --
--- 3) Confirm the new registration RPC exists:
--- SELECT routine_name
--- FROM information_schema.routines
+-- 3) Confirm the new RPC exists:
+-- SELECT routine_name FROM information_schema.routines
 -- WHERE routine_schema='public'
 --   AND routine_name='register_senior_for_care_center';
 --
 -- 4) Test with separate authenticated accounts:
---    - active manager can register a senior in their own active center;
---    - active supervisor can register a senior in their own active center;
---    - active staff can register a senior in their own active center;
+--    - active manager, supervisor and staff can register in their own active center;
 --    - suspended member cannot register;
 --    - member of center A cannot register in center B;
---    - member of a suspended/closed center cannot register;
---    - the new senior has household_id NULL and exactly one active assignment.
+--    - member of suspended/closed center cannot register;
+--    - new senior has household_id NULL and exactly one active assignment.
 --
 -- Do not test by using the service_role key in the Android app.
