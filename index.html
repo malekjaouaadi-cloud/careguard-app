@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CareGuard | Senior Medication, Appointments &amp; Daily Check-In Prototype</title>
+<title>CareGuard | Senior Medication, Appointments &amp; Daily Check-In</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,6 +14,12 @@ font-family: 'Inter', 'Cairo', sans-serif;
 background-color: #f4f7f9;
 color: #1e293b;
 }
+
+body{font-size:17px;}
+#seniorView .text-xs{font-size:.95rem;line-height:1.4rem;}
+#seniorView .text-\[11px\]{font-size:.85rem;}
+button{min-height:44px;}
+:focus-visible{outline:3px solid #0f766e;outline-offset:2px;}
 html[dir="rtl"] body {
 font-family: 'Cairo', 'Inter', sans-serif;
 }
@@ -61,7 +67,7 @@ transform: scale(0.97);
 </div>
 <div>
 <h1 id="brandTitle" class="text-lg font-extrabold text-slate-900 leading-tight">CareGuard</h1>
-<p id="brandSubtitle" class="text-xs text-slate-500">Interactive Demo: Meds + Appointments + Safety Check-In</p>
+<p id="brandSubtitle" class="text-xs text-slate-500">Meds + Appointments + Safety Check-In</p>
 </div>
 </div>
 <div class="flex flex-wrap items-center gap-2">
@@ -91,15 +97,50 @@ Command Center
 </div>
 </div>
 </header>
+<script>
+(function () {
+  var AR2EN = {"نسخ بيانات CareGuard": "CareGuard data backup", "احفظ بيانات هذا الجهاز في ملف، أو استعدها من نسخة سابقة.": "Save this device's data to a file, or restore it from a previous backup.", "تنزيل نسخة احتياطية": "Download backup", "استعادة نسخة": "Restore backup", "النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.": "Backup does not send data to the internet.", "ربط الجهاز بخادم التنبيهات": "Link device to the alerts server", "لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.": "To send \"I'm OK\", vacation mode and battery level to the server that sends real SMS alerts.", "اسم المسن": "Senior name", "+216XXXXXXXX (هاتف المسن)": "+216XXXXXXXX (senior phone)", "حفظ واختبار الاتصال": "Save & test connection", "غير مربوط": "Not linked", "عرض آخر الرسائل المرسلة": "Show latest sent messages", "مساحة التجربة الحقيقية — CareGuard": "Live pilot space — CareGuard", "اتصال Supabase وتسجيل المسنين وطلبات ربط العائلة. هذه المساحة منفصلة عن المحاكي المحلي.": "Supabase connection, senior registration and family link requests. This space is separate from the local simulator.", "غير متصل": "Not connected", "رابط مشروع Supabase": "Supabase project URL", "مفتاح anon / publishable فقط": "anon / publishable key only", "مفتاح المشروع العام": "Public project key", "حفظ الاتصال والاتصال": "Save and connect", "تسجيل الخروج": "Sign out", "تسجيل الدخول": "Sign in", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "دخول إلى الحساب": "Log in", "لم يتم تسجيل الدخول.": "Not signed in.", "تسجيل مسن من مركز الرعاية": "Register a senior from the care center", "يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.": "Allowed for active managers, supervisors and staff of the selected center.", "مركز الرعاية": "Care center", "سجّل الدخول أولاً": "Sign in first", "الاسم الكامل": "Full name", "تسجيل المسن في المركز": "Register senior at the center", "تحديث قائمة مسني المركز": "Refresh center seniors list", "ستظهر هنا الملفات المسجلة في المركز.": "Files registered at the center will appear here.", "ربط العائلة بملف مسن موجود": "Link a family to an existing senior file", "يرسل طلباً فقط؛ لا تحصل العائلة على صلاحية قبل موافقة مدير المركز أو المشرف.": "Sends a request only; the family gets no access until a center manager or supervisor approves.", "ملف المسن — المعرّف UUID": "Senior file — UUID", "معرّف ملف المسن": "Senior file ID", "مساحة العائلة": "Family space", "إرسال طلب الربط": "Send link request", "طلبات الربط المعلّقة": "Pending link requests", "تحديث": "Refresh", "ستظهر الطلبات التي يسمح حسابك بالاطلاع عليها.": "Requests your account is allowed to see will appear here.", "أدخل رابط المشروع والمفتاح العام anon / publishable للبدء. لا تضع مفتاح service_role هنا.": "Enter the project URL and the public anon / publishable key to start. Do not put the service_role key here."};
+  var orig = new WeakMap();
+  function isEn() { return document.documentElement.lang === 'en'; }
+  window.cgL = function (ar, en) { return isEn() ? en : ar; };
+  function norm(t) { return String(t).split(/\s+/).filter(Boolean).join(' '); }
+  window.cgApplyStaticLang = function () {
+    var en = isEn();
+    ['cgToolsSection', 'cgPilotBackend'].forEach(function (id) {
+      var root = document.getElementById(id); if (!root) return;
+      var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, nodes = [];
+      while ((n = w.nextNode())) nodes.push(n);
+      nodes.forEach(function (node) {
+        if (!orig.has(node)) {
+          var k = norm(node.nodeValue);
+          if (k && AR2EN[k]) orig.set(node, node.nodeValue); else return;
+        }
+        var o = orig.get(node);
+        node.nodeValue = en ? (o.match(/^\s*/)[0] + AR2EN[norm(o)] + o.match(/\s*$/)[0]) : o;
+      });
+      root.querySelectorAll('[placeholder]').forEach(function (el) {
+        if (!el.hasAttribute('data-ph-ar')) {
+          var k = norm(el.getAttribute('placeholder'));
+          if (!AR2EN[k]) return;
+          el.setAttribute('data-ph-ar', el.getAttribute('placeholder'));
+        }
+        var a = el.getAttribute('data-ph-ar');
+        el.setAttribute('placeholder', en ? AR2EN[norm(a)] : a);
+      });
+    });
+    ['cgPilotBackend', 'cgSyncCard', 'cgAlertsList'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.setAttribute('dir', en ? 'ltr' : 'rtl');
+    });
+  };
+  document.addEventListener('DOMContentLoaded', window.cgApplyStaticLang);
+  window.addEventListener('load', window.cgApplyStaticLang);
+})();
+</script>
 <!-- Toast Banner -->
 <div id="toastContainer" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
 
-<!-- CareGuard safety and local backup tools (prototype only) -->
-<section class="max-w-5xl mx-auto px-4 pt-4">
-  <div class="rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
-    <strong>نسخة تجريبية محلية:</strong>
-    البيانات محفوظة على هذا الهاتف فقط. لا توجد مراقبة طبية أو مكالمات أو رسائل طوارئ حقيقية، ولا تتم مزامنة البيانات مع العائلة أو مركز الرعاية.
-  </div>
+<!-- CareGuard safety and local backup tools  -->
+<section id="cgToolsSection" class="max-w-5xl mx-auto px-4 pt-4">
   <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
@@ -113,6 +154,26 @@ Command Center
       </div>
     </div>
     <p id="cgBackupStatus" class="mt-3 text-xs text-slate-600" aria-live="polite">النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.</p>
+  </div>
+
+  <div id="cgSyncCard" class="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" dir="rtl">
+    <h2 class="font-extrabold text-slate-900">ربط الجهاز بخادم التنبيهات</h2>
+    <p class="mt-1 text-xs text-slate-500">لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.</p>
+    <div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-3" dir="ltr">
+      <input id="cgSyncUrl" type="url" placeholder="https://PROJECT.supabase.co" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm" />
+      <input id="cgSyncAnon" type="text" placeholder="anon / publishable key" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm" />
+      <input id="cgSyncToken" type="password" placeholder="device token" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm" />
+      <input id="cgSyncName" type="text" maxlength="80" placeholder="اسم المسن" dir="auto" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm" />
+      <input id="cgSyncPhone" type="tel" placeholder="+216XXXXXXXX (هاتف المسن)" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm" />
+    </div>
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <button id="cgSyncSave" type="button" class="tap-btn rounded-xl bg-emerald-700 px-3 py-2 text-xs font-bold text-white">حفظ واختبار الاتصال</button>
+      <span id="cgSyncStatus" class="text-xs text-slate-600" aria-live="polite">غير مربوط</span>
+    </div>
+    <div class="mt-3 border-t border-slate-100 pt-3">
+      <button id="cgAlertsBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800">عرض آخر الرسائل المرسلة</button>
+      <ul id="cgAlertsList" class="mt-2 flex flex-col gap-1 text-xs text-slate-700" dir="rtl"></ul>
+    </div>
   </div>
 </section>
 
@@ -752,7 +813,7 @@ const i18n = {
 en: {
 dir: 'ltr',
 brandTitle: 'CareGuard',
-brandSubtitle: 'Interactive Demo: Meds + Appointments + Safety Check-In',
+brandSubtitle: 'Meds + Appointments + Safety Check-In',
 medicalIdBtn: 'Medical ID',
 tabSenior: 'Senior View',
 tabFamily: 'Family Dashboard',
@@ -824,7 +885,7 @@ noLogs: 'No activity logged yet.'
 ar: {
 dir: 'rtl',
 brandTitle: 'طمأنينة (CareGuard)',
-brandSubtitle: 'نموذج تجريبي: الدواء + المواعيد + الطوارئ',
+brandSubtitle: 'الدواء + المواعيد + الطوارئ',
 medicalIdBtn: 'بطاقة الطوارئ (Medical ID)',
 tabSenior: 'واجهة المسن',
 tabFamily: 'لوحة العائلة والمحاكي',
@@ -938,11 +999,23 @@ logs: [
 { time: 'Yesterday 9:00 PM', text: 'Daily safety check-in completed', type: 'ok' }
 ]
 };
+window.__cgCleanState=function(o){return cleanState(o);};
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function cleanState(o){
+  var out={};
+  ['lang','vacationMode','voiceEnabled'].forEach(function(k){ if(o&&o[k]!==undefined) out[k]=o[k]; });
+  if(o&&o.lang!==undefined) out.lang=(o.lang==='en')?'en':'ar';
+  if(o&&o.medicalId&&typeof o.medicalId==='object'&&!Array.isArray(o.medicalId)) out.medicalId=o.medicalId;
+  ['meds','appointments','contacts','logs'].forEach(function(k){
+    if(o&&Array.isArray(o[k])) out[k]=o[k].filter(function(x){return x&&typeof x==='object'&&!Array.isArray(x);}).slice(0,200);
+  });
+  return out;
+}
 const STORE_KEY = 'careguard_state_v1';
 const PERSIST = ['lang','vacationMode','voiceEnabled','medicalId','meds','appointments','contacts','logs'];
 try {
   const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-  if (saved && typeof saved === 'object') PERSIST.forEach(k => { if (saved[k] !== undefined) state[k] = saved[k]; });
+  if (saved && typeof saved === 'object') { const safe = cleanState(saved); PERSIST.forEach(k => { if (safe[k] !== undefined) state[k] = safe[k]; }); }
 } catch (e) { /* storage unavailable or corrupted: keep defaults */ }
 function saveState() {
   try {
@@ -950,6 +1023,7 @@ function saveState() {
     PERSIST.forEach(k => { out[k] = state[k]; });
     localStorage.setItem(STORE_KEY, JSON.stringify(out));
   } catch (e) { /* ignore */ }
+  try { cgSyncContactsSoon(); } catch (e) { /* sync block not ready yet */ }
 }
 const sampleScannedMeds = [
 { name: 'Atorvastatin 20mg (Cholesterol)', time: '09:00 PM', note: '1 tablet at bedtime' },
@@ -1166,6 +1240,7 @@ pillText: state.lang === 'en' ? 'Emergency Alert Sent' : 'تنبيه طارئ م
 function applyLanguageLabels() {
 document.documentElement.lang = state.lang;
 document.documentElement.dir = t('dir');
+try { window.cgApplyStaticLang && window.cgApplyStaticLang(); } catch (e) {}
 document.getElementById('brandTitle').textContent = t('brandTitle');
 document.getElementById('brandSubtitle').textContent = t('brandSubtitle');
 document.getElementById('medicalIdBtnLabel').textContent = t('medicalIdBtn');
@@ -1349,7 +1424,7 @@ medsList.innerHTML = '';
 state.meds.forEach(med => {
 const row = document.createElement('div');
 row.className = `p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${med.taken ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200'}`;
-row.innerHTML = `<div class="flex items-center gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center ${med.taken ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /> </svg> </div> <div> <div class="flex flex-wrap items-center gap-1.5"> <span class="font-bold text-slate-900 ${med.taken ? 'line-through opacity-75' : ''}">${med.name}</span> ${med.pharmacistVerified ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold">${state.lang === 'en' ? '✓ Verified by Pharmacist' : '✓ معتمد من الصيدلي'}</span>` : ''} </div> <div class="text-xs text-slate-500 mt-0.5">${med.time} • ${med.note}</div> </div> </div> <div class="flex items-center gap-2"> <button type="button" data-speak-med="${med.id}" title="Read Aloud" class="med-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-med-id="${med.id}" class="med-toggle-btn tap-btn px-4 py-2 rounded-xl text-xs font-extrabold ${med.taken ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-900 hover:bg-slate-800 text-white'}"> ${med.taken ? t('takenLabel') : t('takeNowLabel')} </button> </div>`;
+row.innerHTML = `<div class="flex items-center gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center ${med.taken ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /> </svg> </div> <div> <div class="flex flex-wrap items-center gap-1.5"> <span class="font-bold text-slate-900 ${med.taken ? 'line-through opacity-75' : ''}">${esc(med.name)}</span> ${med.pharmacistVerified ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold">${state.lang === 'en' ? '✓ Verified by Pharmacist' : '✓ معتمد من الصيدلي'}</span>` : ''} </div> <div class="text-xs text-slate-500 mt-0.5">${esc(med.time)} • ${esc(med.note)}</div> </div> </div> <div class="flex items-center gap-2"> <button type="button" data-speak-med="${esc(med.id)}" title="Read Aloud" class="med-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-med-id="${esc(med.id)}" class="med-toggle-btn tap-btn px-4 py-2 rounded-xl text-xs font-extrabold ${med.taken ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-900 hover:bg-slate-800 text-white'}"> ${med.taken ? t('takenLabel') : t('takeNowLabel')} </button> </div>`;
 medsList.appendChild(row);
 });
 // Appointments List
@@ -1360,7 +1435,7 @@ appointmentsList.innerHTML = `<div class="text-xs text-slate-400 text-center py-
 state.appointments.forEach(appt => {
 const card = document.createElement('div');
 card.className = `p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition ${appt.completed ? 'bg-indigo-50/50 border-indigo-200' : 'bg-slate-50 border-slate-200'}`;
-card.innerHTML = `<div class="flex items-start gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${appt.completed ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-700'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> </svg> </div> <div> <div class="font-bold text-slate-900 ${appt.completed ? 'line-through opacity-75' : ''}">${appt.doctor}</div> <div class="text-xs text-slate-600 mt-0.5">${appt.date} — ${appt.time} • ${appt.location}</div> ${appt.notifyFamily ? `<span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-bold">${t('familyAlertTag')}</span>` : ''} </div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-speak-appt="${appt.id}" title="Read Aloud" class="appt-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-toggle-appt="${appt.id}" class="appt-toggle-btn tap-btn px-3 py-2 rounded-xl text-xs font-extrabold ${appt.completed ? 'bg-indigo-100 text-indigo-800' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}"> ${appt.completed ? t('attendedLabel') : t('markAttendedLabel')} </button> <button type="button" data-delete-appt="${appt.id}" class="appt-delete-btn p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold">✕</button> </div>`;
+card.innerHTML = `<div class="flex items-start gap-3"> <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${appt.completed ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-700'}"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> </svg> </div> <div> <div class="font-bold text-slate-900 ${appt.completed ? 'line-through opacity-75' : ''}">${esc(appt.doctor)}</div> <div class="text-xs text-slate-600 mt-0.5">${esc(appt.date)} — ${esc(appt.time)} • ${esc(appt.location)}</div> ${appt.notifyFamily ? `<span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-bold">${t('familyAlertTag')}</span>` : ''} </div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-speak-appt="${esc(appt.id)}" title="Read Aloud" class="appt-speak-btn tap-btn p-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200"> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /> </svg> </button> <button type="button" data-toggle-appt="${esc(appt.id)}" class="appt-toggle-btn tap-btn px-3 py-2 rounded-xl text-xs font-extrabold ${appt.completed ? 'bg-indigo-100 text-indigo-800' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}"> ${appt.completed ? t('attendedLabel') : t('markAttendedLabel')} </button> <button type="button" data-delete-appt="${esc(appt.id)}" class="appt-delete-btn p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold">✕</button> </div>`;
 appointmentsList.appendChild(card);
 });
 }
@@ -1375,7 +1450,7 @@ card.className = 'p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex fle
 const isPrimary = c.priority === 'Primary' || c.priority === 'أساسي';
 const badgeStyle = isPrimary ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700';
 const prioLabel = state.lang === 'en' ? (isPrimary ? 'Primary' : 'Backup') : (isPrimary ? 'أساسي' : 'ثانوي');
-card.innerHTML = `<div> <div class="flex items-center gap-2"> <span class="font-bold text-slate-900">${c.name}</span> <span class="text-xs text-slate-500">(${c.relation})</span> <button type="button" data-toggle-priority="${c.id}" class="contact-priority-btn px-2 py-0.5 rounded-md text-[11px] font-bold ${badgeStyle}">${prioLabel}</button> </div> <div class="text-xs text-slate-500 mt-0.5" dir="ltr">${c.phone}</div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-edit-contact="${c.id}" class="contact-edit-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">${t('editBtn')}</button> <button type="button" data-delete-contact="${c.id}" class="contact-delete-btn px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-bold text-rose-700">${t('deleteBtn')}</button> </div>`;
+card.innerHTML = `<div> <div class="flex items-center gap-2"> <span class="font-bold text-slate-900">${esc(c.name)}</span> <span class="text-xs text-slate-500">(${esc(c.relation)})</span> <button type="button" data-toggle-priority="${esc(c.id)}" class="contact-priority-btn px-2 py-0.5 rounded-md text-[11px] font-bold ${badgeStyle}">${prioLabel}</button> </div> <div class="text-xs text-slate-500 mt-0.5" dir="ltr">${esc(c.phone)}</div> </div> <div class="flex items-center gap-1.5"> <button type="button" data-edit-contact="${esc(c.id)}" class="contact-edit-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">${t('editBtn')}</button> <button type="button" data-delete-contact="${esc(c.id)}" class="contact-delete-btn px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-xs font-bold text-rose-700">${t('deleteBtn')}</button> </div>`;
 contactsList.appendChild(card);
 });
 }
@@ -1423,7 +1498,7 @@ state.logs.forEach(item => {
 const li = document.createElement('li');
 const dot = item.type === 'alert' ? 'bg-rose-500' : item.type === 'warn' ? 'bg-amber-500' : 'bg-emerald-500';
 li.className = 'flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100';
-li.innerHTML = `<span class="w-2.5 h-2.5 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="text-slate-800 font-semibold leading-snug">${item.text}</div> <div class="text-[11px] text-slate-400 mt-0.5">${item.time}</div> </div>`;
+li.innerHTML = `<span class="w-2.5 h-2.5 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="text-slate-800 font-semibold leading-snug">${esc(item.text)}</div> <div class="text-[11px] text-slate-400 mt-0.5">${esc(item.time)}</div> </div>`;
 activityLogList.appendChild(li);
 });
 }
@@ -1471,7 +1546,7 @@ supervisorQueueList.innerHTML = `<div class="text-xs text-slate-400 text-center 
 filtered.forEach(p => {
 const row = document.createElement('div');
 row.className = `p-4 rounded-2xl border flex flex-col gap-3 ${p.sev.cardBg}`;
-row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2"> <div class="flex items-center gap-2.5"> <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}">${p.sev.label}</span> <span class="font-extrabold text-slate-900">${p.name} (${p.age})</span> <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">${p.room}</span> <span class="text-xs text-slate-500">• ${p.city}</span> </div> <div class="flex items-center gap-3 text-xs font-bold text-slate-700"> <span>⏱ ${p.hoursInactive}h</span> <span>🔋 ${p.battery}%</span> <span>💊 ${p.missedMeds} pending</span> </div> </div> <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70"> <div class="text-xs text-slate-600"> <span class="font-bold">Family:</span> ${p.contact} </div> <div class="flex flex-wrap items-center gap-1.5"> <button type="button" data-sup-call="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">${t('callPatient')}</button> <button type="button" data-sup-sms="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">${t('alertFamily')}</button> <button type="button" data-sup-resolve="${p.id}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">${t('markSafe')}</button> </div> </div>`;
+row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2"> <div class="flex items-center gap-2.5"> <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}">${p.sev.label}</span> <span class="font-extrabold text-slate-900">${esc(p.name)} (${esc(p.age)})</span> <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">${esc(p.room)}</span> <span class="text-xs text-slate-500">• ${esc(p.city)}</span> </div> <div class="flex items-center gap-3 text-xs font-bold text-slate-700"> <span>⏱ ${p.hoursInactive}h</span> <span>🔋 ${p.battery}%</span> <span>💊 ${p.missedMeds} pending</span> </div> </div> <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70"> <div class="text-xs text-slate-600"> <span class="font-bold">Family:</span> ${p.contact} </div> <div class="flex flex-wrap items-center gap-1.5"> <button type="button" data-sup-call="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">${t('callPatient')}</button> <button type="button" data-sup-sms="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">${t('alertFamily')}</button> <button type="button" data-sup-resolve="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">${t('markSafe')}</button> </div> </div>`;
 supervisorQueueList.appendChild(row);
 });
 }
@@ -1480,7 +1555,7 @@ state.supLogs.forEach(item => {
 const li = document.createElement('li');
 const dot = item.type === 'alert' ? 'bg-rose-500' : item.type === 'warn' ? 'bg-amber-500' : 'bg-emerald-500';
 li.className = 'flex items-start gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100';
-li.innerHTML = `<span class="w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="font-semibold text-slate-800">${item.text}</div> <div class="text-[10px] text-slate-400 mt-0.5">${item.time}</div> </div>`;
+li.innerHTML = `<span class="w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0"></span> <div class="flex-1"> <div class="font-semibold text-slate-800">${esc(item.text)}</div> <div class="text-[10px] text-slate-400 mt-0.5">${esc(item.time)}</div> </div>`;
 supInterventionLog.appendChild(li);
 });
 }
@@ -1518,7 +1593,7 @@ state.supLogs.unshift({ time: nowStr, text: `[${staffName}] Sent wellness SMS to
 showToast(state.lang === 'en' ? `Alert sent to ${patient.name}'s family` : `تم إرسال تنبيه لعائلة ${patient.name}`, 'warn');
 } else if (resBtn) {
 if (isRobert) {
-state.hoursInactive = 0;
+state.hoursInactive = 0; cgCheckIn();
 if (state.batteryLevel < 20) state.batteryLevel = 85;
 } else {
 patient.hoursInactive = 0;
@@ -1567,13 +1642,13 @@ document.execCommand('copy');
 showToast(state.lang === 'en' ? 'Shift report copied!' : 'تم نسخ تقرير المناوبة!', 'indigo');
 });
 btnImOk.addEventListener('click', () => {
-state.hoursInactive = 0;
+state.hoursInactive = 0; cgCheckIn();
 addLog(state.lang === 'en' ? `Senior tapped "I'm OK" — Inactivity timer reset` : 'ضغط المسن على زر "أنا بخير" — تم تصفير المؤقت', 'ok');
 showToast(state.lang === 'en' ? 'Check-in confirmed! Have a great day.' : 'تم تسجيل اطمئنانك بنجاح!');
 render();
 });
 btnVacationToggle.addEventListener('click', () => {
-state.vacationMode = !state.vacationMode;
+state.vacationMode = !state.vacationMode; cgSetVacation(state.vacationMode);
 addLog(state.vacationMode ? 'Vacation mode enabled (Alerts paused)' : 'Vacation mode disabled (Monitoring resumed)', 'warn');
 showToast(state.vacationMode ? 'Vacation mode enabled' : 'Monitoring resumed');
 render();
@@ -1650,7 +1725,7 @@ const med = state.meds.find(m => m.id === id);
 if (!med) return;
 med.taken = !med.taken;
 if (med.taken) {
-state.hoursInactive = 0;
+state.hoursInactive = 0; cgCheckIn();
 addLog(`Confirmed dose: ${med.name} (Check-in timer reset)`, 'ok');
 showToast(`Great! Logged ${med.name}`);
 } else {
@@ -1707,7 +1782,7 @@ const appt = state.appointments.find(a => a.id === id);
 if (!appt) return;
 appt.completed = !appt.completed;
 if (appt.completed) {
-state.hoursInactive = 0;
+state.hoursInactive = 0; cgCheckIn();
 addLog(`Attended appointment: ${appt.doctor} (Check-in timer reset)`, 'ok');
 showToast(`Marked ${appt.doctor} as attended`, 'indigo');
 } else {
@@ -1873,8 +1948,8 @@ if (scanTimer) { clearTimeout(scanTimer); scanTimer = null; }
 scanResultBox.classList.add('hidden');
 scanLaser.classList.remove('hidden');
 scannerStatusText.textContent = fileNameLabel
-? (state.lang === 'en' ? `Analyzing (${fileNameLabel}) with AI...` : `جاري تحليل (${fileNameLabel}) بالذكاء الاصطناعي...`)
-: (state.lang === 'en' ? 'Reading Rx label & extracting dosage with AI...' : 'جاري قراءة الوصفة واستخراج الجرعة بالذكاء الاصطناعي...');
+? (state.lang === 'en' ? `Reading (${fileNameLabel})...` : `جاري قراءة (${fileNameLabel})...`)
+: (state.lang === 'en' ? 'Reading Rx label & extracting dosage...' : 'جاري قراءة الوصفة واستخراج الجرعة...');
 scanTimer = setTimeout(() => {
 scanLaser.classList.add('hidden');
 scannerStatusText.textContent = state.lang === 'en' ? 'Medication identified! Review & confirm below.' : 'تم التعرف على الدواء! راجع البيانات بالأسفل.';
@@ -1928,7 +2003,7 @@ const time = scannedMedTime.value.trim() || '09:00 AM';
 const note = scannedMedNote.value.trim() || 'As directed';
 if (!name) return;
 state.meds.push({ id: Date.now(), name, time, note, taken: false, pharmacistVerified: !!isPharmOk });
-state.hoursInactive = 0;
+state.hoursInactive = 0; cgCheckIn();
 const verTag = isPharmOk ? 'Verified by Pharmacist' : 'Verified vs Prescription';
 const famNote = (famChk && famChk.checked) ? ' (+ sent to family)' : '';
 addLog(`Added medication via Rx Scan (${verTag}): ${name}${famNote}`, 'ok');
@@ -1938,6 +2013,112 @@ render();
 });
 // Init
 render();
+
+// ---- Server sync (real alerts): check-in, vacation, battery ----
+const SYNC_KEY = 'careguard_sync_v1';
+function cgSyncCfg() {
+  try {
+    const c = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null');
+    if (c && /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(c.url) && c.anon && c.token) return c;
+  } catch (e) {}
+  return null;
+}
+async function cgRpc(name, body) {
+  const c = cgSyncCfg();
+  if (!c) return null;
+  const res = await fetch(c.url + '/rest/v1/rpc/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: c.anon, Authorization: 'Bearer ' + c.anon },
+    body: JSON.stringify(Object.assign({ p_token: c.token }, body))
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+async function cgBattery() {
+  try { if (navigator.getBattery) { const b = await navigator.getBattery(); return Math.round(b.level * 100); } } catch (e) {}
+  return null;
+}
+async function cgCheckIn() {
+  if (!cgSyncCfg()) return;
+  try {
+    const ok = await cgRpc('cg_check_in', { p_battery: await cgBattery() });
+    localStorage.removeItem('careguard_sync_pending');
+    if (ok === false) showToast(state.lang === 'en' ? 'Server rejected the device token' : 'الخادم رفض رمز الجهاز');
+  } catch (e) { localStorage.setItem('careguard_sync_pending', '1'); }
+}
+async function cgSetVacation(on) {
+  if (!cgSyncCfg()) return;
+  const until = on ? new Date(Date.now() + 30 * 86400000).toISOString() : null; // max 30 days, then monitoring resumes
+  try { await cgRpc('cg_set_vacation', { p_until: until }); } catch (e) {
+    showToast(state.lang === 'en' ? 'Could not sync vacation mode' : 'تعذّرت مزامنة وضع السفر');
+  }
+}
+
+// Push profile + contacts to the server so alerts reach real people.
+function cgNormPhone(v) { return String(v || '').replace(/[\s\-().]/g, ''); }
+var cgContactsTimer = null, cgLastContactsSig = '';
+function cgSyncContactsSoon() {
+  clearTimeout(cgContactsTimer);
+  cgContactsTimer = setTimeout(cgSyncContacts, 800);
+}
+async function cgSyncContacts(force) {
+  if (!cgSyncCfg()) return;
+  const all = (state.contacts || []).map(c => ({ name: String(c.name || '').trim(), phone: cgNormPhone(c.phone), priority: c.priority === 'Backup' ? 'Backup' : 'Primary' }));
+  const valid = all.filter(c => c.name && /^\+[1-9]\d{7,14}$/.test(c.phone));
+  const sig = JSON.stringify(valid);
+  if (!force && sig === cgLastContactsSig) return;
+  try {
+    const n = await cgRpc('cg_sync_contacts', { p_contacts: valid });
+    if (n === -1) { showToast(state.lang === 'en' ? 'Server rejected the device token' : 'الخادم رفض رمز الجهاز'); return; }
+    cgLastContactsSig = sig;
+    const skipped = all.length - valid.length;
+    if (skipped > 0) showToast(state.lang === 'en' ? skipped + ' contact(s) skipped: use +countrycode format' : 'تم تجاهل ' + skipped + ' جهة اتصال: استخدم الصيغة الدولية +رمز_الدولة');
+  } catch (e) { cgLastContactsSig = ''; }
+}
+async function cgSyncProfile(name, phone) {
+  const ph = cgNormPhone(phone);
+  if (ph && !/^\+[1-9]\d{7,14}$/.test(ph)) throw new Error('phone');
+  return cgRpc('cg_set_profile', { p_name: name || null, p_phone: ph });
+}
+window.addEventListener('online', () => { if (localStorage.getItem('careguard_sync_pending')) cgCheckIn(); });
+(function () {
+  const u = document.getElementById('cgSyncUrl'), a = document.getElementById('cgSyncAnon'),
+        t = document.getElementById('cgSyncToken'), b = document.getElementById('cgSyncSave'),
+        st = document.getElementById('cgSyncStatus');
+  if (!u || !a || !t || !b || !st) return;
+  try {
+    const c = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null') ||
+              JSON.parse(localStorage.getItem('careguard_supabase_public_config') || 'null') || {};
+    u.value = c.url || ''; a.value = c.anon || ''; t.value = (JSON.parse(localStorage.getItem(SYNC_KEY) || 'null') || {}).token || '';
+    if (cgSyncCfg()) { st.textContent = cgL("مربوط","Linked"); const sv = JSON.parse(localStorage.getItem(SYNC_KEY)); document.getElementById('cgSyncName').value = sv.name || ''; document.getElementById('cgSyncPhone').value = sv.phone || ''; }
+  } catch (e) {}
+
+  const ab = document.getElementById('cgAlertsBtn'), al = document.getElementById('cgAlertsList');
+  if (ab && al) ab.addEventListener('click', async () => {
+    al.textContent = '';
+    const addLi = (t) => { const li = document.createElement('li'); li.textContent = t; al.appendChild(li); };
+    if (!cgSyncCfg()) { addLi(cgL("اربط الجهاز بالخادم أولاً.","Link the device to the server first.")); return; }
+    try {
+      const rows = await cgRpc('cg_recent_alerts', { p_limit: 20 });
+      if (!rows || !rows.length) { addLi(cgL("لم تُرسل أي رسائل بعد.","No messages sent yet.")); return; }
+      const names = { nudge: cgL("تذكير للمسن","Reminder to senior"), grace: cgL("مهلة أخيرة للمسن","Final grace to senior"), alert: cgL("تنبيه للعائلة","Alert to family"), battery: cgL("بطارية منخفضة","Low battery") };
+      rows.forEach(r => addLi((r.ok ? '✔ ' : '✖ ') + (names[r.kind] || r.kind) + ' → ' + r.to_masked + ' — ' + new Date(r.created_at).toLocaleString(cgL('ar-TN','en-US'))));
+    } catch (e) { addLi(cgL("تعذر جلب السجل. تأكد من تشغيل 004_recent_alerts.sql.","Could not load the log. Make sure 004_recent_alerts.sql was run.")); }
+  });
+  b.addEventListener('click', async () => {
+    localStorage.setItem(SYNC_KEY, JSON.stringify({ url: u.value.trim().replace(/\/+$/, ''), anon: a.value.trim(), token: t.value.trim() }));
+    if (!cgSyncCfg()) { st.textContent = cgL("تحقق من الرابط (https://xxx.supabase.co) والمفتاح والرمز.","Check the URL (https://xxx.supabase.co), key and token."); return; }
+    try {
+      const ok = await cgRpc('cg_check_in', { p_battery: await cgBattery() });
+      if (!ok) { st.textContent = cgL("الرمز غير صحيح.","Invalid token."); return; }
+      const nm = document.getElementById('cgSyncName').value.trim(), ph = document.getElementById('cgSyncPhone').value.trim();
+      localStorage.setItem(SYNC_KEY, JSON.stringify(Object.assign(JSON.parse(localStorage.getItem(SYNC_KEY)), { name: nm, phone: ph })));
+      try { if (nm || ph) await cgSyncProfile(nm, ph); } catch (e) { st.textContent = cgL("تم الربط، لكن رقم المسن غير صالح (استخدم +216...).","Linked, but the senior phone is invalid (use +countrycode...)."); await cgSyncContacts(true); return; }
+      await cgSyncContacts(true);
+      st.textContent = cgL("تم الربط ومزامنة الاسم وجهات الاتصال ✔","Linked; name and contacts synced ✔");
+    } catch (e) { st.textContent = cgL("تعذر الاتصال بالخادم. تحقق من البيانات والإنترنت.","Could not reach the server. Check the details and your internet."); }
+  });
+})();
 // PWA: offline support
 if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
@@ -1953,6 +2134,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   if (!exportBtn || !importBtn || !fileInput || !status) return;
 
   const key = 'careguard_state_v1';
+  const cleanStateBackup = (typeof window.__cgCleanState === 'function') ? window.__cgCleanState : (o => o);
   exportBtn.addEventListener('click', function () {
     try {
       const raw = localStorage.getItem(key);
@@ -1971,9 +2153,9 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = 'تم تجهيز ملف النسخة الاحتياطية على هذا الجهاز.';
+      status.textContent = cgL("تم تجهيز ملف النسخة الاحتياطية على هذا الجهاز.","Backup file prepared on this device.");
     } catch (err) {
-      status.textContent = 'تعذر إنشاء النسخة. تحقق من مساحة التخزين ثم أعد المحاولة.';
+      status.textContent = cgL("تعذر إنشاء النسخة. تحقق من مساحة التخزين ثم أعد المحاولة.","Could not create the backup. Check storage space and try again.");
     }
   });
 
@@ -1987,16 +2169,14 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
           !data.state || typeof data.state !== 'object' || Array.isArray(data.state)) {
         throw new Error('Invalid backup');
       }
-      if (!confirm('استعادة النسخة ستستبدل بيانات CareGuard المحفوظة حالياً على هذا الهاتف. هل تريد المتابعة؟')) {
+      if (!confirm(cgL("استعادة النسخة ستستبدل بيانات CareGuard المحفوظة حالياً على هذا الهاتف. هل تريد المتابعة؟","Restoring will replace the CareGuard data currently saved on this phone. Continue?"))) {
         fileInput.value = '';
         return;
       }
-      localStorage.setItem(key, JSON.stringify(data.state));
-      status.textContent = 'تمت استعادة البيانات. أعد تحميل الصفحة لعرضها.';
-      alert('تمت الاستعادة. أعد تحميل الصفحة الآن.');
+      localStorage.setItem(key, JSON.stringify(cleanStateBackup(data.state)));
+      status.textContent = cgL("تمت استعادة البيانات. أعد تحميل الصفحة لعرضها.","Data restored. Reload the page to see it.");
     } catch (err) {
-      status.textContent = 'الملف غير صالح أو لا يمكن قراءته. لم يتم تغيير البيانات الحالية.';
-      alert('تعذر استعادة النسخة. تأكد أنك اخترت ملف CareGuard JSON صحيحاً.');
+      status.textContent = cgL("الملف غير صالح أو لا يمكن قراءته. لم يتم تغيير البيانات الحالية.","Invalid or unreadable file. Current data was not changed.");
     } finally {
       fileInput.value = '';
     }
@@ -2031,11 +2211,11 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     else status.classList.add('bg-slate-100','text-slate-700');
   }
   function setConnected(isConnected, email) {
-    badge.textContent = isConnected ? 'متصل بحساب موثّق' : 'غير متصل';
+    badge.textContent = isConnected ? cgL("متصل بحساب موثّق","Connected to a verified account") : cgL("غير متصل","Not connected");
     badge.className = isConnected
       ? 'rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800'
       : 'rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800';
-    $('cgPilotUser').textContent = isConnected ? ('تم تسجيل الدخول: ' + email) : 'لم يتم تسجيل الدخول.';
+    $('cgPilotUser').textContent = isConnected ? (cgL("تم تسجيل الدخول: ","Signed in: ") + email) : cgL("لم يتم تسجيل الدخول.","Not signed in.");
     loginBtn.disabled = !client || isConnected;
     logoutBtn.disabled = !isConnected;
     const canUse = !!isConnected;
@@ -2067,28 +2247,28 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
 
   async function connectFromFields() {
     if (!window.supabase || !window.supabase.createClient) {
-      throw new Error('تعذر تحميل مكتبة الاتصال. تحقق من الإنترنت ثم أعد فتح الصفحة.');
+      throw new Error(cgL("تعذر تحميل مكتبة الاتصال. تحقق من الإنترنت ثم أعد فتح الصفحة.","Could not load the connection library. Check your internet and reopen the page."));
     }
     const url = $('cgPilotUrl').value.trim().replace(/\/+$/, '');
     const anon = $('cgPilotAnonKey').value.trim();
     if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
-      throw new Error('رابط Supabase غير صحيح. يجب أن يكون بالشكل https://project.supabase.co');
+      throw new Error(cgL("رابط Supabase غير صحيح. يجب أن يكون بالشكل https://project.supabase.co","Invalid Supabase URL. It must look like https://project.supabase.co"));
     }
-    if (!anon) throw new Error('أدخل مفتاح anon / publishable العام.');
+    if (!anon) throw new Error(cgL("أدخل مفتاح anon / publishable العام.","Enter the public anon / publishable key."));
     localStorage.setItem('careguard_supabase_public_config', JSON.stringify({ url, anon }));
     client = window.supabase.createClient(url, anon, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     loginBtn.disabled = false;
-    say('تم حفظ إعدادات الاتصال. جارٍ التحقق من جلسة الدخول...', 'success');
+    say(cgL("تم حفظ إعدادات الاتصال. جارٍ التحقق من جلسة الدخول...","Connection settings saved. Checking the session..."), 'success');
     const { data, error } = await client.auth.getSession();
     if (error) throw error;
     if (data.session) {
-      setConnected(true, data.session.user.email || 'حساب موثّق');
+      setConnected(true, data.session.user.email || cgL("حساب موثّق","Verified account"));
       await loadPilotData();
     } else {
       setConnected(false);
-      say('الاتصال جاهز. سجّل الدخول بحساب أنشأته مسبقاً في Supabase Auth.');
+      say(cgL("الاتصال جاهز. سجّل الدخول بحساب أنشأته مسبقاً في Supabase Auth.","Connection ready. Sign in with an account you created in Supabase Auth."));
     }
   }
 
@@ -2101,7 +2281,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       setConnected(false);
       return;
     }
-    setConnected(true, user.email || 'حساب موثّق');
+    setConnected(true, user.email || cgL("حساب موثّق","Verified account"));
 
     const [centerResult, householdResult] = await Promise.all([
       client.from('care_centers').select('id,name,status').eq('status','active').order('name'),
@@ -2111,10 +2291,10 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (householdResult.error) throw householdResult.error;
     centers = centerResult.data || [];
     households = householdResult.data || [];
-    fillSelect(centerSelect, centers, centers.length ? 'اختر مركزاً' : 'لا توجد عضوية مركز نشطة', x => x.name);
-    fillSelect(householdSelect, households, households.length ? 'اختر مساحة العائلة' : 'لا توجد عائلة متاحة لهذا الحساب', x => x.name);
+    fillSelect(centerSelect, centers, centers.length ? cgL("اختر مركزاً","Select a center") : cgL("لا توجد عضوية مركز نشطة","No active center membership"), x => x.name);
+    fillSelect(householdSelect, households, households.length ? cgL("اختر مساحة العائلة","Select a family space") : cgL("لا توجد عائلة متاحة لهذا الحساب","No family available for this account"), x => x.name);
     await Promise.all([loadCenterSeniors(), loadPendingLinks()]);
-    say('تم تسجيل الدخول. البيانات المعروضة تأتي من Supabase وتخضع لصلاحيات RLS.', 'success');
+    say(cgL("تم تسجيل الدخول. البيانات المعروضة تأتي من Supabase وتخضع لصلاحيات RLS.","Signed in. Data shown comes from Supabase and is subject to RLS permissions."), 'success');
   }
 
   async function loadCenterSeniors() {
@@ -2122,7 +2302,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     target.replaceChildren();
     const centerId = centerSelect.value;
     if (!client || !centerId) {
-      addText(target, 'اختر مركزاً لعرض المسنين المسجلين فيه.', 'text-xs text-slate-400');
+      addText(target, cgL("اختر مركزاً لعرض المسنين المسجلين فيه.","Select a center to view its registered seniors."), 'text-xs text-slate-400');
       return;
     }
     const { data: assignments, error: aError } = await client
@@ -2133,7 +2313,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (aError) throw aError;
     const ids = [...new Set((assignments || []).map(x => x.senior_id))];
     if (!ids.length) {
-      addText(target, 'لا توجد ملفات مسنين مسندة إلى هذا المركز بعد.', 'text-xs text-slate-500');
+      addText(target, cgL("لا توجد ملفات مسنين مسندة إلى هذا المركز بعد.","No senior files assigned to this center yet."), 'text-xs text-slate-500');
       return;
     }
     const { data: seniors, error: sError } = await client
@@ -2154,10 +2334,10 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       const copy = document.createElement('button');
       copy.type = 'button';
       copy.className = 'mt-2 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700';
-      copy.textContent = 'نسخ معرّف المسن';
+      copy.textContent = cgL("نسخ معرّف المسن","Copy senior ID");
       copy.addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(senior.id); say('تم نسخ معرّف المسن.'); }
-        catch (_) { $('cgPilotLinkSeniorId').value = senior.id; say('وُضع المعرّف في خانة طلب الربط.'); }
+        try { await navigator.clipboard.writeText(senior.id); say(cgL("تم نسخ معرّف المسن.","Senior ID copied.")); }
+        catch (_) { $('cgPilotLinkSeniorId').value = senior.id; say(cgL("وُضع المعرّف في خانة طلب الربط.","ID placed in the link request field.")); }
       });
       card.append(name, id, copy);
       target.appendChild(card);
@@ -2176,29 +2356,29 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (error) throw error;
     const rows = data || [];
     if (!rows.length) {
-      addText(target, 'لا توجد طلبات ربط معلّقة ظاهرة لهذا الحساب.', 'text-xs text-slate-500');
+      addText(target, cgL("لا توجد طلبات ربط معلّقة ظاهرة لهذا الحساب.","No pending link requests visible to this account."), 'text-xs text-slate-500');
       return;
     }
     rows.forEach(link => {
       const card = document.createElement('div');
       card.className = 'rounded-xl border border-amber-200 bg-amber-50 p-3';
-      addText(card, 'طلب ربط مسن بعائلة', 'font-bold text-xs text-amber-900');
-      addText(card, 'المسن: ' + link.senior_id, 'mt-1 break-all text-[10px] text-slate-600');
-      addText(card, 'العائلة: ' + link.household_id, 'mt-1 break-all text-[10px] text-slate-600');
+      addText(card, cgL("طلب ربط مسن بعائلة","Senior-to-family link request"), 'font-bold text-xs text-amber-900');
+      addText(card, cgL("المسن: ","Senior: ") + link.senior_id, 'mt-1 break-all text-[10px] text-slate-600');
+      addText(card, cgL("العائلة: ","Family: ") + link.household_id, 'mt-1 break-all text-[10px] text-slate-600');
       const approve = document.createElement('button');
       approve.type = 'button';
       approve.className = 'mt-2 rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white';
-      approve.textContent = 'موافقة مدير / مشرف المركز';
+      approve.textContent = cgL("موافقة مدير / مشرف المركز","Center manager / supervisor approval");
       approve.addEventListener('click', async () => {
         approve.disabled = true;
         try {
           const { error: rpcError } = await client.rpc('approve_senior_household_link', { p_link_id: link.id });
           if (rpcError) throw rpcError;
-          say('تمت الموافقة على الربط وتسجيلها في قاعدة البيانات.', 'success');
+          say(cgL("تمت الموافقة على الربط وتسجيلها في قاعدة البيانات.","Link approved and recorded in the database."), 'success');
           await loadPilotData();
         } catch (e) {
           approve.disabled = false;
-          say('لم تتم الموافقة: ' + (e.message || 'خطأ غير معروف'), 'error');
+          say(cgL("لم تتم الموافقة: ","Not approved: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error');
         }
       });
       card.appendChild(approve);
@@ -2208,19 +2388,19 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
 
   $('cgPilotSaveConnect').addEventListener('click', async () => {
     try { await connectFromFields(); }
-    catch (e) { setConnected(false); say('تعذر الاتصال: ' + (e.message || 'خطأ غير معروف'), 'error'); }
+    catch (e) { setConnected(false); say(cgL("تعذر الاتصال: ","Connection failed: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
   });
   $('cgPilotLogin').addEventListener('click', async () => {
     try {
       if (!client) await connectFromFields();
       const email = $('cgPilotEmail').value.trim();
       const password = $('cgPilotPassword').value;
-      if (!email || !password) throw new Error('أدخل البريد الإلكتروني وكلمة المرور.');
+      if (!email || !password) throw new Error(cgL("أدخل البريد الإلكتروني وكلمة المرور.","Enter your email and password."));
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) throw error;
       setConnected(true, data.user.email || email);
       await loadPilotData();
-    } catch (e) { say('تعذر تسجيل الدخول: ' + (e.message || 'خطأ غير معروف'), 'error'); }
+    } catch (e) { say(cgL("تعذر تسجيل الدخول: ","Sign-in failed: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
   });
   $('cgPilotLogout').addEventListener('click', async () => {
     try {
@@ -2230,20 +2410,20 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       }
       setConnected(false);
       centers = []; households = [];
-      fillSelect(centerSelect, [], 'سجّل الدخول أولاً', x => x.name);
-      fillSelect(householdSelect, [], 'سجّل الدخول أولاً', x => x.name);
+      fillSelect(centerSelect, [], cgL("سجّل الدخول أولاً","Sign in first"), x => x.name);
+      fillSelect(householdSelect, [], cgL("سجّل الدخول أولاً","Sign in first"), x => x.name);
       $('cgPilotSeniors').replaceChildren();
       $('cgPilotPendingLinks').replaceChildren();
-      say('تم تسجيل الخروج من حساب Supabase.');
-    } catch (e) { say('تعذر تسجيل الخروج: ' + e.message, 'error'); }
+      say(cgL("تم تسجيل الخروج من حساب Supabase.","Signed out of Supabase."));
+    } catch (e) { say(cgL("تعذر تسجيل الخروج: ","Sign-out failed: ") + e.message, 'error'); }
   });
   $('cgPilotRegisterSenior').addEventListener('click', async () => {
     try {
-      if (!client) throw new Error('اتصل بقاعدة البيانات وسجّل الدخول أولاً.');
+      if (!client) throw new Error(cgL("اتصل بقاعدة البيانات وسجّل الدخول أولاً.","Connect to the database and sign in first."));
       const centerId = centerSelect.value;
       const name = $('cgPilotSeniorName').value.trim();
-      if (!centerId) throw new Error('اختر مركز الرعاية.');
-      if (!name) throw new Error('أدخل اسم المسن.');
+      if (!centerId) throw new Error(cgL("اختر مركز الرعاية.","Select a care center."));
+      if (!name) throw new Error(cgL("أدخل اسم المسن.","Enter the senior name."));
       registerBtn.disabled = true;
       const { data, error } = await client.rpc('register_senior_from_care_center', {
         p_care_center_id: centerId,
@@ -2252,37 +2432,37 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       if (error) throw error;
       $('cgPilotSeniorName').value = '';
       $('cgPilotLinkSeniorId').value = data;
-      say('تم تسجيل المسن بنجاح. UUID: ' + data, 'success');
+      say(cgL("تم تسجيل المسن بنجاح. UUID: ","Senior registered successfully. UUID: ") + data, 'success');
       await loadCenterSeniors();
-    } catch (e) { say('تعذر تسجيل المسن: ' + (e.message || 'خطأ غير معروف'), 'error'); }
+    } catch (e) { say(cgL("تعذر تسجيل المسن: ","Could not register the senior: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
     finally { registerBtn.disabled = !client; }
   });
   $('cgPilotRefreshSeniors').addEventListener('click', async () => {
-    try { await loadCenterSeniors(); say('تم تحديث قائمة المسنين.', 'success'); }
-    catch (e) { say('تعذر تحديث القائمة: ' + e.message, 'error'); }
+    try { await loadCenterSeniors(); say(cgL("تم تحديث قائمة المسنين.","Seniors list refreshed."), 'success'); }
+    catch (e) { say(cgL("تعذر تحديث القائمة: ","Could not refresh the list: ") + e.message, 'error'); }
   });
   centerSelect.addEventListener('change', async () => {
     try { await loadCenterSeniors(); }
-    catch (e) { say('تعذر تحميل مسني المركز: ' + e.message, 'error'); }
+    catch (e) { say(cgL("تعذر تحميل مسني المركز: ","Could not load the center's seniors: ") + e.message, 'error'); }
   });
   $('cgPilotRequestLink').addEventListener('click', async () => {
     try {
-      if (!client) throw new Error('سجّل الدخول أولاً.');
+      if (!client) throw new Error(cgL("سجّل الدخول أولاً.","Sign in first."));
       const seniorId = $('cgPilotLinkSeniorId').value.trim();
       const householdId = householdSelect.value;
-      if (!seniorId || !householdId) throw new Error('أدخل معرّف المسن واختر مساحة العائلة.');
+      if (!seniorId || !householdId) throw new Error(cgL("أدخل معرّف المسن واختر مساحة العائلة.","Enter the senior ID and select a family space."));
       const { data, error } = await client.rpc('request_senior_household_link', {
         p_senior_id: seniorId,
         p_household_id: householdId
       });
       if (error) throw error;
-      say('تم إرسال طلب الربط. لم تُمنح العائلة صلاحية بعد. رقم الطلب: ' + data, 'success');
+      say(cgL("تم إرسال طلب الربط. لم تُمنح العائلة صلاحية بعد. رقم الطلب: ","Link request sent. The family has no access yet. Request ID: ") + data, 'success');
       await loadPendingLinks();
-    } catch (e) { say('تعذر إرسال طلب الربط: ' + (e.message || 'خطأ غير معروف'), 'error'); }
+    } catch (e) { say(cgL("تعذر إرسال طلب الربط: ","Could not send the link request: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
   });
   $('cgPilotRefreshLinks').addEventListener('click', async () => {
-    try { await loadPendingLinks(); say('تم تحديث طلبات الربط.', 'success'); }
-    catch (e) { say('تعذر تحميل الطلبات: ' + e.message, 'error'); }
+    try { await loadPendingLinks(); say(cgL("تم تحديث طلبات الربط.","Link requests refreshed."), 'success'); }
+    catch (e) { say(cgL("تعذر تحميل الطلبات: ","Could not load requests: ") + e.message, 'error'); }
   });
 
   try {
@@ -2290,7 +2470,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (saved && saved.url && saved.anon) {
       $('cgPilotUrl').value = saved.url;
       $('cgPilotAnonKey').value = saved.anon;
-      connectFromFields().catch(e => say('تعذر استعادة الاتصال: ' + e.message, 'error'));
+      connectFromFields().catch(e => say(cgL("تعذر استعادة الاتصال: ","Could not restore the connection: ") + e.message, 'error'));
     }
   } catch (_) { /* ignore invalid local config */ }
 })();
