@@ -201,6 +201,12 @@ Admin
         el.setAttribute('placeholder', en ? AR2EN[norm(a)] : a);
       });
     });
+    document.querySelectorAll('[data-en][data-ar]').forEach(function (el) {
+      el.textContent = en ? el.getAttribute('data-en') : el.getAttribute('data-ar');
+    });
+    document.querySelectorAll('[data-ph-en][data-ph-ar]').forEach(function (el) {
+      el.setAttribute('placeholder', en ? el.getAttribute('data-ph-en') : el.getAttribute('data-ph-ar'));
+    });
     ['cgPilotBackend', 'cgSyncCard', 'cgAlertsList', 'adminView'].forEach(function (id) {
       var el = document.getElementById(id); if (el) el.setAttribute('dir', en ? 'ltr' : 'rtl');
     });
@@ -291,25 +297,25 @@ Admin
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
       </div>
       <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <select id="cgPilotLoginMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email">دخول بالبريد الإلكتروني</option><option value="phone">دخول برقم الهاتف</option></select>
-        <input id="cgPilotPhone" type="tel" autocomplete="tel" placeholder="+216XXXXXXXX" class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-        <button id="cgPilotLogin" type="button" class="tap-btn rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white" disabled>دخول إلى الحساب</button>
+        <select id="cgPilotLoginMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email" data-ar="دخول بالبريد الإلكتروني" data-en="Sign in with Email">Sign in with Email</option><option value="phone" data-ar="دخول برقم الهاتف" data-en="Sign in with Phone">Sign in with Phone</option></select>
+        <input id="cgPilotPhone" type="tel" autocomplete="tel" placeholder="+1 555..." data-ph-ar="+216XXXXXXXX" data-ph-en="+1 555..." class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+        <button id="cgPilotLogin" type="button" data-ar="دخول إلى الحساب" data-en="Log in" class="tap-btn rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white">Log in</button>
       </div>
-      <p id="cgPilotUser" class="mt-2 text-xs text-slate-500" aria-live="polite">لم يتم تسجيل الدخول.</p>
+      <p id="cgPilotUser" class="mt-2 text-xs text-slate-500" aria-live="polite" data-ar="لم يتم تسجيل الدخول." data-en="Not signed in.">Not signed in.</p>
       <details class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-        <summary class="cursor-pointer text-sm font-extrabold text-emerald-900">إنشاء حساب جديد</summary>
+        <summary data-ar="إنشاء حساب جديد" data-en="Create a New Account" class="cursor-pointer text-sm font-extrabold text-emerald-900">Create a New Account</summary>
         <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <input id="cgPilotSignupName" maxlength="120" placeholder="الاسم الكامل" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-          <select id="cgPilotSignupRole" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="family">حساب عائلة</option><option value="senior">حساب مسن</option></select>
-          <select id="cgPilotSignupMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email">التسجيل بالبريد الإلكتروني</option><option value="phone">التسجيل برقم الهاتف</option></select>
-          <input id="cgPilotSignupEmail" type="email" placeholder="البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-          <input id="cgPilotSignupPhone" type="tel" placeholder="رقم الهاتف بصيغة +216..." class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-          <input id="cgPilotSignupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="كلمة المرور (8 أحرف على الأقل)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-          <input id="cgPilotHouseholdName" maxlength="120" placeholder="اسم العائلة / مساحة العائلة" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
-          <input id="cgPilotClaimCode" placeholder="رقم تسجيل المسن CG-... (لحساب المسن)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotSignupName" maxlength="120" placeholder="Full Name" data-ph-ar="الاسم الكامل" data-ph-en="Full Name" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <select id="cgPilotSignupRole" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="senior" data-ar="حساب مسن (سهل وسريع)" data-en="Senior Account (Quick &amp; Easy)">Senior Account (Quick &amp; Easy)</option><option value="family" data-ar="حساب عائلة" data-en="Family Account">Family Account</option></select>
+          <select id="cgPilotSignupMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email" data-ar="التسجيل بالبريد الإلكتروني" data-en="Sign up with Email">Sign up with Email</option><option value="phone" data-ar="التسجيل برقم الهاتف" data-en="Sign up with Phone">Sign up with Phone</option></select>
+          <input id="cgPilotSignupEmail" type="email" placeholder="Email Address" data-ph-ar="البريد الإلكتروني" data-ph-en="Email Address" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotSignupPhone" type="tel" placeholder="Phone e.g. +1 555..." data-ph-ar="رقم الهاتف بصيغة +216..." data-ph-en="Phone e.g. +1 555..." class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotSignupPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Password (6+ characters)" data-ph-ar="كلمة المرور (6 أحرف على الأقل)" data-ph-en="Password (6+ characters)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotHouseholdName" maxlength="120" placeholder="Family / Household Name" data-ph-ar="اسم العائلة / مساحة العائلة" data-ph-en="Family / Household Name" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotClaimCode" placeholder="Care Center Code CG-... (Optional)" data-ph-ar="رمز مركز الرعاية CG-... (اختياري للمسن)" data-ph-en="Care Center Code CG-... (Optional)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
         </div>
-        <button id="cgPilotSignup" type="button" class="tap-btn mt-3 w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-extrabold text-white" disabled>إنشاء الحساب</button>
-        <div class="mt-3 flex gap-2"><input id="cgPilotOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="رمز التحقق عبر SMS" class="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" /><button id="cgPilotVerifyOtp" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold">تأكيد الهاتف</button></div>
+        <button id="cgPilotSignup" type="button" data-ar="إنشاء الحساب" data-en="Create Account" class="tap-btn mt-3 w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-extrabold text-white">Create Account</button>
+        <div id="cgPilotOtpRow" class="hidden mt-3 flex gap-2"><input id="cgPilotOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="SMS Verification Code" data-ph-ar="رمز التحقق عبر SMS" data-ph-en="SMS Verification Code" class="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" /><button id="cgPilotVerifyOtp" type="button" data-ar="تأكيد الهاتف" data-en="Verify Phone" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold">Verify Phone</button></div>
         <p class="mt-2 text-[11px] text-slate-500">يتطلب التسجيل بالهاتف تفعيل مزوّد SMS في إعدادات Supabase. وقد يتطلب البريد تأكيداً قبل الدخول.</p>
       </details>
     </div>
@@ -2421,8 +2427,8 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       ? 'rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800'
       : 'rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800';
     $('cgPilotUser').textContent = isConnected ? (cgL("تم تسجيل الدخول: ","Signed in: ") + email) : cgL("لم يتم تسجيل الدخول.","Not signed in.");
-    loginBtn.disabled = !client || isConnected;
-    if (signupBtn) signupBtn.disabled = !client || isConnected;
+    loginBtn.disabled = isConnected;
+    if (signupBtn) signupBtn.disabled = isConnected;
     logoutBtn.disabled = !isConnected;
     const postGrid = $('cgPilotPostLoginGrid');
     if (postGrid) postGrid.classList.toggle('hidden', !isConnected);
@@ -2468,9 +2474,26 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
         if (createError) throw createError;
       }
     }
-    if (meta.careguard_role === 'senior' && meta.registration_number) {
-      const { data: claimed, error: claimError } = await client.rpc('claim_senior_profile', { p_registration_number: meta.registration_number });
-      if (claimError && !String(claimError.message || '').includes('already claimed')) throw claimError;
+    if (meta.careguard_role === 'senior') {
+      if (meta.registration_number) {
+        try {
+          const { error: claimError } = await client.rpc('claim_senior_profile', { p_registration_number: meta.registration_number });
+          if (claimError && !String(claimError.message || '').includes('already claimed')) throw claimError;
+        } catch (ce) { /* fallback if RPC not installed */ }
+      } else {
+        const { data: ownHouseholds } = await client.from('households').select('id').limit(1);
+        let hid = ownHouseholds && ownHouseholds[0] ? ownHouseholds[0].id : null;
+        if (!hid) {
+          const { data: newHid } = await client.rpc('create_careguard_household', { p_name: String(meta.household_name || displayName).slice(0,120) });
+          hid = newHid;
+        }
+        if (hid) {
+          const { data: existingSp } = await client.from('senior_profiles').select('id').eq('household_id', hid).limit(1);
+          if (!existingSp || !existingSp.length) {
+            await client.from('senior_profiles').insert({ household_id: hid, user_id: null, display_name: displayName });
+          }
+        }
+      }
     }
   }
 
@@ -2480,6 +2503,9 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     }
     const url = $('cgPilotUrl').value.trim().replace(/\/+$/, '');
     const anon = $('cgPilotAnonKey').value.trim();
+    if (!url || !anon) {
+      throw new Error(cgL("يرجى إدخال رابط Supabase والمفتاح العام أولاً من تبويب (لوحة الإدارة).","Please set the Supabase URL and public key in the Admin tab first."));
+    }
     if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
       throw new Error(cgL("رابط Supabase غير صحيح. يجب أن يكون بالشكل https://project.supabase.co","Invalid Supabase URL. It must look like https://project.supabase.co"));
     }
@@ -2700,7 +2726,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
   }
 
   $('cgPilotLoginMethod').addEventListener('change', () => { const phone = $('cgPilotLoginMethod').value === 'phone'; $('cgPilotPhone').classList.toggle('hidden', !phone); $('cgPilotEmail').classList.toggle('hidden', phone); });
-  $('cgPilotSignupMethod').addEventListener('change', () => { const phone = $('cgPilotSignupMethod').value === 'phone'; $('cgPilotSignupPhone').classList.toggle('hidden', !phone); $('cgPilotSignupEmail').classList.toggle('hidden', phone); });
+  $('cgPilotSignupMethod').addEventListener('change', () => { const phone = $('cgPilotSignupMethod').value === 'phone'; $('cgPilotSignupPhone').classList.toggle('hidden', !phone); $('cgPilotSignupEmail').classList.toggle('hidden', phone); $('cgPilotOtpRow').classList.toggle('hidden', !phone); });
   function syncAuthFieldVisibility() {
   const loginPhone = $('cgPilotLoginMethod').value === 'phone';
   $('cgPilotPhone').classList.toggle('hidden', !loginPhone);
@@ -2757,12 +2783,10 @@ syncAuthFieldVisibility();
       const role = $('cgPilotSignupRole').value;
       const method = $('cgPilotSignupMethod').value;
       const password = $('cgPilotSignupPassword').value;
-      const householdName = $('cgPilotHouseholdName').value.trim();
+      const householdName = $('cgPilotHouseholdName').value.trim() || (name + (state.lang === 'en' ? ' Care' : ' للرعاية'));
       const registrationNumber = $('cgPilotClaimCode').value.trim().toUpperCase();
-      if (!name || password.length < 8) throw new Error(cgL("أدخل الاسم وكلمة مرور من 8 أحرف على الأقل.","Enter a name and a password of at least 8 characters."));
-      if (role === 'family' && !householdName) throw new Error(cgL("أدخل اسم مساحة العائلة.","Enter a family space name."));
-      if (role === 'senior' && !registrationNumber) throw new Error(cgL("أدخل رقم تسجيل المسن الصادر عن المركز.","Enter the senior registration number issued by the care center."));
-      const options = { data: { display_name: name, careguard_role: role, household_name: householdName, registration_number: registrationNumber } };
+      if (!name || password.length < 6) throw new Error(cgL("أدخل الاسم وكلمة مرور من 6 أحرف على الأقل.","Enter your name and a password of at least 6 characters."));
+      const options = { data: { display_name: name, careguard_role: role, household_name: householdName, registration_number: registrationNumber || null } };
       const payload = method === 'phone'
         ? { phone: $('cgPilotSignupPhone').value.trim(), password, options }
         : { email: $('cgPilotSignupEmail').value.trim(), password, options };
