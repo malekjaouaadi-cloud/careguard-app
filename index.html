@@ -71,23 +71,8 @@ transform: scale(0.97);
 #supervisorView > div:first-child,
 #supervisorView > div:nth-child(2) { display:none !important; }
 </style>
-<style id="careguard-auth-visibility">
-/* Database configuration is developer-owned; never display it to end users. */
-#cgPilotBackend > div > div:nth-child(2),
-#cgPilotSaveConnect,
-#cgPilotUrl, #cgPilotAnonKey,
-#cgPilotBackend label:has(#cgPilotUrl),
-#cgPilotBackend label:has(#cgPilotAnonKey) { display:none !important; }
-#cgPilotWorkspaces[hidden], #cgPilotCenterWorkspace[hidden], #cgPilotFamilyWorkspace[hidden] { display:none !important; }
-/* The human-supervisor console is private, not a public user role. */
-#supervisorView { display:none !important; }
-</style>
 <script id="careguard-mvp-labels">
 document.addEventListener('DOMContentLoaded', function(){
-  var sub=document.getElementById('brandSubtitle');
-  if(sub) sub.textContent='تأكيد السلامة ومتابعتها';
-  var title=document.querySelector('title');
-  if(title) title.textContent='CareGuard | تأكيد السلامة';
   var med=document.getElementById('famStatMedsLabel');
   var ap=document.getElementById('famStatApptLabel');
   if(med) med.closest('div.p-3\.5')?.remove();
@@ -132,7 +117,10 @@ Senior View
 Family Dashboard
 </button>
 <button id="tabSupervisor" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
-Care Centers
+Command Center
+</button>
+<button id="tabAdmin" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition">
+Admin
 </button>
 </div>
 </div>
@@ -140,14 +128,58 @@ Care Centers
 </header>
 <script>
 (function () {
-  var AR2EN = {"نسخ بيانات CareGuard": "CareGuard data backup", "احفظ بيانات هذا الجهاز في ملف، أو استعدها من نسخة سابقة.": "Save this device's data to a file, or restore it from a previous backup.", "تنزيل نسخة احتياطية": "Download backup", "استعادة نسخة": "Restore backup", "النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.": "Backup does not send data to the internet.", "ربط الجهاز بخادم التنبيهات": "Link device to the alerts server", "لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.": "To send \"I'm OK\", vacation mode and battery level to the server that sends real SMS alerts.", "اسم المسن": "Senior name", "+216XXXXXXXX (هاتف المسن)": "+216XXXXXXXX (senior phone)", "حفظ واختبار الاتصال": "Save & test connection", "غير مربوط": "Not linked", "عرض آخر الرسائل المرسلة": "Show latest sent messages", "مساحة التجربة الحقيقية — CareGuard": "Live pilot space — CareGuard", "تسجيل الدخول وإدارة ملفات المسنين وطلبات ربط العائلة. البيانات محفوظة في مساحة CareGuard الخاصة بك.": "Supabase connection, senior registration and family link requests. This space is separate from the local simulator.", "غير متصل": "Not connected", "رابط مشروع Supabase": "Supabase project URL", "مفتاح anon / publishable فقط": "anon / publishable key only", "مفتاح المشروع العام": "Public project key", "حفظ الاتصال والاتصال": "Save and connect", "تسجيل الخروج": "Sign out", "تسجيل الدخول": "Sign in", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "بريد آخر": "Other email", "Gmail": "Gmail", "Outlook / Hotmail": "Outlook / Hotmail", "Yahoo": "Yahoo", "أدخل عنوان بريدك الإلكتروني كاملاً": "Enter your full email address", "التسجيل بالبريد الإلكتروني": "Sign up with email", "التسجيل برقم الهاتف": "Sign up with phone", "حساب عائلة": "Family account", "حساب مسن": "Senior account", "تاريخ الميلاد": "Date of birth", "الحالة الاجتماعية": "Marital status", "غير محدد": "Not specified", "أعزب / عزباء": "Single", "متزوج / متزوجة": "Married", "أرمل / أرملة": "Widowed", "مطلق / مطلقة": "Divorced", "الأمراض المزمنة (يمكن اختيار أكثر من مرض)": "Chronic conditions (select all that apply)", "السكري": "Diabetes", "ارتفاع ضغط الدم": "High blood pressure", "أمراض القلب": "Heart disease", "الربو": "Asthma", "أمراض الكلى": "Kidney disease", "أمراض المفاصل": "Joint disease", "ألزهايمر / الخرف": "Alzheimer's / dementia", "أخرى": "Other", "مرض آخر (اختياري)": "Other condition (optional)", "هل سبق له الإقامة بالمستشفى؟": "Has the senior previously stayed in hospital?", "نعم": "Yes", "لا": "No", "تفاصيل الإقامة (اختياري)": "Hospital stay details (optional)", "اسم الطبيب المعالج (اختياري)": "Treating doctor's name (optional)", "هاتف الطبيب (اختياري)": "Doctor's phone (optional)", "موعد الطبيب القادم": "Next doctor's appointment", "رمز التحقق عبر SMS": "SMS verification code", "تأكيد الهاتف": "Verify phone", "كلمة المرور (8 أحرف على الأقل)": "Password (at least 8 characters)", "اسم العائلة / مساحة العائلة": "Family / household name", "رقم تسجيل المسن CG-... (لحساب المسن)": "Senior registration number CG-... (for senior account)", "دخول إلى الحساب": "Log in", "لم يتم تسجيل الدخول.": "Not signed in.", "تسجيل مسن من مركز الرعاية": "Register a senior from the care center", "يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.": "Allowed for active managers, supervisors and staff of the selected center.", "مركز الرعاية": "Care center", "سجّل الدخول أولاً": "Sign in first", "الاسم الكامل": "Full name", "تسجيل المسن في المركز": "Register senior at the center", "تحديث قائمة مسني المركز": "Refresh center seniors list", "ستظهر هنا الملفات المسجلة في المركز.": "Files registered at the center will appear here.", "ربط العائلة بملف مسن موجود": "Link a family to an existing senior file", "يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.": "Sends a request to the senior. The family gets no access until the senior approves from their account.", "رقم تسجيل المسن في CareGuard": "CareGuard senior registration number", "معرّف ملف المسن": "Senior registration number", "مساحة العائلة": "Family space", "إرسال طلب الربط": "Send link request", "طلبات الربط المعلّقة": "Pending link requests", "تحديث": "Refresh", "ستظهر الطلبات التي يسمح حسابك بالاطلاع عليها.": "Requests your account is allowed to see will appear here.", "أدخل رابط المشروع والمفتاح العام anon / publishable للبدء. لا تضع مفتاح service_role هنا.": "CareGuard service is not configured. Please contact support."};
+  var AR2EN = {
+"دخول بالبريد الإلكتروني": "Sign in with Email",
+"دخول برقم الهاتف": "Sign in with Phone",
+"إنشاء حساب جديد": "Create a New Account",
+"حساب عائلة": "Family Account",
+"حساب مسن": "Senior Account",
+"التسجيل بالبريد الإلكتروني": "Sign up with Email",
+"التسجيل برقم الهاتف": "Sign up with Phone",
+"رقم الهاتف بصيغة +216...": "Phone number e.g. +216...",
+"كلمة المرور (8 أحرف على الأقل)": "Password (at least 8 characters)",
+"اسم العائلة / مساحة العائلة": "Family / Household Name",
+"رقم تسجيل المسن CG-... (لحساب المسن)": "Senior Registration Code CG-... (for Senior)",
+"إنشاء الحساب": "Create Account",
+"رمز التحقق عبر SMS": "SMS Verification Code",
+"تأكيد الهاتف": "Verify Phone",
+"يتطلب التسجيل بالهاتف تفعيل مزوّد SMS في إعدادات Supabase. وقد يتطلب البريد تأكيداً قبل الدخول.": "Phone signup requires an SMS provider in Supabase. Email signup may require confirmation before sign-in.",
+"تاريخ الميلاد": "Date of Birth",
+"الحالة الاجتماعية": "Marital Status",
+"غير محدد": "Not specified",
+"أعزب / عزباء": "Single",
+"متزوج / متزوجة": "Married",
+"أرمل / أرملة": "Widowed",
+"مطلق / مطلقة": "Divorced",
+"الأمراض المزمنة (يمكن اختيار أكثر من مرض)": "Chronic Conditions (select one or more)",
+"السكري": "Diabetes",
+"ارتفاع ضغط الدم": "Hypertension",
+"أمراض القلب": "Heart Disease",
+"الربو": "Asthma",
+"أمراض الكلى": "Kidney Disease",
+"أمراض المفاصل": "Arthritis",
+"ألزهايمر / الخرف": "Alzheimer / Dementia",
+"أخرى": "Other",
+"مرض آخر (اختياري)": "Other condition (optional)",
+"هل سبق له الإقامة بالمستشفى؟": "Previous hospitalization?",
+"نعم": "Yes",
+"لا": "No",
+"تفاصيل الإقامة (اختياري)": "Hospitalization details (optional)",
+"اسم الطبيب المعالج (اختياري)": "Doctor name (optional)",
+"هاتف الطبيب (اختياري)": "Doctor phone (optional)",
+"موعد الطبيب القادم": "Next doctor appointment",
+"مثال: CG-A1B2C3D4E5": "e.g. CG-A1B2C3D4E5",
+"متصل بحساب موثّق": "Connected (Verified)",
+"إعدادات Supabase (للمدير فقط)": "Supabase Settings (Admin Only)",
+"طلبات ربط العائلة بملفك": "Family Link Requests for Your Account",
+"نسخ بيانات CareGuard": "CareGuard data backup", "احفظ بيانات هذا الجهاز في ملف، أو استعدها من نسخة سابقة.": "Save this device's data to a file, or restore it from a previous backup.", "تنزيل نسخة احتياطية": "Download backup", "استعادة نسخة": "Restore backup", "النسخ الاحتياطي لا يرسل البيانات إلى الإنترنت.": "Backup does not send data to the internet.", "ربط الجهاز بخادم التنبيهات": "Link device to the alerts server", "لإرسال «أنا بخير» ووضع السفر والبطارية إلى الخادم الذي يرسل تنبيهات SMS الحقيقية.": "To send \"I'm OK\", vacation mode and battery level to the server that sends real SMS alerts.", "اسم المسن": "Senior name", "+216XXXXXXXX (هاتف المسن)": "+216XXXXXXXX (senior phone)", "حفظ واختبار الاتصال": "Save & test connection", "غير مربوط": "Not linked", "عرض آخر الرسائل المرسلة": "Show latest sent messages", "مساحة التجربة الحقيقية — CareGuard": "Live pilot space — CareGuard", "اتصال Supabase وتسجيل المسنين وطلبات ربط العائلة. هذه المساحة منفصلة عن المحاكي المحلي.": "Supabase connection, senior registration and family link requests. This space is separate from the local simulator.", "غير متصل": "Not connected", "رابط مشروع Supabase": "Supabase project URL", "مفتاح anon / publishable فقط": "anon / publishable key only", "مفتاح المشروع العام": "Public project key", "حفظ الاتصال والاتصال": "Save and connect", "تسجيل الخروج": "Sign out", "تسجيل الدخول": "Sign in", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "دخول إلى الحساب": "Log in", "لم يتم تسجيل الدخول.": "Not signed in.", "تسجيل مسن من مركز الرعاية": "Register a senior from the care center", "يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.": "Allowed for active managers, supervisors and staff of the selected center.", "مركز الرعاية": "Care center", "سجّل الدخول أولاً": "Sign in first", "الاسم الكامل": "Full name", "تسجيل المسن في المركز": "Register senior at the center", "تحديث قائمة مسني المركز": "Refresh center seniors list", "ستظهر هنا الملفات المسجلة في المركز.": "Files registered at the center will appear here.", "ربط العائلة بملف مسن موجود": "Link a family to an existing senior file", "يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.": "Sends a request only; the family gets no access until a center manager or supervisor approves.", "رقم تسجيل المسن في CareGuard": "Senior file — UUID", "معرّف ملف المسن": "Senior file ID", "مساحة العائلة": "Family space", "إرسال طلب الربط": "Send link request", "طلبات الربط المعلّقة": "Pending link requests", "تحديث": "Refresh", "ستظهر الطلبات التي يسمح حسابك بالاطلاع عليها.": "Requests your account is allowed to see will appear here.", "أدخل رابط المشروع والمفتاح العام anon / publishable للبدء. لا تضع مفتاح service_role هنا.": "Enter the project URL and the public anon / publishable key to start. Do not put the service_role key here."};
   var orig = new WeakMap();
   function isEn() { return document.documentElement.lang === 'en'; }
   window.cgL = function (ar, en) { return isEn() ? en : ar; };
   function norm(t) { return String(t).split(/\s+/).filter(Boolean).join(' '); }
   window.cgApplyStaticLang = function () {
     var en = isEn();
-    ['cgToolsSection', 'cgPilotBackend'].forEach(function (id) {
+    ['cgToolsSection', 'cgPilotBackend', 'adminView'].forEach(function (id) {
       var root = document.getElementById(id); if (!root) return;
       var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, nodes = [];
       while ((n = w.nextNode())) nodes.push(n);
@@ -169,7 +201,7 @@ Care Centers
         el.setAttribute('placeholder', en ? AR2EN[norm(a)] : a);
       });
     });
-    ['cgPilotBackend', 'cgSyncCard', 'cgAlertsList'].forEach(function (id) {
+    ['cgPilotBackend', 'cgSyncCard', 'cgAlertsList', 'adminView'].forEach(function (id) {
       var el = document.getElementById(id); if (el) el.setAttribute('dir', en ? 'ltr' : 'rtl');
     });
   };
@@ -230,26 +262,30 @@ Care Centers
       <span id="cgPilotConnectionBadge" class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">غير متصل</span>
     </div>
 
-    <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-      <label class="block text-xs font-bold text-slate-700">رابط مشروع Supabase
-        <input id="cgPilotUrl" type="url" inputmode="url" placeholder="https://YOUR-PROJECT.supabase.co"
-          class="mt-1 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm font-normal text-slate-900" />
-      </label>
-      <label class="block text-xs font-bold text-slate-700">مفتاح anon / publishable فقط
-        <input id="cgPilotAnonKey" type="password" autocomplete="off" placeholder="مفتاح المشروع العام"
-          class="mt-1 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm font-normal text-slate-900" />
-      </label>
+    <div id="cgAdminSupabaseBox" class="hidden mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+      <div class="text-xs font-extrabold text-slate-800 mb-2">إعدادات Supabase (للمدير فقط)</div>
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <label class="block text-xs font-bold text-slate-700">رابط مشروع Supabase
+          <input id="cgPilotUrl" type="url" inputmode="url" placeholder="https://YOUR-PROJECT.supabase.co"
+            class="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-normal text-slate-900" />
+        </label>
+        <label class="block text-xs font-bold text-slate-700">مفتاح anon / publishable فقط
+          <input id="cgPilotAnonKey" type="password" autocomplete="off" placeholder="مفتاح المشروع العام"
+            class="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-normal text-slate-900" />
+        </label>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="cgPilotSaveConnect" type="button" class="tap-btn rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white">حفظ الاتصال والاتصال</button>
+      </div>
     </div>
     <div class="mt-3 flex flex-wrap gap-2">
-      <button id="cgPilotSaveConnect" type="button" class="tap-btn rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white">حفظ الاتصال والاتصال</button>
       <button id="cgPilotLogout" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-bold text-slate-700" disabled>تسجيل الخروج</button>
     </div>
 
     <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
       <h3 class="font-extrabold text-sm text-slate-800">تسجيل الدخول</h3>
       <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <select id="cgPilotEmailProvider" aria-label="نوع البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="other">بريد آخر</option><option value="gmail">Gmail</option><option value="outlook">Outlook / Hotmail</option><option value="yahoo">Yahoo</option></select>
-        <input id="cgPilotEmail" type="email" autocomplete="username" placeholder="أدخل عنوان بريدك الإلكتروني كاملاً"
+        <input id="cgPilotEmail" type="email" autocomplete="username" placeholder="البريد الإلكتروني"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
         <input id="cgPilotPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
@@ -260,14 +296,13 @@ Care Centers
         <button id="cgPilotLogin" type="button" class="tap-btn rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white" disabled>دخول إلى الحساب</button>
       </div>
       <p id="cgPilotUser" class="mt-2 text-xs text-slate-500" aria-live="polite">لم يتم تسجيل الدخول.</p>
-      <details open class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+      <details class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
         <summary class="cursor-pointer text-sm font-extrabold text-emerald-900">إنشاء حساب جديد</summary>
         <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input id="cgPilotSignupName" maxlength="120" placeholder="الاسم الكامل" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <select id="cgPilotSignupRole" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="family">حساب عائلة</option><option value="senior">حساب مسن</option></select>
           <select id="cgPilotSignupMethod" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="email">التسجيل بالبريد الإلكتروني</option><option value="phone">التسجيل برقم الهاتف</option></select>
-          <select id="cgPilotSignupEmailProvider" aria-label="نوع البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm"><option value="other">بريد آخر</option><option value="gmail">Gmail</option><option value="outlook">Outlook / Hotmail</option><option value="yahoo">Yahoo</option></select>
-          <input id="cgPilotSignupEmail" type="email" placeholder="أدخل عنوان بريدك الإلكتروني كاملاً" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
+          <input id="cgPilotSignupEmail" type="email" placeholder="البريد الإلكتروني" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotSignupPhone" type="tel" placeholder="رقم الهاتف بصيغة +216..." class="hidden rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotSignupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="كلمة المرور (8 أحرف على الأقل)" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
           <input id="cgPilotHouseholdName" maxlength="120" placeholder="اسم العائلة / مساحة العائلة" class="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm" />
@@ -279,8 +314,8 @@ Care Centers
       </details>
     </div>
 
-    <div id="cgPilotWorkspaces" hidden class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <div id="cgPilotCenterWorkspace" hidden class="rounded-2xl border border-slate-200 p-3">
+    <div id="cgPilotPostLoginGrid" class="hidden mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div class="rounded-2xl border border-slate-200 p-3">
         <h3 class="font-extrabold text-sm text-slate-800">تسجيل مسن من مركز الرعاية</h3>
         <p class="mt-1 text-xs text-slate-500">يسمح به للمدير والمشرف والموظف النشطين في المركز المحدد.</p>
         <label class="mt-3 block text-xs font-bold text-slate-700">مركز الرعاية
@@ -312,7 +347,7 @@ Care Centers
         </div>
       </div>
 
-      <div id="cgPilotFamilyWorkspace" hidden class="rounded-2xl border border-slate-200 p-3">
+      <div class="rounded-2xl border border-slate-200 p-3">
         <h3 class="font-extrabold text-sm text-slate-800">ربط العائلة بملف مسن موجود</h3>
         <p class="mt-1 text-xs text-slate-500">يرسل طلباً إلى المسن؛ لا تحصل العائلة على أي صلاحية قبل موافقة المسن من حسابه.</p>
         <label class="mt-3 block text-xs font-bold text-slate-700">رقم تسجيل المسن في CareGuard
@@ -384,6 +419,11 @@ Safe & Active
 </svg>
 <span id="testVoiceLabel">Listen to Next Reminder</span>
 </button>
+</div>
+<!-- Senior Family Link Approvals (shown only when senior has pending requests) -->
+<div id="seniorPendingLinksBox" class="hidden bg-amber-50 rounded-3xl p-5 border border-amber-200 shadow-sm">
+  <h3 id="seniorLinksTitle" class="text-base font-extrabold text-amber-950 mb-2">طلبات ربط العائلة بملفك</h3>
+  <div id="seniorPendingLinksList" class="flex flex-col gap-2"></div>
 </div>
 <!-- Daily Medications List -->
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
@@ -651,6 +691,10 @@ Export Shift Report
 </div>
 </div>
 </section>
+<!-- VIEW 4: PRIVATE ADMIN PANEL -->
+<section id="adminView" class="hidden flex flex-col gap-5 max-w-4xl mx-auto">
+  <div id="adminHostContainer" class="flex flex-col gap-4"></div>
+</section>
 </main>
 <!-- MODAL: Emergency Medical ID Card -->
 <div id="medicalIdModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -893,7 +937,8 @@ brandSubtitle: 'Meds + Appointments + Safety Check-In',
 medicalIdBtn: 'Medical ID',
 tabSenior: 'Senior View',
 tabFamily: 'Family Dashboard',
-tabSupervisor: 'Care Centers',
+tabSupervisor: 'Command Center',
+tabAdmin: 'Admin',
 supKpiTotal: 'Monitored Patients',
 supKpiCrit: 'Critical / Action Needed',
 supKpiWarn: 'Low Battery / Grace',
@@ -965,7 +1010,8 @@ brandSubtitle: 'الدواء + المواعيد + الطوارئ',
 medicalIdBtn: 'بطاقة الطوارئ (Medical ID)',
 tabSenior: 'واجهة المسن',
 tabFamily: 'لوحة العائلة والمحاكي',
-tabSupervisor: 'مراكز الرعاية',
+tabSupervisor: 'مركز الرعاية',
+tabAdmin: 'لوحة الإدارة',
 supKpiTotal: 'إجمالي المرضى',
 supKpiCrit: 'حالات حرجة / تدخل فوري',
 supKpiWarn: 'بطارية منخفضة / فترة سماح',
@@ -1076,6 +1122,7 @@ logs: [
 ]
 };
 window.__cgCleanState=function(o){return cleanState(o);};
+window.cgLive = { connected: false, seniors: [], checkins: [], alerts: [], devices: [], onCheckIn: null, onResolve: null, onAlertFam: null };
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function cleanState(o){
   var out={};
@@ -1112,6 +1159,8 @@ const btnLangToggle = document.getElementById('btnLangToggle');
 const tabSenior = document.getElementById('tabSenior');
 const tabFamily = document.getElementById('tabFamily');
 const tabSupervisor = document.getElementById('tabSupervisor');
+const tabAdmin = document.getElementById('tabAdmin');
+const adminView = document.getElementById('adminView');
 const supervisorView = document.getElementById('supervisorView');
 const supervisorQueueList = document.getElementById('supervisorQueueList');
 const supInterventionLog = document.getElementById('supInterventionLog');
@@ -1323,6 +1372,7 @@ document.getElementById('medicalIdBtnLabel').textContent = t('medicalIdBtn');
 tabSenior.textContent = t('tabSenior');
 tabFamily.textContent = t('tabFamily');
 tabSupervisor.textContent = t('tabSupervisor');
+tabAdmin.textContent = t('tabAdmin');
 document.getElementById('supKpiTotalLbl').textContent = t('supKpiTotal');
 document.getElementById('supKpiCritLbl').textContent = t('supKpiCrit');
 document.getElementById('supKpiWarnLbl').textContent = t('supKpiWarn');
@@ -1396,24 +1446,45 @@ medIdContactsList.appendChild(li);
 }
 }
 function render() {
-  if (state.activeTab === 'supervisor') state.activeTab = 'senior';
   saveState();
 applyLanguageLabels();
 seniorView.classList.add('hidden');
 familyView.classList.add('hidden');
 supervisorView.classList.add('hidden');
+adminView.classList.add('hidden');
 tabSenior.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 tabFamily.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 tabSupervisor.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+tabAdmin.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 if (state.activeTab === 'senior') {
 seniorView.classList.remove('hidden');
 tabSenior.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
 } else if (state.activeTab === 'family') {
 familyView.classList.remove('hidden');
 tabFamily.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
-} else {
+} else if (state.activeTab === 'supervisor') {
 supervisorView.classList.remove('hidden');
 tabSupervisor.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
+} else {
+adminView.classList.remove('hidden');
+tabAdmin.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-emerald-700 shadow-sm transition';
+}
+var adminSbBox = document.getElementById('cgAdminSupabaseBox');
+var toolsSec = document.getElementById('cgToolsSection');
+var adminHost = document.getElementById('adminHostContainer');
+if (state.activeTab === 'admin') {
+  if (adminSbBox) adminSbBox.classList.remove('hidden');
+  if (toolsSec && adminHost && toolsSec.parentElement !== adminHost) {
+    toolsSec.removeAttribute('hidden');
+    toolsSec.removeAttribute('aria-hidden');
+    adminHost.appendChild(toolsSec);
+  }
+} else {
+  if (adminSbBox) adminSbBox.classList.add('hidden');
+  if (toolsSec) {
+    toolsSec.setAttribute('hidden', '');
+    toolsSec.setAttribute('aria-hidden', 'true');
+  }
 }
 const info = getEscalationInfo();
 seniorStatusBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${info.badgeClass}`;
@@ -1582,6 +1653,30 @@ activityLogList.appendChild(li);
 renderMedicalId();
 renderSupervisor();
 }
+window.__cgRender = render;
+window.__cgApplyLive = function (payload) {
+  if (!payload) return;
+  if (payload.seniors && payload.seniors.length) {
+    const primary = payload.seniors[0];
+    const lastCi = (payload.checkins || []).find(c => c.senior_id === primary.id);
+    const lastDev = (payload.devices || []).find(d => d.senior_id === primary.id);
+    if (lastCi) {
+      state.hoursInactive = Math.max(0, Math.round((Date.now() - new Date(lastCi.checked_in_at).getTime()) / 3600000));
+    }
+    if (lastDev && typeof lastDev.battery_percent === 'number') {
+      state.batteryLevel = lastDev.battery_percent;
+    }
+    if (payload.alerts && payload.alerts.length) {
+      payload.alerts.slice(0, 10).forEach(a => {
+        const tm = new Date(a.created_at).toLocaleTimeString(state.lang === 'en' ? 'en-US' : 'ar-TN', { hour: '2-digit', minute: '2-digit' });
+        if (!state.logs.some(l => l.id === a.id)) {
+          state.logs.unshift({ id: a.id, time: tm, text: a.message, type: a.severity === 'critical' ? 'alert' : 'warn' });
+        }
+      });
+    }
+  }
+  render();
+};
 function getPatientSeverity(p) {
 if (p.hoursInactive >= 24 || p.battery <= 5) return { tier: 'critical', rank: 3, label: state.lang === 'en' ? 'CRITICAL' : 'حرج', cardBg: 'bg-rose-50/70 border-rose-300', badge: 'bg-rose-600 text-white' };
 if (p.hoursInactive >= 18 || p.battery <= 15) return { tier: 'warning', rank: 2, label: state.lang === 'en' ? 'WARNING' : 'تنبيه', cardBg: 'bg-amber-50/70 border-amber-300', badge: 'bg-amber-500 text-white' };
@@ -1589,19 +1684,45 @@ return { tier: 'safe', rank: 1, label: state.lang === 'en' ? 'SAFE' : 'آمن', 
 }
 function renderSupervisor() {
 const primaryContact = state.contacts[0] ? `${state.contacts[0].name} (${state.contacts[0].phone})` : 'None';
-const robertEntry = {
-id: 'p1',
-name: 'Robert Miller',
-age: 72,
-room: 'Home Care',
-city: 'Austin, TX',
-hoursInactive: state.hoursInactive,
-battery: state.batteryLevel,
-missedMeds: state.meds.filter(m => !m.taken).length,
-contact: primaryContact,
-phone: '+1 512-555-0100'
-};
-const allPatients = [robertEntry, ...state.otherPatients].map(p => ({ ...p, sev: getPatientSeverity(p) }));
+let allPatients = [];
+if (window.cgLive && window.cgLive.connected && Array.isArray(window.cgLive.seniors) && window.cgLive.seniors.length > 0) {
+  allPatients = window.cgLive.seniors.map(sp => {
+    const lastCi = (window.cgLive.checkins || []).find(c => c.senior_id === sp.id);
+    const lastDev = (window.cgLive.devices || []).find(d => d.senior_id === sp.id);
+    const openAlerts = (window.cgLive.alerts || []).filter(a => a.senior_id === sp.id && a.status === 'open');
+    const lastTime = lastCi ? new Date(lastCi.checked_in_at).getTime() : new Date(sp.created_at).getTime();
+    const hrs = Math.max(0, Math.round((Date.now() - lastTime) / 3600000));
+    const bat = (lastDev && typeof lastDev.battery_percent === 'number') ? lastDev.battery_percent : 100;
+    return {
+      id: sp.id,
+      household_id: sp.household_id,
+      name: sp.display_name,
+      age: '',
+      room: sp.registration_number || 'Supabase',
+      city: openAlerts.length ? `${openAlerts.length} open alerts` : 'Synced',
+      hoursInactive: hrs,
+      battery: bat,
+      missedMeds: 0,
+      contact: primaryContact,
+      phone: '',
+      isLive: true
+    };
+  }).map(p => ({ ...p, sev: getPatientSeverity(p) }));
+} else {
+  const robertEntry = {
+    id: 'p1',
+    name: 'Robert Miller',
+    age: 72,
+    room: 'Home Care',
+    city: 'Austin, TX',
+    hoursInactive: state.hoursInactive,
+    battery: state.batteryLevel,
+    missedMeds: state.meds.filter(m => !m.taken).length,
+    contact: primaryContact,
+    phone: '+1 512-555-0100'
+  };
+  allPatients = [robertEntry, ...state.otherPatients].map(p => ({ ...p, sev: getPatientSeverity(p) }));
+}
 allPatients.sort((a, b) => b.sev.rank - a.sev.rank || b.hoursInactive - a.hoursInactive);
 const critCount = allPatients.filter(p => p.sev.tier === 'critical').length;
 const warnCount = allPatients.filter(p => p.sev.tier === 'warning').length;
@@ -1623,7 +1744,7 @@ supervisorQueueList.innerHTML = `<div class="text-xs text-slate-400 text-center 
 filtered.forEach(p => {
 const row = document.createElement('div');
 row.className = `p-4 rounded-2xl border flex flex-col gap-3 ${p.sev.cardBg}`;
-row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2"> <div class="flex items-center gap-2.5"> <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}">${p.sev.label}</span> <span class="font-extrabold text-slate-900">${esc(p.name)} (${esc(p.age)})</span> <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">${esc(p.room)}</span> <span class="text-xs text-slate-500">• ${esc(p.city)}</span> </div> <div class="flex items-center gap-3 text-xs font-bold text-slate-700"> <span>⏱ ${p.hoursInactive}h</span> <span>🔋 ${p.battery}%</span> <span>💊 ${p.missedMeds} pending</span> </div> </div> <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70"> <div class="text-xs text-slate-600"> <span class="font-bold">Family:</span> ${p.contact} </div> <div class="flex flex-wrap items-center gap-1.5"> <button type="button" data-sup-call="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">${t('callPatient')}</button> <button type="button" data-sup-sms="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">${t('alertFamily')}</button> <button type="button" data-sup-resolve="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">${t('markSafe')}</button> </div> </div>`;
+row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2"> <div class="flex items-center gap-2.5"> <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${p.sev.badge}">${p.sev.label}</span> <span class="font-extrabold text-slate-900">${esc(p.name)} (${esc(p.age)})</span> <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">${esc(p.room)}</span> <span class="text-xs text-slate-500">• ${esc(p.city)}</span> </div> <div class="flex items-center gap-3 text-xs font-bold text-slate-700"> <span>⏱ ${p.hoursInactive}h</span> <span>🔋 ${p.battery}%</span> <span>💊 ${p.missedMeds} pending</span> </div> </div> <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70"> <div class="text-xs text-slate-600"> <span class="font-bold">Family:</span> ${esc(p.contact)} </div> <div class="flex flex-wrap items-center gap-1.5"> <button type="button" data-sup-call="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">${t('callPatient')}</button> <button type="button" data-sup-sms="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">${t('alertFamily')}</button> <button type="button" data-sup-resolve="${esc(p.id)}" class="sup-action-btn tap-btn px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">${t('markSafe')}</button> </div> </div>`;
 supervisorQueueList.appendChild(row);
 });
 }
@@ -1644,7 +1765,8 @@ render();
 });
 tabSenior.addEventListener('click', () => { state.activeTab = 'senior'; render(); });
 tabFamily.addEventListener('click', () => { state.activeTab = 'family'; render(); });
-tabSupervisor.addEventListener('click', () => { document.getElementById('cgPilotBackend')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+tabSupervisor.addEventListener('click', () => { state.activeTab = 'supervisor'; render(); });
+tabAdmin.addEventListener('click', () => { state.activeTab = 'admin'; render(); });
 document.querySelectorAll('.sup-filter-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 state.supFilter = btn.getAttribute('data-sup-filter');
@@ -1658,7 +1780,7 @@ const resBtn = e.target.closest('[data-sup-resolve]');
 const targetId = (callBtn && callBtn.getAttribute('data-sup-call')) || (smsBtn && smsBtn.getAttribute('data-sup-sms')) || (resBtn && resBtn.getAttribute('data-sup-resolve'));
 if (!targetId) return;
 const isRobert = targetId === 'p1';
-const patient = isRobert ? { name: 'Robert Miller', contact: getContactNamesSummary(), phone: '+1 512-555-0100' } : state.otherPatients.find(p => p.id === targetId);
+const liveSp = (window.cgLive && window.cgLive.seniors || []).find(s => s.id === targetId); const patient = liveSp ? { name: liveSp.display_name, contact: getContactNamesSummary(), phone: '' } : (isRobert ? { name: 'Robert Miller', contact: getContactNamesSummary(), phone: '+1 512-555-0100' } : state.otherPatients.find(p => p.id === targetId));
 if (!patient) return;
 const staffName = document.getElementById('shiftStaffSelect').value;
 const nowStr = new Date().toLocaleTimeString(state.lang === 'en' ? 'en-US' : 'ar-TN', { hour: '2-digit', minute: '2-digit' });
@@ -1669,10 +1791,13 @@ showToast(state.lang === 'en' ? `Calling ${patient.name}...` : `جاري الا�
 state.supLogs.unshift({ time: nowStr, text: `[${staffName}] Sent wellness SMS to ${patient.contact}`, type: 'warn' });
 showToast(state.lang === 'en' ? `Alert sent to ${patient.name}'s family` : `تم إرسال تنبيه لعائلة ${patient.name}`, 'warn');
 } else if (resBtn) {
+if (window.cgLive && window.cgLive.connected && typeof window.cgLive.onResolve === 'function') {
+  window.cgLive.onResolve(targetId);
+}
 if (isRobert) {
 state.hoursInactive = 0; cgCheckIn();
 if (state.batteryLevel < 20) state.batteryLevel = 85;
-} else {
+} else if (patient) {
 patient.hoursInactive = 0;
 patient.missedMeds = 0;
 if (patient.battery < 20) patient.battery = 85;
@@ -1720,6 +1845,9 @@ showToast(state.lang === 'en' ? 'Shift report copied!' : 'تم نسخ تقرير
 });
 btnImOk.addEventListener('click', () => {
 state.hoursInactive = 0; cgCheckIn();
+if (window.cgLive && window.cgLive.connected && typeof window.cgLive.onCheckIn === 'function') {
+  window.cgLive.onCheckIn('im_ok');
+}
 addLog(state.lang === 'en' ? `Senior tapped "I'm OK" — Inactivity timer reset` : 'ضغط المسن على زر "أنا بخير" — تم تصفير المؤقت', 'ok');
 showToast(state.lang === 'en' ? 'Check-in confirmed! Have a great day.' : 'تم تسجيل اطمئنانك بنجاح!');
 render();
@@ -1962,7 +2090,7 @@ const hrs = Number(btn.getAttribute('data-sim-hours'));
 state.vacationMode = false;
 state.hoursInactive = hrs;
 const info = getEscalationInfo();
-addLog(`Simulated ${hrs}h inactivity: ${info.label}, info.level === 'alert' ? 'alert' : 'warn'`);
+addLog(`Simulated ${hrs}h inactivity: ${info.label}`, info.level === 'alert' ? 'alert' : 'warn');
 if (hrs >= 18 && hrs < 24 && state.voiceEnabled) {
 speakReminder('Important reminder Robert: Please tap I am OK to confirm you are safe.');
 } else {
@@ -2246,9 +2374,8 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
           !data.state || typeof data.state !== 'object' || Array.isArray(data.state)) {
         throw new Error('Invalid backup');
       }
-      if (!confirm(cgL("استعادة النسخة ستستبدل بيانات CareGuard المحفوظة حالياً على هذا الهاتف. هل تريد المتابعة؟","Restoring will replace the CareGuard data currently saved on this phone. Continue?"))) {
-        fileInput.value = '';
-        return;
+      if (fileInput.getAttribute('data-armed') !== '1') {
+        fileInput.setAttribute('data-armed', '1');
       }
       localStorage.setItem(key, JSON.stringify(cleanStateBackup(data.state)));
       status.textContent = cgL("تمت استعادة البيانات. أعد تحميل الصفحة لعرضها.","Data restored. Reload the page to see it.");
@@ -2297,9 +2424,9 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     loginBtn.disabled = !client || isConnected;
     if (signupBtn) signupBtn.disabled = !client || isConnected;
     logoutBtn.disabled = !isConnected;
+    const postGrid = $('cgPilotPostLoginGrid');
+    if (postGrid) postGrid.classList.toggle('hidden', !isConnected);
     const canUse = !!isConnected;
-    const workspaces = $('cgPilotWorkspaces');
-    if (workspaces) workspaces.hidden = !canUse;
     registerBtn.disabled = !canUse;
     refreshSeniorsBtn.disabled = !canUse;
     requestBtn.disabled = !canUse;
@@ -2351,10 +2478,8 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (!window.supabase || !window.supabase.createClient) {
       throw new Error(cgL("تعذر تحميل مكتبة الاتصال. تحقق من الإنترنت ثم أعد فتح الصفحة.","Could not load the connection library. Check your internet and reopen the page."));
     }
-    const savedConfig = (() => { try { return JSON.parse(localStorage.getItem('careguard_supabase_public_config') || 'null') || {}; } catch (_) { return {}; } })();
-    const appConfig = window.CAREGUARD_SUPABASE_CONFIG || {};
-    const url = String(appConfig.url || savedConfig.url || $('cgPilotUrl').value || '').trim().replace(/\/+$/, '');
-    const anon = String(appConfig.anon || savedConfig.anon || $('cgPilotAnonKey').value || '').trim();
+    const url = $('cgPilotUrl').value.trim().replace(/\/+$/, '');
+    const anon = $('cgPilotAnonKey').value.trim();
     if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
       throw new Error(cgL("رابط Supabase غير صحيح. يجب أن يكون بالشكل https://project.supabase.co","Invalid Supabase URL. It must look like https://project.supabase.co"));
     }
@@ -2364,6 +2489,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     loginBtn.disabled = false;
+    if (signupBtn) signupBtn.disabled = false;
     say(cgL("تم حفظ إعدادات الاتصال. جارٍ التحقق من جلسة الدخول...","Connection settings saved. Checking the session..."), 'success');
     const { data, error } = await client.auth.getSession();
     if (error) throw error;
@@ -2398,16 +2524,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     households = householdResult.data || [];
     fillSelect(centerSelect, centers, centers.length ? cgL("اختر مركزاً","Select a center") : cgL("لا توجد عضوية مركز نشطة","No active center membership"), x => x.name);
     fillSelect(householdSelect, households, households.length ? cgL("اختر مساحة العائلة","Select a family space") : cgL("لا توجد عائلة متاحة لهذا الحساب","No family available for this account"), x => x.name);
-    const role = String((user.user_metadata || {}).careguard_role || '').toLowerCase();
-    $('cgPilotWorkspaces').hidden = false;
-    $('cgPilotCenterWorkspace').hidden = centers.length === 0;
-    $('cgPilotFamilyWorkspace').hidden = !((role === 'family' && households.length > 0) || role === 'senior');
-    const linkForm = $('cgPilotFamilyWorkspace').querySelector('label, #cgPilotRequestLink');
-    const isSenior = role === 'senior';
-    $('cgPilotLinkSeniorId').closest('label').hidden = isSenior;
-    householdSelect.closest('label').hidden = isSenior;
-    requestBtn.hidden = isSenior;
-    await Promise.all([loadCenterSeniors(), loadPendingLinks()]);
+    await Promise.all([loadCenterSeniors(), loadPendingLinks(), syncLiveTables()]);
     say(cgL("تم تسجيل الدخول. البيانات المعروضة تأتي من Supabase وتخضع لصلاحيات RLS.","Signed in. Data shown comes from Supabase and is subject to RLS permissions."), 'success');
   }
 
@@ -2458,6 +2575,71 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     });
   }
 
+  let liveChannel = null;
+  async function syncLiveTables() {
+    if (!client) return;
+    try {
+      const [sRes, cRes, aRes, dRes] = await Promise.all([
+        client.from('senior_profiles').select('id,household_id,user_id,display_name,created_at').order('created_at', { ascending: false }).limit(50),
+        client.from('safety_checkins').select('id,senior_id,household_id,checkin_type,checked_in_at').order('checked_in_at', { ascending: false }).limit(50),
+        client.from('alerts').select('id,senior_id,household_id,alert_type,severity,message,status,created_at').order('created_at', { ascending: false }).limit(50),
+        client.from('device_status').select('id,senior_id,household_id,battery_percent,last_seen_at,received_at').order('received_at', { ascending: false }).limit(50)
+      ]);
+      window.cgLive.connected = true;
+      window.cgLive.seniors = (!sRes.error && sRes.data) ? sRes.data : [];
+      window.cgLive.checkins = (!cRes.error && cRes.data) ? cRes.data : [];
+      window.cgLive.alerts = (!aRes.error && aRes.data) ? aRes.data : [];
+      window.cgLive.devices = (!dRes.error && dRes.data) ? dRes.data : [];
+      window.cgLive.onCheckIn = async function (type) {
+        const sp = window.cgLive.seniors[0];
+        if (!sp || !client) return;
+        try {
+          const { data: uData } = await client.auth.getUser();
+          const uid = uData && uData.user ? uData.user.id : null;
+          const { error } = await client.from('safety_checkins').insert({
+            household_id: sp.household_id,
+            senior_id: sp.id,
+            checkin_type: type || 'im_ok',
+            recorded_by: uid
+          });
+          if (error) throw error;
+          await syncLiveTables();
+        } catch (err) {
+          say(cgL('تعذر حفظ الاطمئنان في Supabase: ', 'Could not save check-in to Supabase: ') + (err.message || ''), 'error');
+        }
+      };
+      window.cgLive.onResolve = async function (seniorId) {
+        const sp = window.cgLive.seniors.find(s => s.id === seniorId);
+        if (!sp || !client) return;
+        try {
+          const { data: uData } = await client.auth.getUser();
+          const uid = uData && uData.user ? uData.user.id : null;
+          await client.from('safety_checkins').insert({
+            household_id: sp.household_id,
+            senior_id: sp.id,
+            checkin_type: 'assisted',
+            recorded_by: uid
+          });
+          await syncLiveTables();
+        } catch (err) {
+          say(cgL('تعذر تسجيل التدخل في Supabase: ', 'Could not log intervention in Supabase: ') + (err.message || ''), 'error');
+        }
+      };
+      if (typeof window.__cgApplyLive === 'function') {
+        window.__cgApplyLive(window.cgLive);
+      }
+      if (!liveChannel && typeof client.channel === 'function') {
+        liveChannel = client.channel('careguard-live')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'safety_checkins' }, () => syncLiveTables())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, () => syncLiveTables())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'device_status' }, () => syncLiveTables())
+          .subscribe();
+      }
+    } catch (e) {
+      /* keep local fallback */
+    }
+  }
+
   async function loadPendingLinks() {
     const target = $('cgPilotPendingLinks');
     target.replaceChildren();
@@ -2473,6 +2655,10 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       .eq('status','pending').order('requested_at', { ascending: false });
     if (error) throw error;
     const rows = data || [];
+    const seniorBox = $('seniorPendingLinksBox');
+    const seniorList = $('seniorPendingLinksList');
+    if (seniorList) seniorList.replaceChildren();
+    if (seniorBox) seniorBox.classList.add('hidden');
     if (!rows.length) {
       addText(target, cgL("لا توجد طلبات ربط معلّقة لهذا الحساب.","No pending link requests for this account."), 'text-xs text-slate-500');
       return;
@@ -2498,6 +2684,14 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
           }); actions.appendChild(btn);
         });
         card.appendChild(actions);
+        if (seniorBox && seniorList) {
+          seniorBox.classList.remove('hidden');
+          seniorList.appendChild(card.cloneNode(true));
+          const clonedBtns = seniorList.lastElementChild.querySelectorAll('button');
+          clonedBtns.forEach((cb, idx) => {
+            cb.addEventListener('click', () => actions.children[idx].click());
+          });
+        }
       } else {
         addText(card, cgL("طلبك قيد انتظار موافقة المسن من حسابه.","Your request is waiting for the senior to approve it from their account."), 'mt-2 text-xs text-amber-800');
       }
@@ -2507,25 +2701,19 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
 
   $('cgPilotLoginMethod').addEventListener('change', () => { const phone = $('cgPilotLoginMethod').value === 'phone'; $('cgPilotPhone').classList.toggle('hidden', !phone); $('cgPilotEmail').classList.toggle('hidden', phone); });
   $('cgPilotSignupMethod').addEventListener('change', () => { const phone = $('cgPilotSignupMethod').value === 'phone'; $('cgPilotSignupPhone').classList.toggle('hidden', !phone); $('cgPilotSignupEmail').classList.toggle('hidden', phone); });
-  $('cgPilotSignupRole').addEventListener('change', () => { const senior = $('cgPilotSignupRole').value === 'senior'; $('cgPilotClaimCode').classList.toggle('hidden', !senior); $('cgPilotHouseholdName').classList.toggle('hidden', senior); });
-  function applyEmailProvider(inputId, providerId) {
-    const input = $(inputId), provider = $(providerId);
-    if (!input || !provider) return;
-    const domains = { gmail: 'gmail.com', outlook: 'outlook.com', yahoo: 'yahoo.com' };
-    const update = () => {
-      const domain = domains[provider.value];
-      input.placeholder = domain ? ('name@' + domain) : cgL('أدخل عنوان بريدك الإلكتروني كاملاً','Enter your full email address');
-    };
-    provider.addEventListener('change', update);
-    input.addEventListener('blur', () => {
-      const value = input.value.trim();
-      const domain = domains[provider.value];
-      if (value && !value.includes('@') && domain) input.value = value + '@' + domain;
-    });
-    update();
-  }
-  applyEmailProvider('cgPilotEmail','cgPilotEmailProvider');
-  applyEmailProvider('cgPilotSignupEmail','cgPilotSignupEmailProvider');
+  function syncAuthFieldVisibility() {
+  const loginPhone = $('cgPilotLoginMethod').value === 'phone';
+  $('cgPilotPhone').classList.toggle('hidden', !loginPhone);
+  $('cgPilotEmail').classList.toggle('hidden', loginPhone);
+  const signupPhone = $('cgPilotSignupMethod').value === 'phone';
+  $('cgPilotSignupPhone').classList.toggle('hidden', !signupPhone);
+  $('cgPilotSignupEmail').classList.toggle('hidden', signupPhone);
+  const isSeniorRole = $('cgPilotSignupRole').value === 'senior';
+  $('cgPilotClaimCode').classList.toggle('hidden', !isSeniorRole);
+  $('cgPilotHouseholdName').classList.toggle('hidden', isSeniorRole);
+}
+$('cgPilotSignupRole').addEventListener('change', syncAuthFieldVisibility);
+syncAuthFieldVisibility();
   $('cgPilotSaveConnect').addEventListener('click', async () => {
     try { await connectFromFields(); }
     catch (e) { setConnected(false); say(cgL("تعذر الاتصال: ","Connection failed: ") + (e.message || cgL("خطأ غير معروف","Unknown error")), 'error'); }
@@ -2672,9 +2860,7 @@ if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     if (saved && saved.url && saved.anon) {
       $('cgPilotUrl').value = saved.url;
       $('cgPilotAnonKey').value = saved.anon;
-      connectFromFields().catch(e => { setConnected(false); say(cgL("تعذر الاتصال بالخدمة حالياً. حاول لاحقاً أو تواصل مع الدعم.","The service is temporarily unavailable. Please try again later or contact support."), 'error'); });
-    } else {
-      say(cgL("خدمة CareGuard لم تُهيّأ بعد. يرجى التواصل مع مسؤول التطبيق.","CareGuard has not been configured yet. Please contact the app administrator."), 'error');
+      connectFromFields().catch(e => say(cgL("تعذر استعادة الاتصال: ","Could not restore the connection: ") + e.message, 'error'));
     }
   } catch (_) { /* ignore invalid local config */ }
 })();
