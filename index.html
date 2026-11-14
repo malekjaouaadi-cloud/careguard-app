@@ -84,6 +84,36 @@ Command Center
 </header>
 <!-- Toast Banner -->
 <div id="toastContainer" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
+<!-- Voice / Video Call Demo Modal -->
+<div id="careCallModal" class="hidden fixed inset-0 z-[70] bg-slate-950/70 p-3 sm:p-6 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="careCallTitle">
+  <div class="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+    <div class="bg-slate-900 text-white p-5">
+      <div class="flex items-center justify-between gap-3">
+        <div><div id="careCallMode" class="text-xs text-sky-200 font-bold uppercase tracking-wide">Voice call demo</div><h2 id="careCallTitle" class="text-xl font-extrabold mt-1">Robert Miller</h2><p id="careCallStatus" class="text-xs text-slate-300 mt-1">Demo call screen — not connected</p></div>
+        <button id="careCallClose" type="button" class="rounded-full bg-white/10 hover:bg-white/20 w-10 h-10 text-xl" aria-label="Close">×</button>
+      </div>
+    </div>
+    <div class="p-5">
+      <div id="careVideoPlaceholder" class="hidden rounded-2xl bg-slate-800 text-white min-h-52 flex-col items-center justify-center gap-3 mb-4">
+        <div class="w-20 h-20 rounded-full bg-slate-600 flex items-center justify-center text-4xl">👤</div>
+        <div class="text-sm font-bold">Video preview will appear here</div>
+        <div class="text-xs text-slate-300">Camera service is not connected in this demo</div>
+      </div>
+      <div id="careAudioPlaceholder" class="rounded-2xl bg-sky-50 border border-sky-100 min-h-36 flex flex-col items-center justify-center gap-2 mb-4">
+        <div class="w-20 h-20 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-4xl">☎</div>
+        <div class="font-bold text-slate-800">Ready to connect</div>
+        <div class="text-xs text-slate-500">This is a visual prototype</div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <button id="careCallMute" type="button" class="rounded-xl bg-slate-100 text-slate-800 py-3 text-xs font-bold">🎙 Mute</button>
+        <button id="careCallCamera" type="button" class="rounded-xl bg-slate-100 text-slate-800 py-3 text-xs font-bold">▣ Camera</button>
+        <button id="careCallEnd" type="button" class="rounded-xl bg-rose-600 text-white py-3 text-xs font-bold">End Call</button>
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-400 mt-4">No audio or video is transmitted. Real-time calling requires the Android calling module, secure signaling, and user permissions.</p>
+    </div>
+  </div>
+</div>
+
 <!-- Main Content -->
 <main class="max-w-5xl mx-auto px-4 py-6">
 <!-- Escalation Alert Banner -->
@@ -126,6 +156,25 @@ Safe & Active
 </svg>
 <span id="testVoiceLabel">Listen to Next Reminder</span>
 </button>
+</div>
+<!-- CareGuard Voice & Video Calling -->
+<div class="bg-white rounded-3xl p-6 border border-sky-200 shadow-sm">
+  <div class="flex items-center gap-3 mb-3">
+    <div class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-2xl">☎</div>
+    <div>
+      <h3 class="text-lg font-extrabold text-slate-900">Stay Connected</h3>
+      <p class="text-xs text-slate-500">Talk with your family or care team</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-3">
+    <button type="button" data-care-call="audio" class="tap-btn rounded-2xl bg-sky-600 hover:bg-sky-700 text-white px-3 py-4 font-extrabold flex flex-col items-center gap-1">
+      <span class="text-2xl">☎</span><span>Voice Call</span>
+    </button>
+    <button type="button" data-care-call="video" class="tap-btn rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-4 font-extrabold flex flex-col items-center gap-1">
+      <span class="text-2xl">▣</span><span>Video Call</span>
+    </button>
+  </div>
+  <p class="text-[11px] text-slate-400 mt-3">Demo interface only — real calls will be enabled after secure calling services are connected.</p>
 </div>
 <!-- Daily Medications List -->
 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
@@ -277,6 +326,14 @@ Safe & Active
 <div id="famStatApptLabel" class="text-xs text-slate-500 font-semibold">Next Visit</div>
 <div class="text-xs font-extrabold text-indigo-700 mt-1.5 leading-snug" id="famNextAppointmentDisplay">Dr. Karim Yusuf</div>
 </div>
+</div>
+<div class="rounded-2xl border border-sky-200 bg-sky-50 p-4 mb-5">
+  <div class="font-extrabold text-slate-900 mb-1">Connect with Robert</div>
+  <p class="text-xs text-slate-600 mb-3">Start a voice or video call with the senior.</p>
+  <div class="grid grid-cols-2 gap-2">
+    <button type="button" data-care-call="audio" class="tap-btn rounded-xl bg-sky-600 text-white py-3 px-2 text-sm font-bold">☎ Voice Call</button>
+    <button type="button" data-care-call="video" class="tap-btn rounded-xl bg-indigo-600 text-white py-3 px-2 text-sm font-bold">▣ Video Call</button>
+  </div>
 </div>
 <!-- Sliders to Simulate Hours & Battery -->
 <div class="flex flex-col gap-3">
@@ -1353,6 +1410,54 @@ li.innerHTML = `<span class="w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0"></span
 supInterventionLog.appendChild(li);
 });
 }
+// Voice/video call prototype controls (UI only; no real media connection yet)
+const careCallModal = document.getElementById('careCallModal');
+const careCallMode = document.getElementById('careCallMode');
+const careCallTitle = document.getElementById('careCallTitle');
+const careCallStatus = document.getElementById('careCallStatus');
+const careVideoPlaceholder = document.getElementById('careVideoPlaceholder');
+const careAudioPlaceholder = document.getElementById('careAudioPlaceholder');
+const careCallMute = document.getElementById('careCallMute');
+const careCallCamera = document.getElementById('careCallCamera');
+let careCallType = 'audio';
+let careCallMuted = false;
+let careCameraEnabled = false;
+function openCareCall(type = 'audio', person = 'Robert Miller') {
+  careCallType = type;
+  careCallMuted = false;
+  careCameraEnabled = type === 'video';
+  careCallTitle.textContent = person;
+  careCallMode.textContent = type === 'video' ? 'Video call demo' : 'Voice call demo';
+  careCallStatus.textContent = 'Demo screen opened — not connected';
+  careVideoPlaceholder.classList.toggle('hidden', type !== 'video');
+  careVideoPlaceholder.classList.toggle('flex', type === 'video');
+  careAudioPlaceholder.classList.toggle('hidden', type === 'video');
+  careCallMute.textContent = '🎙 Mute';
+  careCallCamera.classList.toggle('opacity-50', type !== 'video');
+  careCallCamera.textContent = type === 'video' ? '▣ Camera On' : '▣ Camera';
+  careCallModal.classList.remove('hidden');
+}
+function closeCareCall() {
+  careCallModal.classList.add('hidden');
+  careCallStatus.textContent = 'Demo screen closed';
+}
+document.querySelectorAll('[data-care-call]').forEach(btn => {
+  btn.addEventListener('click', () => openCareCall(btn.getAttribute('data-care-call')));
+});
+document.getElementById('careCallClose').addEventListener('click', closeCareCall);
+document.getElementById('careCallEnd').addEventListener('click', closeCareCall);
+careCallModal.addEventListener('click', e => { if (e.target === careCallModal) closeCareCall(); });
+careCallMute.addEventListener('click', () => {
+  careCallMuted = !careCallMuted;
+  careCallMute.textContent = careCallMuted ? '🔇 Unmute' : '🎙 Mute';
+});
+careCallCamera.addEventListener('click', () => {
+  careCameraEnabled = !careCameraEnabled;
+  careCallCamera.textContent = careCameraEnabled ? '▣ Camera On' : '▣ Camera Off';
+  if (careCallType === 'video') careVideoPlaceholder.querySelector('.text-sm').textContent = careCameraEnabled ? 'Camera preview will appear here' : 'Camera is off';
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !careCallModal.classList.contains('hidden')) closeCareCall(); });
+
 // Event Listeners
 btnLangToggle.addEventListener('click', () => {
 state.lang = state.lang === 'en' ? 'ar' : 'en';
@@ -1380,8 +1485,9 @@ if (!patient) return;
 const staffName = document.getElementById('shiftStaffSelect').value;
 const nowStr = new Date().toLocaleTimeString(state.lang === 'en' ? 'en-US' : 'ar-TN', { hour: '2-digit', minute: '2-digit' });
 if (callBtn) {
-state.supLogs.unshift({ time: nowStr, text: `[DEMO — NO CALL PLACED] ${staffName} selected the call action for ${patient.name} (${patient.phone})`, type: 'warn' });
-showToast(state.lang === 'en' ? `Demo only: use your phone to call ${patient.name}.` : `عرض تجريبي: اتصل بـ ${patient.name} من هاتفك.` , 'indigo');
+state.supLogs.unshift({ time: nowStr, text: `[DEMO — NO CALL PLACED] ${staffName} opened the voice call screen for ${patient.name} (${patient.phone})`, type: 'warn' });
+openCareCall('audio', patient.name);
+showToast(state.lang === 'en' ? `Demo call screen opened for ${patient.name}; no call was placed.` : `تم فتح واجهة اتصال تجريبية مع ${patient.name}؛ لم يتم إجراء مكالمة فعلية.`, 'indigo');
 } else if (smsBtn) {
 state.supLogs.unshift({ time: nowStr, text: `[DEMO — NOT SENT] ${staffName} prepared a family alert for ${patient.contact}`, type: 'warn' });
 showToast(state.lang === 'en' ? 'Demo only: no SMS was sent. Connect an SMS provider for real delivery.' : 'عرض تجريبي: لم تُرسل أي رسالة SMS. يلزم ربط مزود رسائل فعلي.', 'warn');
