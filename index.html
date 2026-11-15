@@ -2134,6 +2134,13 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'senior_care_links' }, () => { if (userRole === 'senior') loadPendingCareLinksForSenior(); else if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'safety_checkins' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'medication_logs' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alerts' }, (payload) => {
+        if (['family', 'nurse', 'center'].includes(userRole)) {
+          loadCarePortalData();
+          const msg = payload && payload.new && payload.new.message ? payload.new.message : 'CareGuard Alert';
+          sendSwNotification('🚨 CareGuard Alert', msg, 'cg-alert-' + ((payload.new && payload.new.id) || Date.now()));
+        }
+      })
       .subscribe();
   }
 
@@ -2366,12 +2373,13 @@
         // Fetch latest check-in, battery, meds, today's med logs, and appointments for this linked senior
         const todayStr = getLocalDateStr();
         const todayStart = getLocalDayStartIso();
-        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }] = await Promise.all([
+        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }, { data: openAlerts }] = await Promise.all([
           client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
           client.from('device_status').select('battery_percent').eq('senior_id', sp.id).order('recorded_at', { ascending: false }).limit(1),
           client.from('medications').select('id, name, dosage').eq('senior_id', sp.id).order('created_at', { ascending: true }),
           client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
-          client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5)
+          client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
+          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(5)
         ]);
         const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (ar ? 'Aucun' : 'None');
         const batVal = bat && bat[0] ? bat[0].battery_percent : null;
@@ -2398,6 +2406,30 @@
         pills.append(p1, p2, p3, p4);
         top.append(info, pills);
         card.appendChild(top);
+
+        // Open Automatic Alerts (Missed Check-in / Missed Med / Low Battery)
+        if (Array.isArray(openAlerts) && openAlerts.length) {
+          const alBox = document.createElement('div');
+          alBox.className = 'rounded-2xl border-2 border-rose-300 bg-rose-50 p-3 space-y-2';
+          openAlerts.forEach((al) => {
+            const alRow = document.createElement('div');
+            alRow.className = 'flex items-center justify-between gap-2 text-xs font-extrabold text-rose-950';
+            const alTxt = document.createElement('span');
+            alTxt.textContent = '🚨 ' + (al.message || al.alert_type);
+            const ackBtn = document.createElement('button');
+            ackBtn.type = 'button';
+            ackBtn.style.minHeight = '30px';
+            ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
+            ackBtn.textContent = ar ? 'Vu ✓' : 'Ack ✓';
+            ackBtn.addEventListener('click', async () => {
+              await client.from('alerts').update({ status: 'resolved' }).eq('id', al.id);
+              loadCarePortalData();
+            });
+            alRow.append(alTxt, ackBtn);
+            alBox.appendChild(alRow);
+          });
+          card.appendChild(alBox);
+        }
 
         // Detailed Medications Status Today
         const medSec = document.createElement('div');
