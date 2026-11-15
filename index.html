@@ -359,6 +359,7 @@
         <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 Écouter le rappel vocal</button>
         <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 Sonnerie</button>
         <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 Changer de rôle</button>
+        <button id="openPlansModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">⭐ Abonnement : Gratuit</button>
         <button id="openLegalModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-800">⚖️ Confidentialité & Conditions</button>
         <button id="signOutBtn" type="button" class="hidden tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900">Déconnexion</button>
       </div>
@@ -373,6 +374,7 @@
         <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
       </div>
       <div class="flex items-center gap-2">
+        <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-950" style="min-height:38px;">⭐ Plan</button>
         <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
         <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">Changer rôle</button>
         <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">Quitter</button>
@@ -763,6 +765,19 @@
   </div>
 </div>
 
+
+<div id="plansModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 id="plansModalTitle" class="text-xl font-black text-slate-900">Abonnements CareGuard</h3>
+      <button id="closePlansModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <p id="plansCurrentBadge" class="rounded-2xl bg-emerald-50 border border-emerald-200 px-3.5 py-2 text-xs font-extrabold text-emerald-900"></p>
+    <div id="plansCardsList" class="space-y-3"></div>
+    <p id="plansFeedback" class="hidden rounded-2xl border border-amber-300 bg-amber-50 px-3.5 py-2 text-xs font-extrabold text-amber-950"></p>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -816,6 +831,10 @@
   const ROLE_STORAGE_KEY = 'careguard_user_role_v1';
   let userRole = localStorage.getItem(ROLE_STORAGE_KEY) || '';
   let currentUser = null;
+  let userPlan = 'free';
+  // Paste your Stripe Payment Links below when ready to accept live card payments:
+  const STRIPE_PLUS_URL = '';
+  const STRIPE_AGENCY_URL = '';
   let state = loadState('guest');
   let currentSeniorId = null;
   let pendingImageDataUrl = '';
@@ -892,6 +911,80 @@
     }
     editingMedId = null;
   });
+
+
+  function renderPlansModal() {
+    const isFr = state.lang === 'fr';
+    $('plansModalTitle').textContent = isFr ? 'Abonnements CareGuard' : 'CareGuard Plans';
+    const planLabel = userPlan === 'plus' ? 'CareGuard Plus' : (userPlan === 'agency' ? (isFr ? 'Infirmier / Agence' : 'Nurse / Agency') : (isFr ? 'Gratuit' : 'Free'));
+    $('plansCurrentBadge').textContent = (isFr ? 'Plan actuel : ' : 'Current plan: ') + planLabel;
+    const box = $('plansCardsList'); box.replaceChildren();
+    $('plansFeedback').classList.add('hidden');
+    const plans = [
+      {
+        id: 'free',
+        title: isFr ? 'Gratuit (Découverte)' : 'Free (Starter)',
+        price: isFr ? '0 € / mois' : '$0 / month',
+        feats: isFr
+          ? ['1 senior • Bouton "Je vais bien" & Eau', 'Fiche d\'urgence médicale & Salon', '1 proche lié']
+          : ['1 senior • "I\'m OK" & Water reminders', 'Emergency Medical ID & Lounge', '1 linked family member'],
+        url: ''
+      },
+      {
+        id: 'plus',
+        title: 'CareGuard Plus',
+        price: isFr ? '7 € / mois' : '$7 / month',
+        feats: isFr
+          ? ['Lecture IA des ordonnances incluse', 'Famille illimitée + Infirmier', 'Alertes auto 24/7 + Messages vocaux']
+          : ['AI prescription scanning included', 'Unlimited family + Nurse', '24/7 missed alerts + Voice chat'],
+        url: STRIPE_PLUS_URL
+      },
+      {
+        id: 'agency',
+        title: isFr ? 'Infirmier / Soins à domicile' : 'Nurse / Home Care Agency',
+        price: isFr ? '24 € / mois' : '$24 / month',
+        feats: isFr
+          ? ['Suivi multi-patients illimité', 'Tableau complet médicaments, eau & RDV', 'Alertes temps réel & messagerie directe']
+          : ['Unlimited multi-patient monitoring', 'Full meds, water & appointment log', 'Real-time alerts & direct chat'],
+        url: STRIPE_AGENCY_URL
+      }
+    ];
+    plans.forEach((pl) => {
+      const active = userPlan === pl.id;
+      const card = document.createElement('div');
+      card.className = active ? 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 p-4 space-y-2' : 'rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2';
+      const top = document.createElement('div'); top.className = 'flex items-center justify-between';
+      const t = document.createElement('p'); t.className = 'text-base font-black text-slate-900'; t.textContent = pl.title;
+      const pr = document.createElement('span'); pr.className = 'rounded-full bg-white px-2.5 py-0.5 text-xs font-black text-emerald-900 border border-emerald-200'; pr.textContent = pl.price;
+      top.append(t, pr); card.appendChild(top);
+      const ul = document.createElement('ul'); ul.className = 'space-y-1 text-xs font-bold text-slate-700';
+      pl.feats.forEach((f) => { const li = document.createElement('li'); li.textContent = '✓ ' + f; ul.appendChild(li); });
+      card.appendChild(ul);
+      if (pl.id !== 'free' && !active) {
+        const btn = document.createElement('button'); btn.type = 'button';
+        btn.className = 'tap-btn w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-extrabold text-white';
+        btn.textContent = isFr ? 'Passer à cette offre' : 'Upgrade to this plan';
+        btn.addEventListener('click', () => {
+          if (pl.url) {
+            const sep = pl.url.includes('?') ? '&' : '?';
+            const uid = currentUser ? encodeURIComponent(currentUser.id) : '';
+            const em = currentUser && currentUser.email ? encodeURIComponent(currentUser.email) : '';
+            window.open(`${pl.url}${sep}client_reference_id=${uid}&prefilled_email=${em}`, '_blank', 'noopener');
+          } else {
+            $('plansFeedback').textContent = isFr
+              ? 'Paiement Stripe prêt à être activé : ajoutez votre lien Stripe Payment Link dans index.html.'
+              : 'Stripe checkout ready: add your Stripe Payment Link URL in index.html to go live.';
+            $('plansFeedback').classList.remove('hidden');
+          }
+        });
+        card.appendChild(btn);
+      }
+      box.appendChild(card);
+    });
+  }
+  if ($('openPlansModalBtn')) $('openPlansModalBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
+  if ($('carePlansBtn')) $('carePlansBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
+  if ($('closePlansModalBtn')) $('closePlansModalBtn').addEventListener('click', () => $('plansModal').classList.add('hidden'));
 
   renderRoleViews();
       return;
@@ -1615,8 +1708,18 @@
     });
   }
 
-  // Gemini AI (with automatic multi-candidate model discovery)
+  // Gemini AI (Edge Function `gemini-proxy` first when signed in, then local key fallback)
   async function callGeminiText(prompt, imageBase64, mimeType) {
+    if (client && currentUser && navigator.onLine) {
+      try {
+        const { data, error } = await client.functions.invoke('gemini-proxy', {
+          body: { prompt, imageBase64: imageBase64 || null, mimeType: mimeType || 'image/jpeg' }
+        });
+        if (!error && data && typeof data.text === 'string' && data.text.trim()) {
+          return data.text;
+        }
+      } catch (_) {}
+    }
     const key = (localStorage.getItem(AI_KEY_STORAGE) || '').trim();
     if (!key) return null;
     const parts = [{ text: prompt }];
@@ -1906,6 +2009,7 @@
     $('openApptModalBtn').textContent = isFr ? '+ Ajouter' : '+ Add';
     $('aiPanelTitle').textContent = isFr ? 'Assistant IA' : 'AI Assistant';
     const hasAiKey = !!(localStorage.getItem(AI_KEY_STORAGE) || '').trim();
+    $('openAiConfigBtn').classList.toggle('hidden', !!currentUser && !hasAiKey);
     $('openAiConfigBtn').textContent = hasAiKey ? (isFr ? 'IA connectée ✓' : 'AI Connected ✓') : (isFr ? 'Config. IA' : 'AI Setup');
     $('aiVoiceBtnLabel').textContent = isFr ? '🎤 Parler à l\'assistant' : '🎤 Talk to AI Assistant';
     $('aiQuestionInput').placeholder = isFr ? 'Ex : Quand est mon prochain médicament ?' : 'e.g. When is my next medication?';
@@ -1915,6 +2019,11 @@
     $('testWaterAlertBtn').textContent = isFr ? '💧 Écouter le rappel d\'eau' : '💧 Hear Water Reminder';
     $('voiceBtn').textContent = isFr ? '🔊 Écouter le rappel vocal' : '🔊 Voice Reminder';
     $('openRingtoneModalBtn').textContent = isFr ? '🔔 Sonnerie' : '🔔 Alert Ringtone';
+    if ($('openPlansModalBtn')) {
+      const pNames = { free: isFr ? 'Gratuit' : 'Free', plus: 'Plus', agency: isFr ? 'Pro / Agence' : 'Pro / Agency' };
+      $('openPlansModalBtn').textContent = (isFr ? '⭐ Abonnement : ' : '⭐ Plan: ') + (pNames[userPlan] || 'Free');
+    }
+    if ($('carePlansBtn')) $('carePlansBtn').textContent = isFr ? '⭐ Plan' : '⭐ Plan';
     if ($('openLegalModalBtn')) $('openLegalModalBtn').textContent = isFr ? '⚖️ Confidentialité & Conditions' : '⚖️ Privacy & Legal';
     if ($('rxExtractedTitle')) $('rxExtractedTitle').textContent = isFr ? 'Médicaments détectés :' : 'Detected medications:';
     if ($('legalModalTitle')) $('legalModalTitle').textContent = isFr ? 'Confidentialité & Conditions' : 'Privacy & Legal Terms';
@@ -2104,7 +2213,7 @@
   $('aiAnalyzePhotoBtn').addEventListener('click', async () => {
     const st = $('aiPhotoStatus'); st.classList.remove('hidden');
     if (!pendingImageDataUrl) return;
-    if (!(localStorage.getItem(AI_KEY_STORAGE) || '').trim()) { st.textContent = state.lang === 'fr' ? 'Ajoutez la clé Gemini dans Paramètres.' : 'Add Gemini key in Settings.'; return; }
+    if (!currentUser && !(localStorage.getItem(AI_KEY_STORAGE) || '').trim()) { st.textContent = state.lang === 'fr' ? 'Connectez-vous ou ajoutez une clé Gemini.' : 'Sign in or add Gemini key in Settings.'; return; }
     st.textContent = state.lang === 'fr' ? 'Lecture...' : 'Reading...';
     try {
       const compressed = await compressImageDataUrl(pendingImageDataUrl, 1280);
@@ -2290,6 +2399,11 @@
     try {
       const displayName = getRealDisplayName();
       await client.from('profiles').upsert({ id: user.id, display_name: displayName }, { onConflict: 'id' });
+      try {
+        const { data: pRow } = await client.from('profiles').select('plan, plan_expires_at').eq('id', user.id).single();
+        if (pRow && pRow.plan) userPlan = pRow.plan;
+        applyLang();
+      } catch (_) {}
       const { data: existing } = await client.from('senior_profiles').select('id, registration_number').eq('user_id', user.id).limit(1);
       if (existing && existing.length) {
         try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz) client.from('senior_profiles').update({ timezone: tz }).eq('id', existing[0].id).then(() => {}); } catch (_) {}
