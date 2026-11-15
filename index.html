@@ -566,6 +566,16 @@
   </div>
 </div>
 
+<div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="notifModalTitle" class="text-2xl font-black text-slate-900">التنبيهات والإشعارات</h3>
+      <button id="closeNotifModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <div id="notifListBody" class="mt-4 max-h-[65vh] space-y-2.5 overflow-y-auto"></div>
+  </div>
+</div>
+
 <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-4">
   <div class="w-full max-w-md rounded-3xl border-2 border-rose-300 bg-white p-6 text-center shadow-2xl">
     <h3 id="confirmDelTitle" class="text-2xl font-black text-slate-900">تأكيد الحذف</h3>
@@ -691,7 +701,8 @@
   $('tileAiBtn').addEventListener('click', () => switchTab('settings'));
   $('openChatPageBtn').addEventListener('click', () => switchTab('chat'));
   $('backFromChatBtn').addEventListener('click', () => switchTab('home'));
-  $('headerBellBtn').addEventListener('click', () => $('ringtoneModal').classList.remove('hidden'));
+  $('headerBellBtn').addEventListener('click', () => { renderNotificationsModal(); $('notificationsModal').classList.remove('hidden'); });
+  $('closeNotifModalBtn').addEventListener('click', () => $('notificationsModal').classList.add('hidden'));
 
   // Tap Water Tile: Log 1 glass immediately + gentle feedback
   $('tileWaterBtn').addEventListener('click', () => {
@@ -916,6 +927,7 @@
     } catch (_) {}
   }
   function updateBatteryUI(pct, charging) {
+    lastBatteryPct = pct; lastBatteryCharging = charging;
     const badge = $('batteryBadge'), txt = $('batteryText'), topBanner = $('topBatteryBanner');
     txt.textContent = pct + '%' + (charging ? ' ⚡' : '');
     if (pct <= 30 && !charging) {
@@ -987,7 +999,8 @@
     const takenCount = state.meds.filter((m) => m.taken).length;
     const remCount = state.meds.length - takenCount;
     $('tileMedsSub').textContent = state.lang === 'ar' ? `${takenCount} / ${state.meds.length} جرعات` : `${takenCount} / ${state.meds.length} doses`;
-    $('headerBellCount').textContent = String(Math.max(0, remCount));
+    const batAlertCnt = (lastBatteryPct <= 30 && !lastBatteryCharging) ? 1 : 0;
+    $('headerBellCount').textContent = String(Math.max(0, remCount + batAlertCnt));
 
     state.meds.forEach((m) => {
       const row = document.createElement('div');
@@ -1041,6 +1054,71 @@
     });
   }
 
+  let lastBatteryPct = 100, lastBatteryCharging = true;
+  function renderNotificationsModal() {
+    const body = $('notifListBody');
+    if (!body) return;
+    body.replaceChildren();
+    const ar = state.lang === 'ar';
+    $('notifModalTitle').textContent = ar ? 'التنبيهات والإشعارات' : 'Alerts & Notifications';
+
+    const items = [];
+    if (lastBatteryPct <= 30 && !lastBatteryCharging) {
+      items.push({
+        cls: 'border-rose-300 bg-rose-50 text-rose-900',
+        title: ar ? `🔋 بطارية الهاتف منخفضة (${lastBatteryPct}%)` : `🔋 Low Phone Battery (${lastBatteryPct}%)`,
+        sub: ar ? 'يرجى توصيل الشاحن الآن.' : 'Please plug in your charger now.'
+      });
+    }
+    state.meds.filter((m) => !m.taken).forEach((m) => {
+      items.push({
+        cls: 'border-emerald-200 bg-emerald-50 text-slate-900',
+        title: (ar ? '💊 دواء متبقٍ: ' : '💊 Medication due: ') + (ar ? m.nameAr : m.nameEn),
+        sub: (ar ? 'الموعد: ' : 'Time: ') + m.time,
+        medId: m.id
+      });
+    });
+    if (state.appts.length) {
+      const a = state.appts[0];
+      items.push({
+        cls: 'border-purple-200 bg-purple-50 text-slate-900',
+        title: (ar ? '📅 الموعد القادم: ' : '📅 Upcoming Appointment: ') + (ar ? a.doctorAr : a.doctorEn),
+        sub: a.date + ' • ' + a.time
+      });
+    }
+    items.push({
+      cls: 'border-sky-200 bg-sky-50 text-slate-900',
+      title: ar ? `💧 شرب الماء: ${state.waterCount} / 8 أكواب` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
+      sub: $('waterNextText').textContent || ''
+    });
+
+    items.forEach((it) => {
+      const card = document.createElement('div');
+      card.className = 'flex items-center justify-between gap-2 rounded-2xl border p-3.5 ' + it.cls;
+      const txtWrap = document.createElement('div');
+      const t = document.createElement('p'); t.className = 'text-base font-black'; t.textContent = it.title;
+      const s = document.createElement('p'); s.className = 'text-sm font-bold opacity-80'; s.textContent = it.sub;
+      txtWrap.append(t, s);
+      card.appendChild(txtWrap);
+      if (it.medId) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'shrink-0 rounded-xl bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white';
+        btn.style.minHeight = '36px';
+        btn.textContent = ar ? 'تم ✓' : 'Done ✓';
+        btn.addEventListener('click', () => {
+          const med = state.meds.find((x) => x.id === it.medId);
+          if (med) med.taken = true;
+          saveState();
+          applyLang();
+          renderNotificationsModal();
+        });
+        card.appendChild(btn);
+      }
+      body.appendChild(card);
+    });
+  }
+
   function renderEmergency() {
     const body = $('emBody'); body.replaceChildren();
     const displayName = getRealDisplayName();
@@ -1048,9 +1126,11 @@
     const p = state.profile;
     const familyLabel = p.emergencyPhone ? (p.emergencyPhone + (p.familyRelation ? ` (${p.familyRelation})` : '')) : '-';
     const doctorLabel = (p.doctorName || '-') + (p.doctorPhone ? ` • ${p.doctorPhone}` : '');
+    const dispAllergies = (state.lang === 'en' && p.allergies === 'البنسلين') ? 'Penicillin' : (p.allergies || '-');
+    const dispConditions = (state.lang === 'en' && p.conditions === 'السكري، ضغط الدم') ? 'Diabetes, Hypertension' : (p.conditions || '-');
     const items = state.lang === 'ar'
       ? [['الاسم:', displayName], ['تاريخ الميلاد:', p.dob || '-'], ['هاتف المسن:', p.phone || '-'], ['أحد أفراد العائلة:', familyLabel], ['هاتف احتياطي:', p.backupPhone || '-'], ['الطبيب المعالج:', doctorLabel], ['عنوان السكن:', p.address || '-'], ['فصيلة الدم:', p.bloodType || '-'], ['الحساسية:', p.allergies || '-'], ['الأمراض المزمنة:', p.conditions || '-'], ['ملاحظات خاصة:', p.medicalNotes || '-'], ['الأدوية الحالية:', medNames]]
-      : [['Name:', displayName], ['Date of Birth:', p.dob || '-'], ['Senior Phone:', p.phone || '-'], ['Close Family:', familyLabel], ['Backup Phone:', p.backupPhone || '-'], ['Doctor:', doctorLabel], ['Address:', p.address || '-'], ['Blood Type:', p.bloodType || '-'], ['Allergies:', p.allergies || '-'], ['Conditions:', p.conditions || '-'], ['Notes:', p.medicalNotes || '-'], ['Medications:', medNames]];
+      : [['Name:', displayName], ['Date of Birth:', p.dob || '-'], ['Senior Phone:', p.phone || '-'], ['Close Family:', familyLabel], ['Backup Phone:', p.backupPhone || '-'], ['Doctor:', doctorLabel], ['Address:', p.address || '-'], ['Blood Type:', p.bloodType || '-'], ['Allergies:', dispAllergies], ['Conditions:', dispConditions], ['Notes:', p.medicalNotes || '-'], ['Medications:', medNames]];
     items.forEach(([k, v]) => {
       const line = document.createElement('div');
       line.className = 'flex flex-wrap justify-between gap-2 rounded-xl bg-rose-50 px-3.5 py-2';
@@ -1070,8 +1150,13 @@
     const parts = [{ text: prompt }];
     if (imageBase64) parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: imageBase64 } });
     for (const model of ['gemini-2.5-flash', 'gemini-2.0-flash']) {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + encodeURIComponent(key),
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }) });
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      let res;
+      try {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + encodeURIComponent(key),
+          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }), signal: ctrl.signal });
+      } finally { clearTimeout(timer); }
       if (res.ok) { const d = await res.json(); return d?.candidates?.[0]?.content?.parts?.[0]?.text || ''; }
       if (res.status !== 404) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
     }
@@ -1354,6 +1439,52 @@
     $('authSubheading').textContent = ar ? 'اختر حسابك في Google للدخول بلمسة واحدة.' : 'Sign in with one tap using Google.';
     $('googleBtnLabel').textContent = ar ? 'المتابعة بحساب Google' : 'Continue with Google';
     $('emailFallbackSummary').textContent = ar ? 'أو الدخول بالبريد الإلكتروني' : 'Or sign in with Email';
+    $('medDueTitle').textContent = ar ? 'حان موعد الدواء!' : 'Medication Time!';
+    $('medDueTakeBtn').textContent = ar ? 'أخذت الدواء الآن ✓' : 'I Took It Now ✓';
+    $('medDueSnoozeBtn').textContent = ar ? 'تأجيل 10 دقائق' : 'Snooze 10 Minutes';
+    $('uploadModalTitle').textContent = ar ? 'إضافة دواء أو صورة وصفة' : 'Add Medication or Rx Photo';
+    $('uploadPhotoPrompt').textContent = ar ? 'اضغط لرفع صورة الوصفة الطبية أو علبة الدواء' : 'Tap to upload prescription or pillbox photo';
+    $('aiAnalyzePhotoBtn').textContent = ar ? 'قراءة الصورة بالذكاء الاصطناعي' : 'Read Photo with AI';
+    $('downloadPreviewLink').textContent = ar ? 'تنزيل' : 'Download';
+    $('newMedNameInput').placeholder = ar ? 'اسم الدواء والجرعة' : 'Medication name & dose';
+    $('rxConfirmLabel').textContent = ar ? 'أؤكد مطابقة الدواء والجرعة مع وصفة الطبيب المعتمدة.' : "I confirm this matches my doctor's prescription.";
+    $('saveNewMedBtn').textContent = ar ? 'حفظ الدواء' : 'Save Medication';
+    $('profileModalTitle').textContent = ar ? 'تحديث بيانات المسن' : 'Update Senior Info';
+    $('profilePrivacyNote').textContent = ar ? 'تُحفظ هذه البيانات لبطاقة الطوارئ فقط ولا تظهر في الدردشة.' : 'Saved privately for Emergency ID only — never shown in chat.';
+    $('profNameInput').placeholder = ar ? 'الاسم الكامل' : 'Full Name';
+    $('profDobLabel').textContent = ar ? 'تاريخ الميلاد:' : 'Date of Birth:';
+    $('profShareBirthdayLabel').textContent = ar ? 'مشاركة يوم ميلادي للتهنئة في المجلس (اليوم والشهر فقط)' : 'Share my birthday month & day in lounge';
+    $('profPhoneInput').placeholder = ar ? 'رقم هاتف المسن' : 'Senior Phone Number';
+    $('profEmergencyPhoneInput').placeholder = ar ? 'هاتف أحد أفراد العائلة' : 'Close Family Phone';
+    $('profFamilyRelInput').placeholder = ar ? 'صفة القرابة (الابن/الابنة)' : 'Relationship (Son/Daughter)';
+    $('profBackupPhoneInput').placeholder = ar ? 'رقم عائلي احتياطي (اختياري)' : 'Backup Family Phone (optional)';
+    $('profDoctorNameInput').placeholder = ar ? 'اسم الطبيب المعالج' : 'Primary Doctor Name';
+    $('profDoctorPhoneInput').placeholder = ar ? 'هاتف الطبيب' : 'Doctor Phone';
+    $('profAddressInput').placeholder = ar ? 'عنوان السكن (اختياري)' : 'Home Address (optional)';
+    $('profBloodInput').placeholder = ar ? 'فصيلة الدم (O+)' : 'Blood Type (O+)';
+    $('profAllergiesInput').placeholder = ar ? 'الحساسية' : 'Allergies';
+    $('profConditionsInput').placeholder = ar ? 'الأمراض المزمنة' : 'Medical Conditions';
+    $('profMedicalNotesInput').placeholder = ar ? 'ملاحظات طبية خاصة' : 'Special Medical Notes';
+    $('saveProfileBtn').textContent = ar ? 'حفظ البيانات' : 'Save Information';
+    $('ringtoneModalTitle').textContent = ar ? 'إعداد نغمة التنبيه' : 'Alert Ringtone Settings';
+    $('pickPhoneRingtoneLabel').textContent = ar ? 'فتح مدير الملفات لاختيار نغمة (MP3 / M4A / WAV)' : 'Pick Ringtone File from Phone (MP3 / M4A / WAV)';
+    $('testRingtoneBtn').textContent = ar ? 'تجربة صوت الرنين والاهتزاز' : 'Test Loud Ringtone & Vibration';
+    $('stopRingtoneBtn').textContent = ar ? '⏹ إيقاف الصوت' : '⏹ Stop Sound';
+    const rOpts = $('ringtonePresetSelect').options;
+    if (rOpts && rOpts.length >= 4) {
+      rOpts[0].text = ar ? 'رنين هاتف قوي متكرر' : 'Loud Repeating Phone Ring';
+      rOpts[1].text = ar ? 'جرس هاتف كلاسيكي' : 'Classic Bell Ringtone';
+      rOpts[2].text = ar ? 'منبّه طبي عالي الوضوح' : 'High-Clarity Medical Alarm';
+      rOpts[3].text = ar ? 'نغمة من ملفات هاتفي' : 'Custom File from My Phone';
+    }
+    $('aiConfigTitle').textContent = ar ? 'ربط الذكاء الاصطناعي (Gemini)' : 'Connect AI (Gemini)';
+    $('aiConfigHint').textContent = ar ? 'أدخل مفتاح Gemini API (يُحفظ في جهازك فقط).' : 'Enter Gemini API key (saved on this device only).';
+    $('saveAiKeyBtn').textContent = ar ? 'حفظ في هذا الجهاز' : 'Save on This Device';
+    $('apptModalTitle').textContent = ar ? 'إضافة موعد طبي' : 'Add Medical Appointment';
+    $('apptDoctorInput').placeholder = ar ? 'اسم الطبيب أو التخصص' : 'Doctor name or specialty';
+    $('apptSaveBtn').textContent = ar ? 'حفظ الموعد' : 'Save Appointment';
+    $('emModalTitle').textContent = ar ? 'بطاقة الطوارئ الطبية' : 'Emergency Medical ID';
+
 
     const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
     const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
@@ -1510,12 +1641,17 @@
     applyLang(); setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
   });
   $('askAiBtn').addEventListener('click', () => askAiQuestion($('aiQuestionInput').value.trim()));
+  $('aiQuestionInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); askAiQuestion($('aiQuestionInput').value.trim()); }
+  });
   $('aiVoiceTalkBtn').addEventListener('click', () => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { const b = $('aiAnswerBox'); b.classList.remove('hidden'); b.textContent = state.lang === 'ar' ? 'استخدم Chrome للمحادثة الصوتية.' : 'Use Chrome for voice.'; return; }
+    const b = $('aiAnswerBox');
+    if (!SR) { b.classList.remove('hidden'); b.textContent = state.lang === 'ar' ? 'استخدم Chrome للمحادثة الصوتية.' : 'Use Chrome for voice.'; return; }
     const rec = new SR(); rec.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
     $('aiVoiceBtnLabel').textContent = state.lang === 'ar' ? '🎤 جاري الاستماع...' : '🎤 Listening...';
     rec.onresult = (ev) => { const t = ev.results?.[0]?.[0]?.transcript || ''; $('aiQuestionInput').value = t; applyLang(); askAiQuestion(t); };
+    rec.onerror = () => { applyLang(); b.classList.remove('hidden'); b.textContent = state.lang === 'ar' ? 'تعذر سماع الصوت، تأكد من إذن الميكروفون أو اكتب سؤالك.' : 'Could not hear voice; check mic permission or type.'; };
     rec.onend = () => applyLang();
     rec.start();
   });
