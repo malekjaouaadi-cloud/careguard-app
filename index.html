@@ -8,85 +8,84 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   body {
     font-family: 'Cairo', 'Inter', sans-serif;
-    background-color: #f4f7f9;
-    color: #1e293b;
-    font-size: 17px;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-size: 20px;
+    line-height: 1.6;
   }
   html[dir="ltr"] body {
     font-family: 'Inter', 'Cairo', sans-serif;
   }
-  button { min-height: 46px; }
-  :focus-visible { outline: 3px solid #0f766e; outline-offset: 2px; }
-  .tap-btn { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-  .tap-btn:active { transform: scale(0.97); }
-  @keyframes scanLine {
-    0% { top: 8%; }
-    50% { top: 86%; }
-    100% { top: 8%; }
+  button, summary {
+    min-height: 54px;
   }
-  .scan-line {
-    position: absolute;
-    left: 6%;
-    right: 6%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #10b981, transparent);
-    box-shadow: 0 0 10px #10b981;
-    animation: scanLine 2s ease-in-out infinite;
+  input, select, textarea {
+    min-height: 52px;
+    font-size: 18px;
+  }
+  :focus-visible {
+    outline: 4px solid #0f766e;
+    outline-offset: 2px;
+  }
+  .tap-btn {
+    transition: transform 0.14s ease, box-shadow 0.14s ease;
+  }
+  .tap-btn:active {
+    transform: scale(0.97);
   }
 </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="min-h-screen pb-14">
 
-<!-- Clean Single-Bar Header (Zero Tabs) -->
-<header class="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-  <div class="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 py-3">
-    <div class="flex items-center gap-3">
-      <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-sm">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+<!-- Clean Single-Bar Header (Large Text & Icons, Zero Tabs) -->
+<header class="sticky top-0 z-30 border-b-2 border-slate-200 bg-white/95 backdrop-blur">
+  <div class="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 py-3.5">
+    <div class="flex items-center gap-3.5">
+      <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-sm">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       </div>
       <div>
-        <h1 id="appTitle" class="text-lg font-extrabold leading-tight text-slate-900">طمأنينة (CareGuard)</h1>
-        <p id="appSubtitle" class="text-xs font-semibold text-slate-500">الدواء + المواعيد + الاطمئنان اليومي</p>
+        <h1 id="appTitle" class="text-2xl font-black leading-tight text-slate-900">طمأنينة</h1>
+        <p id="appSubtitle" class="text-sm font-bold text-slate-600">الدواء • الماء • الاطمئنان</p>
       </div>
     </div>
-    <button id="langToggle" type="button" class="tap-btn rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-800 hover:bg-slate-100">
+    <button id="langToggle" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-extrabold text-slate-900 hover:bg-slate-100">
       EN / AR
     </button>
   </div>
 </header>
 
-<main class="mx-auto max-w-xl space-y-4 px-4 pt-4">
+<main class="mx-auto max-w-xl space-y-5 px-4 pt-5">
 
-  <!-- Signed-In Status Bar (Shown only when authenticated) -->
-  <section id="signedInBar" class="hidden flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-    <div class="flex items-center gap-2.5">
-      <span class="h-2.5 w-2.5 rounded-full bg-emerald-600"></span>
+  <!-- Signed-In Bar (Shown only when signed in) -->
+  <section id="signedInBar" class="hidden flex flex-wrap items-center justify-between gap-3 rounded-3xl border-2 border-emerald-300 bg-emerald-50 p-4">
+    <div class="flex items-center gap-3">
+      <span class="h-4 w-4 shrink-0 rounded-full bg-emerald-600"></span>
       <div>
-        <p id="signedInGreeting" class="text-sm font-extrabold text-emerald-950">مرحباً</p>
-        <p id="signedInEmail" class="text-xs text-emerald-800"></p>
+        <p id="signedInGreeting" class="text-lg font-extrabold text-emerald-950">مرحباً</p>
+        <p id="signedInEmail" class="text-sm font-semibold text-emerald-800"></p>
       </div>
     </div>
-    <button id="signOutBtn" type="button" class="tap-btn rounded-xl border border-emerald-300 bg-white px-3.5 py-2 text-xs font-bold text-emerald-900 hover:bg-emerald-100">
-      تسجيل الخروج
+    <button id="signOutBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-400 bg-white px-4 py-2.5 text-base font-extrabold text-emerald-900 hover:bg-emerald-100">
+      خروج
     </button>
   </section>
 
-  <!-- Clean Google-First Auth Card (Hidden automatically when signed in) -->
-  <section id="authCard" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+  <!-- Google-First Auth Card (Hidden automatically when signed in) -->
+  <section id="authCard" class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
     <div class="text-center">
-      <h2 id="authHeading" class="text-lg font-extrabold text-slate-900">تسجيل الدخول أو إنشاء حساب</h2>
-      <p id="authSubheading" class="mt-1 text-sm text-slate-600">اختر حسابك في Google للدخول فوراً بلمسة واحدة دون كلمة مرور.</p>
+      <h2 id="authHeading" class="text-2xl font-black text-slate-900">الدخول السريع</h2>
+      <p id="authSubheading" class="mt-1.5 text-base font-semibold text-slate-600">اختر حسابك في Google للدخول بلمسة واحدة.</p>
     </div>
 
-    <!-- Official-Style Google Account Button -->
-    <button id="googleAuthBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-300 bg-white px-4 py-3.5 text-base font-bold text-slate-800 shadow-sm hover:bg-slate-50">
-      <svg class="h-6 w-6 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+    <button id="googleAuthBtn" type="button" class="tap-btn mt-5 flex w-full items-center justify-center gap-3.5 rounded-2xl border-2 border-slate-300 bg-white px-5 py-4 text-xl font-extrabold text-slate-900 shadow-sm hover:bg-slate-50">
+      <svg class="h-8 w-8 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
         <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
         <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
@@ -95,81 +94,177 @@
       <span id="googleBtnLabel">المتابعة بحساب Google</span>
     </button>
 
-    <div id="authStatus" class="hidden mt-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold"></div>
+    <div id="authStatus" class="hidden mt-4 rounded-2xl px-4 py-3 text-base font-bold"></div>
 
-    <!-- Optional Email Fallback -->
-    <details class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-      <summary id="emailFallbackSummary" class="cursor-pointer text-xs font-bold text-slate-600">
-        أو الدخول / التسجيل بالبريد الإلكتروني
+    <details class="mt-5 rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 py-3">
+      <summary id="emailFallbackSummary" class="flex cursor-pointer items-center text-base font-extrabold text-slate-700">
+        أو الدخول بالبريد الإلكتروني
       </summary>
-      <div class="mt-3 space-y-2.5">
-        <input id="emailName" type="text" placeholder="الاسم الكامل (عند إنشاء حساب جديد)" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900" />
-        <input id="emailInput" type="email" dir="ltr" placeholder="name@example.com" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900" />
-        <input id="passwordInput" type="password" placeholder="كلمة المرور (حرف كبير وصغير ورقم ورمز)" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900" />
-        <div class="grid grid-cols-2 gap-2">
-          <button id="emailSignInBtn" type="button" class="tap-btn rounded-xl bg-slate-900 px-3 py-2.5 text-xs font-bold text-white">دخول</button>
-          <button id="emailSignUpBtn" type="button" class="tap-btn rounded-xl bg-emerald-700 px-3 py-2.5 text-xs font-bold text-white">إنشاء حساب</button>
+      <div class="mt-3 space-y-3">
+        <input id="emailName" type="text" placeholder="الاسم الكامل (عند إنشاء حساب)" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+        <input id="emailInput" type="email" dir="ltr" placeholder="name@example.com" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+        <input id="passwordInput" type="password" placeholder="كلمة المرور" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+        <div class="grid grid-cols-2 gap-3">
+          <button id="emailSignInBtn" type="button" class="tap-btn rounded-2xl bg-slate-900 px-4 py-3 text-lg font-extrabold text-white">دخول</button>
+          <button id="emailSignUpBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-3 text-lg font-extrabold text-white">حساب جديد</button>
         </div>
       </div>
     </details>
   </section>
 
-  <!-- SENIOR VIEW ONLY (Clean 3-Card Layout) -->
-  <section id="seniorView" class="space-y-4">
+  <!-- SENIOR VIEW (High Contrast, Large Text, Big Icons) -->
+  <section id="seniorView" class="space-y-5">
 
-    <!-- Card 1: Daily Safety Check-In -->
-    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <span id="safetyBadge" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800">
-          <span class="h-2 w-2 rounded-full bg-emerald-600"></span>
-          <span id="safetyBadgeText">طبيعي — لا توجد تنبيهات</span>
-        </span>
-        <span id="lastCheckInText" class="text-xs font-semibold text-slate-500">آخر طمأنة: منذ ساعتين</span>
-      </div>
-
-      <h2 id="seniorGreeting" class="mt-3 text-xl font-extrabold text-slate-900">مرحباً بك</h2>
-      <p id="seniorPromptText" class="mt-1 text-sm text-slate-600">اضغط الزر الأخضر لطمأنة عائلتك بأنك بخير اليوم.</p>
-
-      <button id="imOkBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-emerald-700 px-5 py-4 text-lg font-extrabold text-white shadow-md hover:bg-emerald-800">
-        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    <!-- Quick Action Bar: Update Info & Ringtone Settings -->
+    <div class="grid grid-cols-2 gap-3">
+      <button id="openProfileModalBtn" type="button" class="tap-btn flex items-center justify-center gap-2.5 rounded-3xl border-2 border-slate-300 bg-white px-4 py-4 text-lg font-extrabold text-slate-900 shadow-sm hover:bg-slate-50">
+        <svg class="h-7 w-7 shrink-0 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
-        <span id="imOkLabel">أنا بخير — تسجيل الاطمئنان</span>
+        <span id="updateInfoBtnLabel">تحديث بياناتي</span>
       </button>
 
-      <button id="voiceBtn" type="button" class="tap-btn mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 hover:bg-slate-100">
-        <svg class="h-5 w-5 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+      <button id="openRingtoneModalBtn" type="button" class="tap-btn flex items-center justify-center gap-2.5 rounded-3xl border-2 border-slate-300 bg-white px-4 py-4 text-lg font-extrabold text-slate-900 shadow-sm hover:bg-slate-50">
+        <svg class="h-7 w-7 shrink-0 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span id="ringtoneBtnLabel">نغمة التنبيه</span>
+      </button>
+    </div>
+
+    <!-- Card 1: Daily Check-In -->
+    <div class="rounded-3xl border-2 border-emerald-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-base font-extrabold text-emerald-900">
+          <span class="h-3 w-3 rounded-full bg-emerald-600"></span>
+          <span id="safetyBadgeText">الحالة طبيعية</span>
+        </span>
+        <span id="lastCheckInText" class="text-base font-bold text-slate-600">آخر طمأنة: منذ ساعتين</span>
+      </div>
+
+      <h2 id="seniorGreeting" class="mt-4 text-3xl font-black text-slate-900">مرحباً بك</h2>
+      <p id="seniorPromptText" class="mt-1.5 text-lg font-semibold text-slate-700">اضغط الزر الأخضر لتخبر عائلتك أنك بخير.</p>
+
+      <button id="imOkBtn" type="button" class="tap-btn mt-5 flex w-full items-center justify-center gap-3 rounded-3xl bg-emerald-700 px-6 py-5 text-2xl font-black text-white shadow-md hover:bg-emerald-800">
+        <svg class="h-9 w-9 shrink-0" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="imOkLabel">أنا بخير</span>
+      </button>
+
+      <button id="voiceBtn" type="button" class="tap-btn mt-3.5 flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-slate-300 bg-slate-50 px-5 py-4 text-lg font-extrabold text-slate-900 hover:bg-slate-100">
+        <svg class="h-7 w-7 shrink-0 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
         </svg>
         <span id="voiceBtnLabel">استماع للتذكير الصوتي</span>
       </button>
 
-      <div id="checkInFeedback" class="hidden mt-3 rounded-xl bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-800"></div>
+      <div id="checkInFeedback" class="hidden mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900"></div>
     </div>
 
-    <!-- Card 2: Today's Medications -->
-    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="medsHeading" class="text-lg font-extrabold text-slate-900">أدوية اليوم</h3>
-        <button id="openRxModalBtn" type="button" class="tap-btn rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-extrabold text-emerald-800 hover:bg-emerald-100">
-          مسح علبة الدواء
+    <!-- Card 2: Automatic 2-Hour Water Reminder (AI-Powered Voice) -->
+    <div class="rounded-3xl border-2 border-sky-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+            <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.25C12 3.25 6 10.2 6 14.5a6 6 0 1012 0c0-4.3-6-11.25-6-11.25z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="waterHeading" class="text-2xl font-black text-slate-900">شرب الماء</h3>
+            <p id="waterSubheading" class="text-base font-bold text-sky-800">تذكير تلقائي كل ساعتين</p>
+          </div>
+        </div>
+        <span id="waterCountBadge" class="rounded-2xl bg-sky-100 px-4 py-2 text-lg font-black text-sky-900">0 / 8</span>
+      </div>
+
+      <div class="mt-4 h-4 w-full overflow-hidden rounded-full bg-slate-200">
+        <div id="waterProgressBar" class="h-full rounded-full bg-sky-600 transition-all duration-300" style="width: 0%;"></div>
+      </div>
+
+      <p id="waterNextText" class="mt-3 text-base font-bold text-slate-700">التذكير الصوتي التلقائي يعمل كل ساعتين.</p>
+
+      <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <button id="drankWaterBtn" type="button" class="tap-btn flex items-center justify-center gap-2.5 rounded-2xl bg-sky-700 px-5 py-4 text-xl font-black text-white shadow-sm hover:bg-sky-800">
+          <svg class="h-7 w-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          <span id="drankWaterLabel">شربت كأس ماء</span>
+        </button>
+
+        <button id="testWaterAlertBtn" type="button" class="tap-btn flex items-center justify-center gap-2 rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-4 text-lg font-extrabold text-sky-900 hover:bg-sky-100">
+          <svg class="h-7 w-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <span id="testWaterLabel">سماع تذكير الماء</span>
         </button>
       </div>
-      <div id="medsList" class="mt-3 space-y-2.5"></div>
+      <div id="waterAiFeedback" class="hidden mt-3 rounded-2xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-base font-bold text-sky-950"></div>
     </div>
 
-    <!-- Card 3: Upcoming Appointment & Emergency ID -->
-    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="apptsHeading" class="text-lg font-extrabold text-slate-900">الموعد الطبي القادم</h3>
-        <button id="openApptModalBtn" type="button" class="tap-btn rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-100">
-          + إضافة موعد
+    <!-- Card 3: Today's Medications (With Upload Photo & Add/Delete) -->
+    <div class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+            <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a4 4 0 00-5.656 0l-4.244 4.244a4 4 0 01-5.656-5.656l4.244-4.244a4 4 0 015.656 0m5.656 5.656a4 4 0 000-5.656l-4.244-4.244" />
+            </svg>
+          </div>
+          <h3 id="medsHeading" class="text-2xl font-black text-slate-900">أدوية اليوم</h3>
+        </div>
+        <button id="openUploadMedBtn" type="button" class="tap-btn flex items-center gap-2 rounded-2xl bg-emerald-700 px-4 py-3 text-base font-extrabold text-white hover:bg-emerald-800">
+          <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span id="uploadMedBtnLabel">+ إضافة / صورة وصفة</span>
         </button>
       </div>
-      <div id="apptsList" class="mt-3 space-y-2.5"></div>
 
-      <button id="openEmergencyBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-extrabold text-rose-800 hover:bg-rose-100">
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+      <div id="medsList" class="mt-4 space-y-3"></div>
+    </div>
+
+    <!-- Card 4: AI Assistant (Smart Helper for Senior) -->
+    <div class="rounded-3xl border-2 border-violet-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+            <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="aiHeading" class="text-2xl font-black text-slate-900">المساعد الذكي</h3>
+            <p id="aiSubheading" class="text-base font-bold text-slate-600">اسأل عن أدويتك أو صحتك بصوت واضح</p>
+          </div>
+        </div>
+        <button id="openAiConfigBtn" type="button" class="tap-btn rounded-2xl border-2 border-violet-200 bg-violet-50 px-3.5 py-2 text-sm font-extrabold text-violet-900">
+          إعداد AI
+        </button>
+      </div>
+
+      <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+        <input id="aiQuestionInput" type="text" placeholder="اكتب سؤالك هنا (مثال: ما هي أدويتي اليوم؟)" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
+        <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-violet-700 px-6 py-3.5 text-lg font-extrabold text-white hover:bg-violet-800">
+          اسأل
+        </button>
+      </div>
+      <div id="aiAnswerBox" class="hidden mt-4 rounded-2xl border-2 border-violet-200 bg-violet-50 p-4 text-lg font-bold text-slate-900"></div>
+    </div>
+
+    <!-- Card 5: Next Appointment & Emergency Medical Card -->
+    <div class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h3 id="apptsHeading" class="text-2xl font-black text-slate-900">الموعد الطبي القادم</h3>
+        <button id="openApptModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-extrabold text-slate-900 hover:bg-slate-100">
+          + موعد جديد
+        </button>
+      </div>
+      <div id="apptsList" class="mt-4 space-y-3"></div>
+
+      <button id="openEmergencyBtn" type="button" class="tap-btn mt-5 flex w-full items-center justify-center gap-3 rounded-3xl border-2 border-rose-400 bg-rose-50 px-5 py-4 text-xl font-black text-rose-900 hover:bg-rose-100">
+        <svg class="h-8 w-8 shrink-0 text-rose-700" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z" />
         </svg>
         <span id="emergencyBtnLabel">بطاقة الطوارئ الطبية</span>
@@ -179,55 +274,152 @@
   </section>
 </main>
 
-<!-- Modal: Scan Rx Label (Verified against Doctor's Prescription / Pharmacist) -->
-<div id="rxModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-  <div class="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
-    <div class="flex items-center justify-between">
-      <h3 id="rxModalTitle" class="text-base font-extrabold text-slate-900">مسح ومطابقة الوصفة الطبية</h3>
-      <button id="closeRxModalBtn" type="button" class="rounded-xl px-3 py-1.5 text-sm font-bold text-slate-500 hover:bg-slate-100">✕</button>
+<!-- Modal 1: Upload Prescription / Medication Box Image + AI Extract -->
+<div id="uploadMedModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-2">
+      <h3 id="uploadModalTitle" class="text-2xl font-black text-slate-900">إضافة دواء أو صورة وصفة</h3>
+      <button id="closeUploadMedBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
-    <div class="relative mt-3 overflow-hidden rounded-2xl border-2 border-emerald-500 bg-slate-900 p-5 text-center text-white">
-      <div class="scan-line"></div>
-      <p id="rxScanSimText" class="text-sm font-bold text-emerald-300">جاهز لمطابقة الدواء مع وصفة الطبيب</p>
-      <p id="rxScanDetail" class="mt-1 text-xs text-slate-300">Metformin 500 mg — قرص واحد صباحاً بعد الفطور</p>
-      <span id="rxVerifiedBadge" class="mt-2 inline-block rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300">موثّق من الصيدلي</span>
+
+    <div class="mt-4 space-y-3.5">
+      <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-400 bg-emerald-50 p-5 text-center hover:bg-emerald-100">
+        <svg class="h-10 w-10 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span id="uploadPhotoPrompt" class="text-lg font-extrabold text-emerald-950">اضغط لرفع صورة الوصفة الطبية أو علبة الدواء</span>
+        <input id="medImageInput" type="file" accept="image/*" capture="environment" class="hidden" />
+      </label>
+
+      <div id="medImagePreviewWrap" class="hidden space-y-2 rounded-2xl border-2 border-slate-200 bg-slate-50 p-3">
+        <img id="medImagePreview" alt="معاينة الصورة" class="max-h-56 w-full rounded-xl object-contain" />
+        <div class="flex flex-wrap gap-2">
+          <button id="aiAnalyzePhotoBtn" type="button" class="tap-btn flex-1 rounded-2xl bg-violet-700 px-4 py-2.5 text-base font-extrabold text-white">
+            قراءة الصورة بالذكاء الاصطناعي
+          </button>
+          <a id="downloadPreviewLink" download="prescription.jpg" class="tap-btn inline-flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white px-4 py-2.5 text-base font-extrabold text-slate-800">
+            تنزيل الصورة
+          </a>
+        </div>
+        <p id="aiPhotoStatus" class="hidden text-sm font-bold text-violet-900"></p>
+      </div>
+
+      <input id="newMedNameInput" type="text" placeholder="اسم الدواء والجرعة (مثال: ميتفورمين 500 ملغ)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="newMedTimeInput" type="time" value="08:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+
+      <label class="flex items-start gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3.5 text-base font-bold text-amber-950">
+        <input id="rxConfirmCheck" type="checkbox" class="mt-1 h-6 w-6 shrink-0 accent-emerald-700" />
+        <span id="rxConfirmLabel">أؤكد مطابقة الدواء والجرعة مع وصفة الطبيب المعتمدة.</span>
+      </label>
+
+      <button id="saveNewMedBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white disabled:opacity-50" disabled>
+        حفظ الدواء
+      </button>
     </div>
-    <label class="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-950">
-      <input id="rxConfirmCheck" type="checkbox" class="mt-0.5 h-4 w-4 accent-emerald-700" />
-      <span id="rxConfirmLabel">أؤكد مطابقة اسم الدواء والجرعة مع وصفة الطبيب المعتمدة.</span>
-    </label>
-    <button id="rxSaveBtn" type="button" class="tap-btn mt-3 w-full rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-extrabold text-white disabled:opacity-50" disabled>
-      حفظ الدواء في القائمة
-    </button>
   </div>
 </div>
 
-<!-- Modal: Add Appointment -->
-<div id="apptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-  <div class="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
+<!-- Modal 2: Update Senior Profile & Manage Meds -->
+<div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="apptModalTitle" class="text-base font-extrabold text-slate-900">إضافة موعد طبي</h3>
-      <button id="closeApptModalBtn" type="button" class="rounded-xl px-3 py-1.5 text-sm font-bold text-slate-500 hover:bg-slate-100">✕</button>
+      <h3 id="profileModalTitle" class="text-2xl font-black text-slate-900">تحديث بيانات المسن</h3>
+      <button id="closeProfileModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
-    <div class="mt-3 space-y-2.5">
-      <input id="apptDoctorInput" type="text" placeholder="اسم الطبيب أو التخصص (مثال: طبيب القلب)" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
-      <input id="apptDateInput" type="date" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
-      <input id="apptTimeInput" type="time" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
-      <button id="apptSaveBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-extrabold text-white">
+    <div class="mt-4 space-y-3">
+      <input id="profNameInput" type="text" placeholder="الاسم الكامل" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="profBloodInput" type="text" placeholder="فصيلة الدم (مثال: O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="profAllergiesInput" type="text" placeholder="الحساسية (مثال: البنسلين)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="profConditionsInput" type="text" placeholder="الأمراض المزمنة (مثال: السكري، الضغط)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="profEmergencyPhoneInput" type="tel" dir="ltr" placeholder="رقم الطوارئ / العائلة (مثال: +216...)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <button id="saveProfileBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">
+        حفظ البيانات
+      </button>
+      <p id="profileSaveFeedback" class="hidden text-center text-base font-extrabold text-emerald-800"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Strong Ringtone & Phone Sound Selector -->
+<div id="ringtoneModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="ringtoneModalTitle" class="text-2xl font-black text-slate-900">إعداد نغمة التنبيه القوية</h3>
+      <button id="closeRingtoneModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      <label class="block text-base font-extrabold text-slate-800">
+        <span id="ringtonePresetLabel">اختر نوع الرنين:</span>
+        <select id="ringtonePresetSelect" class="mt-1.5 w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg">
+          <option value="loud_phone">رنين هاتف قوي متكرر</option>
+          <option value="urgent_alarm">جرس طبي عالي الوضوح</option>
+          <option value="custom_file">نغمة مخصّصة من هاتفي</option>
+        </select>
+      </label>
+
+      <label class="flex cursor-pointer items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50 p-4 text-center text-lg font-extrabold text-amber-950 hover:bg-amber-100">
+        <span id="pickPhoneRingtoneLabel">اختيار ملف نغمة من الهاتف (MP3 / M4A / WAV)</span>
+        <input id="customRingtoneInput" type="file" accept="audio/*" class="hidden" />
+      </label>
+      <p id="customRingtoneStatus" class="text-sm font-bold text-slate-600"></p>
+
+      <button id="testRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl bg-amber-600 px-5 py-4 text-xl font-black text-white hover:bg-amber-700">
+        تجربة صوت الرنين والاهتزاز الآن
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: AI Key / Settings -->
+<div id="aiConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="aiConfigTitle" class="text-2xl font-black text-slate-900">ربط الذكاء الاصطناعي (Gemini)</h3>
+      <button id="closeAiConfigBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
+    </div>
+    <p id="aiConfigHint" class="mt-2 text-base font-semibold text-slate-600">
+      أدخل مفتاح Gemini API (يُحفظ في جهازك فقط) لتفعيل قراءة صور الوصفات وتوليد تذكيرات الماء الذكية، أو اتركه فارغاً لاستخدام الردود الذكية المدمجة.
+    </p>
+    <div class="mt-4 space-y-3">
+      <input id="geminiKeyInput" type="password" dir="ltr" placeholder="AIza..." class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <button id="saveAiKeyBtn" type="button" class="tap-btn w-full rounded-2xl bg-violet-700 px-5 py-4 text-xl font-black text-white">
+        حفظ في هذا الجهاز
+      </button>
+      <p id="aiKeyFeedback" class="hidden text-center text-base font-extrabold text-violet-900"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: Add Appointment -->
+<div id="apptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
+  <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="apptModalTitle" class="text-2xl font-black text-slate-900">إضافة موعد طبي</h3>
+      <button id="closeApptModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
+    </div>
+    <div class="mt-4 space-y-3">
+      <input id="apptDoctorInput" type="text" placeholder="اسم الطبيب أو التخصص" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="apptDateInput" type="date" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="apptTimeInput" type="time" value="10:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <button id="apptSaveBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">
         حفظ الموعد
       </button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Emergency Medical ID -->
-<div id="emergencyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-  <div class="w-full max-w-md rounded-3xl border-2 border-rose-500 bg-white p-5 shadow-xl">
+<!-- Modal 6: Emergency Medical ID -->
+<div id="emergencyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl border-4 border-rose-600 bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="emModalTitle" class="text-base font-extrabold text-rose-800">بطاقة الطوارئ الطبية</h3>
-      <button id="closeEmergencyBtn" type="button" class="rounded-xl px-3 py-1.5 text-sm font-bold text-slate-500 hover:bg-slate-100">✕</button>
+      <h3 id="emModalTitle" class="text-2xl font-black text-rose-800">بطاقة الطوارئ الطبية</h3>
+      <button id="closeEmergencyBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
-    <div id="emBody" class="mt-3 space-y-2 text-sm text-slate-800"></div>
+    <div id="emBody" class="mt-4 space-y-3 text-lg text-slate-900"></div>
+    <a id="emCallLink" href="tel:190" class="tap-btn mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-700 px-5 py-4 text-xl font-black text-white hover:bg-rose-800">
+      <span id="emCallLabel">اتصال سريع برقم الطوارئ</span>
+    </a>
   </div>
 </div>
 
@@ -240,124 +432,356 @@
   const SUPABASE_URL = 'https://jobzviplbwfdoyrdrblt.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi';
 
-  const state = {
+  const STORAGE_KEY = 'careguard_senior_state_v2';
+  const AI_KEY_STORAGE = 'careguard_local_gemini_key';
+
+  const defaultState = {
     lang: 'ar',
-    user: null,
+    profile: {
+      name: '',
+      bloodType: 'O+',
+      allergies: 'البنسلين',
+      conditions: 'السكري، ضغط الدم',
+      emergencyPhone: ''
+    },
     lastCheckInIso: null,
+    waterCount: 0,
+    waterDate: new Date().toISOString().slice(0, 10),
+    lastWaterReminderAt: Date.now(),
+    ringtonePreset: 'loud_phone',
+    customRingtoneName: '',
     meds: [
-      { id: 'm1', nameAr: 'ميتفورمين 500 ملغ', nameEn: 'Metformin 500 mg', time: '08:00', taken: false },
-      { id: 'm2', nameAr: 'ليسينوبريل 10 ملغ', nameEn: 'Lisinopril 10 mg', time: '13:00', taken: false },
-      { id: 'm3', nameAr: 'أتورفاستاتين 20 ملغ', nameEn: 'Atorvastatin 20 mg', time: '21:00', taken: false }
+      { id: 'm1', nameAr: 'ميتفورمين 500 ملغ', nameEn: 'Metformin 500 mg', time: '08:00', taken: false, imageData: '' },
+      { id: 'm2', nameAr: 'ليسينوبريل 10 ملغ', nameEn: 'Lisinopril 10 mg', time: '13:00', taken: false, imageData: '' },
+      { id: 'm3', nameAr: 'أتورفاستاتين 20 ملغ', nameEn: 'Atorvastatin 20 mg', time: '21:00', taken: false, imageData: '' }
     ],
     appts: [
       { id: 'a1', doctorAr: 'د. سامي بن علي — أمراض القلب', doctorEn: 'Dr. Sami Ben Ali — Cardiology', date: '2026-11-18', time: '10:30' }
     ]
   };
 
+  let state = loadState();
+  let currentUser = null;
+  let pendingImageDataUrl = '';
+  let customAudioDataUrl = '';
+
+  function loadState() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (raw && typeof raw === 'object') {
+        const merged = Object.assign({}, defaultState, raw);
+        merged.profile = Object.assign({}, defaultState.profile, raw.profile || {});
+        const today = new Date().toISOString().slice(0, 10);
+        if (merged.waterDate !== today) {
+          merged.waterDate = today;
+          merged.waterCount = 0;
+        }
+        return merged;
+      }
+    } catch (_) {}
+    return JSON.parse(JSON.stringify(defaultState));
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (_) {}
+  }
+
+  // IndexedDB for storing custom phone ringtone audio file
+  function openRingtoneDb() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error('No IndexedDB'));
+      const req = indexedDB.open('careguard_audio_db', 1);
+      req.onupgradeneeded = () => {
+        if (!req.result.objectStoreNames.contains('sounds')) req.result.createObjectStore('sounds');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function saveCustomRingtone(dataUrl) {
+    customAudioDataUrl = dataUrl;
+    try {
+      const db = await openRingtoneDb();
+      const tx = db.transaction('sounds', 'readwrite');
+      tx.objectStore('sounds').put(dataUrl, 'phone_ringtone');
+    } catch (_) {}
+  }
+
+  async function loadCustomRingtone() {
+    try {
+      const db = await openRingtoneDb();
+      return await new Promise((resolve) => {
+        const tx = db.transaction('sounds', 'readonly');
+        const req = tx.objectStore('sounds').get('phone_ringtone');
+        req.onsuccess = () => resolve(req.result || '');
+        req.onerror = () => resolve('');
+      });
+    } catch (_) { return ''; }
+  }
+
   const T = {
     ar: {
-      title: 'طمأنينة (CareGuard)',
-      subtitle: 'الدواء + المواعيد + الاطمئنان اليومي',
+      title: 'طمأنينة',
+      subtitle: 'الدواء • الماء • الاطمئنان',
       langBtn: 'EN / AR',
-      authHeading: 'تسجيل الدخول أو إنشاء حساب',
-      authSub: 'اختر حسابك في Google للدخول فوراً بلمسة واحدة دون كلمة مرور.',
+      authHeading: 'الدخول السريع',
+      authSub: 'اختر حسابك في Google للدخول بلمسة واحدة.',
       googleBtn: 'المتابعة بحساب Google',
-      emailSummary: 'أو الدخول / التسجيل بالبريد الإلكتروني',
-      namePh: 'الاسم الكامل (عند إنشاء حساب جديد)',
-      passPh: 'كلمة المرور (حرف كبير وصغير ورقم ورمز)',
+      emailSummary: 'أو الدخول بالبريد الإلكتروني',
+      namePh: 'الاسم الكامل (عند إنشاء حساب)',
+      passPh: 'كلمة المرور',
       signInBtn: 'دخول',
-      signUpBtn: 'إنشاء حساب',
-      signOutBtn: 'تسجيل الخروج',
+      signUpBtn: 'حساب جديد',
+      signOutBtn: 'خروج',
+      updateInfoBtn: 'تحديث بياناتي',
+      ringtoneBtn: 'نغمة التنبيه',
       helloPrefix: 'مرحباً، ',
       seniorGreetingDefault: 'مرحباً بك',
-      safetyOk: 'طبيعي — لا توجد تنبيهات',
+      safetyOk: 'الحالة طبيعية',
       lastCheckDefault: 'آخر طمأنة: منذ ساعتين',
       lastCheckJustNow: 'آخر طمأنة: الآن',
-      seniorPrompt: 'اضغط الزر الأخضر لطمأنة عائلتك بأنك بخير اليوم.',
-      imOk: 'أنا بخير — تسجيل الاطمئنان',
+      seniorPrompt: 'اضغط الزر الأخضر لتخبر عائلتك أنك بخير.',
+      imOk: 'أنا بخير',
       voiceBtn: 'استماع للتذكير الصوتي',
+      waterHeading: 'شرب الماء',
+      waterSub: 'تذكير تلقائي كل ساعتين',
+      drankWater: 'شربت كأس ماء',
+      testWater: 'سماع تذكير الماء',
+      waterNextPrefix: 'الكأس القادم بعد: ',
       medsHeading: 'أدوية اليوم',
-      scanRx: 'مسح علبة الدواء',
+      uploadMedBtn: '+ إضافة / صورة وصفة',
       taken: 'تم الأخذ ✓',
       markTaken: 'أخذت الدواء',
+      deleteMed: 'حذف',
+      viewImg: 'عرض/تنزيل الصورة',
+      aiHeading: 'المساعد الذكي',
+      aiSub: 'اسأل عن أدويتك أو صحتك بصوت واضح',
+      aiConfigBtn: 'إعداد AI',
+      aiInputPh: 'اكتب سؤالك هنا (مثال: ما هي أدويتي اليوم؟)',
+      askBtn: 'اسأل',
       apptsHeading: 'الموعد الطبي القادم',
-      addAppt: '+ إضافة موعد',
+      addAppt: '+ موعد جديد',
       emergencyBtn: 'بطاقة الطوارئ الطبية',
-      rxTitle: 'مسح ومطابقة الوصفة الطبية',
-      rxSim: 'جاهز لمطابقة الدواء مع وصفة الطبيب',
-      rxVerified: 'موثّق من الصيدلي',
-      rxConfirm: 'أؤكد مطابقة اسم الدواء والجرعة مع وصفة الطبيب المعتمدة.',
-      rxSave: 'حفظ الدواء في القائمة',
-      apptTitle: 'إضافة موعد طبي',
-      apptDocPh: 'اسم الطبيب أو التخصص (مثال: طبيب القلب)',
+      uploadModalTitle: 'إضافة دواء أو صورة وصفة',
+      uploadPhotoPrompt: 'اضغط لرفع صورة الوصفة الطبية أو علبة الدواء',
+      aiAnalyzePhoto: 'قراءة الصورة بالذكاء الاصطناعي',
+      downloadImg: 'تنزيل الصورة',
+      newMedNamePh: 'اسم الدواء والجرعة (مثال: ميتفورمين 500 ملغ)',
+      rxConfirm: 'أؤكد مطابقة الدواء والجرعة مع وصفة الطبيب المعتمدة.',
+      saveNewMed: 'حفظ الدواء',
+      profileModalTitle: 'تحديث بيانات المسن',
+      saveProfile: 'حفظ البيانات',
+      ringtoneModalTitle: 'إعداد نغمة التنبيه القوية',
+      ringtonePresetLabel: 'اختر نوع الرنين:',
+      pickPhoneRingtone: 'اختيار ملف نغمة من الهاتف (MP3 / M4A / WAV)',
+      testRingtone: 'تجربة صوت الرنين والاهتزاز الآن',
+      aiConfigTitle: 'ربط الذكاء الاصطناعي (Gemini)',
+      saveAiKey: 'حفظ في هذا الجهاز',
+      apptModalTitle: 'إضافة موعد طبي',
+      apptDocPh: 'اسم الطبيب أو التخصص',
       apptSave: 'حفظ الموعد',
-      emTitle: 'بطاقة الطوارئ الطبية',
+      emModalTitle: 'بطاقة الطوارئ الطبية',
+      emCall: 'اتصال سريع برقم الطوارئ',
       checkInDone: 'تم تسجيل أنك بخير بنجاح!',
       checkInSavedCloud: 'تم تسجيل أنك بخير وحفظه في حسابك بنجاح!',
-      voiceSpeak: 'مرحباً، تذكير طمأنينة: حان موعد دوائك، واضغط زر أنا بخير لطمأنة عائلتك.',
-      googleConnecting: 'جارٍ فتح نافذة اختيار حساب Google...',
-      googleError: 'تعذر فتح دخول Google: ',
-      emailRequired: 'أدخل البريد الإلكتروني وكلمة المرور.',
-      signupCheckEmail: 'تم إنشاء الحساب! افتح بريدك لتأكيد الحساب ثم سجّل الدخول.',
-      signedInOk: 'تم تسجيل الدخول بنجاح!'
+      voiceSpeak: 'مرحباً، تذكير من طمأنينة: حان موعد دوائك، ولا تنس الضغط على زر أنا بخير.',
+      googleNotEnabled: 'مزوّد Google غير مفعّل بعد في لوحة Supabase (Authentication -> Providers -> Google). يمكنك الدخول بالبريد الإلكتروني مؤقتاً.'
     },
     en: {
       title: 'CareGuard',
-      subtitle: 'Meds + Appointments + Daily Check-In',
+      subtitle: 'Meds • Water • Daily Check-In',
       langBtn: 'AR / EN',
-      authHeading: 'Sign in or create an account',
-      authSub: 'Choose your Google account to sign in with one tap — no password needed.',
+      authHeading: 'Quick Sign In',
+      authSub: 'Choose your Google account to sign in with one tap.',
       googleBtn: 'Continue with Google',
-      emailSummary: 'Or sign in / sign up with Email',
+      emailSummary: 'Or sign in with Email',
       namePh: 'Full name (for new account)',
-      passPh: 'Password (upper, lower, number & symbol)',
+      passPh: 'Password',
       signInBtn: 'Sign in',
-      signUpBtn: 'Create account',
+      signUpBtn: 'New account',
       signOutBtn: 'Sign out',
+      updateInfoBtn: 'Update My Info',
+      ringtoneBtn: 'Alert Ringtone',
       helloPrefix: 'Hello, ',
       seniorGreetingDefault: 'Welcome',
-      safetyOk: 'All Clear — No Alerts',
+      safetyOk: 'All Clear',
       lastCheckDefault: 'Last check-in: 2 hours ago',
       lastCheckJustNow: 'Last check-in: Just now',
-      seniorPrompt: 'Tap the green button to let your family know you are OK today.',
-      imOk: "I'm OK — Daily Check-In",
+      seniorPrompt: 'Tap the green button to let your family know you are OK.',
+      imOk: "I'm OK",
       voiceBtn: 'Listen to Voice Reminder',
+      waterHeading: 'Drink Water',
+      waterSub: 'Auto voice reminder every 2 hours',
+      drankWater: 'I Drank a Glass',
+      testWater: 'Hear Water Reminder',
+      waterNextPrefix: 'Next glass reminder in: ',
       medsHeading: "Today's Medications",
-      scanRx: 'Scan Rx Label',
+      uploadMedBtn: '+ Add / Rx Photo',
       taken: 'Taken ✓',
       markTaken: 'Mark Taken',
+      deleteMed: 'Delete',
+      viewImg: 'View / Download Photo',
+      aiHeading: 'AI Assistant',
+      aiSub: 'Ask about your meds or water schedule',
+      aiConfigBtn: 'AI Setup',
+      aiInputPh: 'Ask a question (e.g. What are my meds today?)',
+      askBtn: 'Ask',
       apptsHeading: 'Next Medical Appointment',
-      addAppt: '+ Add Appointment',
+      addAppt: '+ Add',
       emergencyBtn: 'Emergency Medical ID',
-      rxTitle: 'Scan & Verify Prescription',
-      rxSim: 'Ready to verify against doctor prescription',
-      rxVerified: 'Verified by Pharmacist',
-      rxConfirm: "I confirm the medication name and dose match my doctor's prescription.",
-      rxSave: 'Save Medication',
-      apptTitle: 'Add Medical Appointment',
-      apptDocPh: 'Doctor name or specialty (e.g. Cardiology)',
+      uploadModalTitle: 'Add Medication or Rx Photo',
+      uploadPhotoPrompt: 'Tap to upload doctor prescription or pillbox photo',
+      aiAnalyzePhoto: 'Read Photo with AI',
+      downloadImg: 'Download Photo',
+      newMedNamePh: 'Medication name & dose (e.g. Metformin 500 mg)',
+      rxConfirm: "I confirm the medication and dose match my doctor's prescription.",
+      saveNewMed: 'Save Medication',
+      profileModalTitle: 'Update Senior Information',
+      saveProfile: 'Save Information',
+      ringtoneModalTitle: 'Loud Alert & Phone Ringtone',
+      ringtonePresetLabel: 'Choose ringtone style:',
+      pickPhoneRingtone: 'Pick ringtone file from phone (MP3 / M4A / WAV)',
+      testRingtone: 'Test Loud Ringtone & Vibration Now',
+      aiConfigTitle: 'Connect AI (Gemini)',
+      saveAiKey: 'Save on This Device',
+      apptModalTitle: 'Add Medical Appointment',
+      apptDocPh: 'Doctor name or specialty',
       apptSave: 'Save Appointment',
-      emTitle: 'Emergency Medical ID',
+      emModalTitle: 'Emergency Medical ID',
+      emCall: 'Quick Call Emergency Number',
       checkInDone: 'Check-in recorded!',
       checkInSavedCloud: 'Check-in recorded and synced to your account!',
       voiceSpeak: 'Hello from CareGuard. Reminder to take your medication and tap I am OK.',
-      googleConnecting: 'Opening Google account chooser...',
-      googleError: 'Google sign-in failed: ',
-      emailRequired: 'Please enter both email and password.',
-      signupCheckEmail: 'Account created! Check your email to confirm, then sign in.',
-      signedInOk: 'Signed in successfully!'
+      googleNotEnabled: 'Google provider is not enabled yet in Supabase (Authentication -> Providers -> Google). You can use Email sign-in for now.'
     }
   };
 
-  function tr(key) { return T[state.lang][key]; }
+  function tr(k) { return T[state.lang][k]; }
 
   function showAuthMsg(msg, kind) {
     const el = $('authStatus');
     el.textContent = msg;
-    el.className = 'mt-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold';
-    if (kind === 'error') el.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
-    else if (kind === 'success') el.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
-    else el.classList.add('bg-sky-50', 'text-sky-800', 'border', 'border-sky-200');
+    el.className = 'mt-4 rounded-2xl px-4 py-3 text-base font-bold';
+    if (kind === 'error') el.classList.add('bg-rose-50', 'text-rose-900', 'border-2', 'border-rose-300');
+    else if (kind === 'success') el.classList.add('bg-emerald-50', 'text-emerald-900', 'border-2', 'border-emerald-300');
+    else el.classList.add('bg-sky-50', 'text-sky-900', 'border-2', 'border-sky-300');
+  }
+
+  // Strong Loud Ringtone + Vibration
+  function playStrongRingtone() {
+    if (navigator.vibrate) {
+      try { navigator.vibrate([500, 200, 500, 200, 700]); } catch (_) {}
+    }
+    if (state.ringtonePreset === 'custom_file' && customAudioDataUrl) {
+      try {
+        const audio = new Audio(customAudioDataUrl);
+        audio.volume = 1.0;
+        audio.play().catch(() => playSynthRing('loud_phone'));
+        return;
+      } catch (_) {}
+    }
+    playSynthRing(state.ringtonePreset);
+  }
+
+  function playSynthRing(mode) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const bursts = mode === 'urgent_alarm' ? 4 : 3;
+      for (let i = 0; i < bursts; i++) {
+        const t = now + i * 0.42;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc1.type = mode === 'urgent_alarm' ? 'square' : 'triangle';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(mode === 'urgent_alarm' ? 880 : 660, t);
+        osc2.frequency.setValueAtTime(mode === 'urgent_alarm' ? 1175 : 880, t);
+        gain.gain.setValueAtTime(0.32, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.34);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+        osc1.start(t);
+        osc2.start(t);
+        osc1.stop(t + 0.35);
+        osc2.stop(t + 0.35);
+      }
+    } catch (_) {}
+  }
+
+  function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
+    u.rate = 0.92;
+    u.volume = 1.0;
+    window.speechSynthesis.speak(u);
+  }
+
+  // Gemini AI Helper (Optional local key; falls back to smart built-in assistant)
+  async function callGeminiText(prompt, imageBase64, mimeType) {
+    const key = localStorage.getItem(AI_KEY_STORAGE) || '';
+    if (!key) return null;
+    const parts = [{ text: prompt }];
+    if (imageBase64) {
+      parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: imageBase64 } });
+    }
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts }] })
+      }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+
+  async function triggerWaterReminder(manualTest) {
+    playStrongRingtone();
+    const remaining = Math.max(0, 8 - state.waterCount);
+    const name = state.profile.name || (state.lang === 'ar' ? 'والدي العزيز' : 'friend');
+    let msg = state.lang === 'ar'
+      ? `مرحباً ${name}، حان وقت شرب كأس ماء الآن. شربت اليوم ${state.waterCount} من 8 أكواب.`
+      : `Hello ${name}, time to drink a glass of water now. You have had ${state.waterCount} of 8 glasses today.`;
+
+    try {
+      const aiPrompt = state.lang === 'ar'
+        ? `اكتب تذكيراً صوتياً لطيفاً وقصيراً جداً (جملتان فقط) لمسن اسمه "${name}" لشرب كأس ماء الآن. شرب اليوم ${state.waterCount} أكواب وبقي له ${remaining}.`
+        : `Write a warm, very short 2-sentence voice reminder for an older adult named "${name}" to drink a glass of water now. They drank ${state.waterCount} of 8 glasses today.`;
+      const aiReply = await callGeminiText(aiPrompt);
+      if (aiReply && aiReply.trim()) msg = aiReply.trim();
+    } catch (_) {}
+
+    const fb = $('waterAiFeedback');
+    fb.textContent = msg;
+    fb.classList.remove('hidden');
+    setTimeout(() => speakText(msg), 900);
+    if (!manualTest) {
+      state.lastWaterReminderAt = Date.now();
+      saveState();
+    }
+  }
+
+  function renderWater() {
+    $('waterCountBadge').textContent = state.waterCount + ' / 8';
+    const pct = Math.min(100, Math.round((state.waterCount / 8) * 100));
+    $('waterProgressBar').style.width = pct + '%';
+    const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
+    const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
+    const hrs = Math.floor(remMin / 60);
+    const mins = remMin % 60;
+    const timeStr = hrs > 0
+      ? (state.lang === 'ar' ? `${hrs} س و ${mins} د` : `${hrs}h ${mins}m`)
+      : (state.lang === 'ar' ? `${mins} دقيقة` : `${mins} min`);
+    $('waterNextText').textContent = tr('waterNextPrefix') + timeStr;
   }
 
   function renderMeds() {
@@ -365,28 +789,64 @@
     box.replaceChildren();
     state.meds.forEach((m) => {
       const row = document.createElement('div');
-      row.className = 'flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3';
+      row.className = 'rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 space-y-3';
+
+      const top = document.createElement('div');
+      top.className = 'flex flex-wrap items-center justify-between gap-2';
       const info = document.createElement('div');
       const title = document.createElement('p');
-      title.className = 'text-sm font-extrabold text-slate-900';
+      title.className = 'text-xl font-black text-slate-900';
       title.textContent = state.lang === 'ar' ? m.nameAr : m.nameEn;
       const time = document.createElement('p');
-      time.className = 'text-xs font-semibold text-slate-500';
+      time.className = 'text-base font-bold text-slate-600';
       time.textContent = m.time;
       info.append(title, time);
 
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = m.taken
-        ? 'tap-btn rounded-xl bg-emerald-700 px-3.5 py-2 text-xs font-extrabold text-white'
-        : 'tap-btn rounded-xl border border-emerald-300 bg-white px-3.5 py-2 text-xs font-extrabold text-emerald-800 hover:bg-emerald-50';
-      btn.textContent = m.taken ? tr('taken') : tr('markTaken');
-      btn.addEventListener('click', () => {
+      const actions = document.createElement('div');
+      actions.className = 'flex flex-wrap items-center gap-2';
+
+      const takeBtn = document.createElement('button');
+      takeBtn.type = 'button';
+      takeBtn.className = m.taken
+        ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2.5 text-base font-extrabold text-white'
+        : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2.5 text-base font-extrabold text-emerald-900 hover:bg-emerald-50';
+      takeBtn.textContent = m.taken ? tr('taken') : tr('markTaken');
+      takeBtn.addEventListener('click', () => {
         m.taken = !m.taken;
+        saveState();
         renderMeds();
       });
 
-      row.append(info, btn);
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2.5 text-base font-extrabold text-rose-700 hover:bg-rose-50';
+      delBtn.textContent = tr('deleteMed');
+      delBtn.addEventListener('click', () => {
+        state.meds = state.meds.filter((x) => x.id !== m.id);
+        saveState();
+        renderMeds();
+      });
+
+      actions.append(takeBtn, delBtn);
+      top.append(info, actions);
+      row.appendChild(top);
+
+      if (m.imageData) {
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-2.5';
+        const thumb = document.createElement('img');
+        thumb.src = m.imageData;
+        thumb.alt = title.textContent;
+        thumb.className = 'h-16 w-16 rounded-xl object-cover';
+        const dl = document.createElement('a');
+        dl.href = m.imageData;
+        dl.download = (m.nameEn || 'prescription') + '.jpg';
+        dl.className = 'tap-btn rounded-xl bg-slate-100 px-3.5 py-2 text-sm font-extrabold text-slate-800 hover:bg-slate-200';
+        dl.textContent = tr('viewImg');
+        imgWrap.append(thumb, dl);
+        row.appendChild(imgWrap);
+      }
+
       box.appendChild(row);
     });
   }
@@ -396,14 +856,27 @@
     box.replaceChildren();
     state.appts.forEach((a) => {
       const row = document.createElement('div');
-      row.className = 'rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3';
+      row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 border-slate-200 bg-slate-50 p-4';
+      const info = document.createElement('div');
       const doc = document.createElement('p');
-      doc.className = 'text-sm font-extrabold text-slate-900';
+      doc.className = 'text-lg font-black text-slate-900';
       doc.textContent = state.lang === 'ar' ? a.doctorAr : a.doctorEn;
       const dt = document.createElement('p');
-      dt.className = 'mt-0.5 text-xs font-semibold text-slate-600';
+      dt.className = 'text-base font-bold text-slate-600';
       dt.textContent = a.date + ' • ' + a.time;
-      row.append(doc, dt);
+      info.append(doc, dt);
+
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2 text-base font-extrabold text-rose-700';
+      delBtn.textContent = tr('deleteMed');
+      delBtn.addEventListener('click', () => {
+        state.appts = state.appts.filter((x) => x.id !== a.id);
+        saveState();
+        renderAppts();
+      });
+
+      row.append(info, delBtn);
       box.appendChild(row);
     });
   }
@@ -411,32 +884,44 @@
   function renderEmergency() {
     const body = $('emBody');
     body.replaceChildren();
-    const displayName = (state.user && (state.user.user_metadata?.full_name || state.user.user_metadata?.display_name || state.user.email)) || (state.lang === 'ar' ? 'المسن' : 'Senior');
+    const displayName = state.profile.name
+      || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email))
+      || (state.lang === 'ar' ? 'المسن' : 'Senior');
+    const medNames = state.meds.map((m) => (state.lang === 'ar' ? m.nameAr : m.nameEn)).join(' • ') || '-';
     const items = state.lang === 'ar'
       ? [
           ['الاسم:', displayName],
-          ['فصيلة الدم:', 'O+'],
-          ['الحساسية:', 'البنسلين'],
-          ['الأمراض المزمنة:', 'السكري • ضغط الدم']
+          ['فصيلة الدم:', state.profile.bloodType || '-'],
+          ['الحساسية:', state.profile.allergies || '-'],
+          ['الأمراض المزمنة:', state.profile.conditions || '-'],
+          ['الأدوية الحالية:', medNames],
+          ['هاتف الطوارئ:', state.profile.emergencyPhone || '190']
         ]
       : [
           ['Name:', displayName],
-          ['Blood Type:', 'O+'],
-          ['Allergies:', 'Penicillin'],
-          ['Conditions:', 'Diabetes • Hypertension']
+          ['Blood Type:', state.profile.bloodType || '-'],
+          ['Allergies:', state.profile.allergies || '-'],
+          ['Conditions:', state.profile.conditions || '-'],
+          ['Medications:', medNames],
+          ['Emergency Phone:', state.profile.emergencyPhone || '911']
         ];
+
     items.forEach(([k, v]) => {
       const line = document.createElement('div');
-      line.className = 'flex justify-between gap-2 rounded-xl bg-rose-50/60 px-3 py-2';
+      line.className = 'flex flex-wrap justify-between gap-2 rounded-2xl bg-rose-50 px-4 py-3';
       const sk = document.createElement('span');
-      sk.className = 'font-bold text-rose-900';
+      sk.className = 'font-black text-rose-900';
       sk.textContent = k;
       const sv = document.createElement('span');
-      sv.className = 'font-semibold text-slate-800';
+      sv.className = 'font-bold text-slate-900';
       sv.textContent = v;
       line.append(sk, sv);
       body.appendChild(line);
     });
+
+    const tel = (state.profile.emergencyPhone || (state.lang === 'ar' ? '190' : '911')).replace(/\s+/g, '');
+    $('emCallLink').href = 'tel:' + tel;
+    $('emCallLabel').textContent = tr('emCall') + ' (' + tel + ')';
   }
 
   function applyLang() {
@@ -455,29 +940,53 @@
     $('emailSignInBtn').textContent = tr('signInBtn');
     $('emailSignUpBtn').textContent = tr('signUpBtn');
     $('signOutBtn').textContent = tr('signOutBtn');
+    $('updateInfoBtnLabel').textContent = tr('updateInfoBtn');
+    $('ringtoneBtnLabel').textContent = tr('ringtoneBtn');
     $('safetyBadgeText').textContent = tr('safetyOk');
     $('lastCheckInText').textContent = state.lastCheckInIso ? tr('lastCheckJustNow') : tr('lastCheckDefault');
     $('seniorPromptText').textContent = tr('seniorPrompt');
     $('imOkLabel').textContent = tr('imOk');
     $('voiceBtnLabel').textContent = tr('voiceBtn');
+    $('waterHeading').textContent = tr('waterHeading');
+    $('waterSubheading').textContent = tr('waterSub');
+    $('drankWaterLabel').textContent = tr('drankWater');
+    $('testWaterLabel').textContent = tr('testWater');
     $('medsHeading').textContent = tr('medsHeading');
-    $('openRxModalBtn').textContent = tr('scanRx');
+    $('uploadMedBtnLabel').textContent = tr('uploadMedBtn');
+    $('aiHeading').textContent = tr('aiHeading');
+    $('aiSubheading').textContent = tr('aiSub');
+    $('openAiConfigBtn').textContent = tr('aiConfigBtn');
+    $('aiQuestionInput').placeholder = tr('aiInputPh');
+    $('askAiBtn').textContent = tr('askBtn');
     $('apptsHeading').textContent = tr('apptsHeading');
     $('openApptModalBtn').textContent = tr('addAppt');
     $('emergencyBtnLabel').textContent = tr('emergencyBtn');
-    $('rxModalTitle').textContent = tr('rxTitle');
-    $('rxScanSimText').textContent = tr('rxSim');
-    $('rxVerifiedBadge').textContent = tr('rxVerified');
+    $('uploadModalTitle').textContent = tr('uploadModalTitle');
+    $('uploadPhotoPrompt').textContent = tr('uploadPhotoPrompt');
+    $('aiAnalyzePhotoBtn').textContent = tr('aiAnalyzePhoto');
+    $('downloadPreviewLink').textContent = tr('downloadImg');
+    $('newMedNameInput').placeholder = tr('newMedNamePh');
     $('rxConfirmLabel').textContent = tr('rxConfirm');
-    $('rxSaveBtn').textContent = tr('rxSave');
-    $('apptModalTitle').textContent = tr('apptTitle');
+    $('saveNewMedBtn').textContent = tr('saveNewMed');
+    $('profileModalTitle').textContent = tr('profileModalTitle');
+    $('saveProfileBtn').textContent = tr('saveProfile');
+    $('ringtoneModalTitle').textContent = tr('ringtoneModalTitle');
+    $('ringtonePresetLabel').textContent = tr('ringtonePresetLabel');
+    $('pickPhoneRingtoneLabel').textContent = tr('pickPhoneRingtone');
+    $('testRingtoneBtn').textContent = tr('testRingtone');
+    $('aiConfigTitle').textContent = tr('aiConfigTitle');
+    $('saveAiKeyBtn').textContent = tr('saveAiKey');
+    $('apptModalTitle').textContent = tr('apptModalTitle');
     $('apptDoctorInput').placeholder = tr('apptDocPh');
     $('apptSaveBtn').textContent = tr('apptSave');
-    $('emModalTitle').textContent = tr('emTitle');
+    $('emModalTitle').textContent = tr('emModalTitle');
 
-    const name = state.user && (state.user.user_metadata?.full_name || state.user.user_metadata?.display_name || state.user.email);
+    const name = state.profile.name
+      || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
     $('seniorGreeting').textContent = name ? (tr('helloPrefix') + name) : tr('seniorGreetingDefault');
     $('signedInGreeting').textContent = name ? (tr('helloPrefix') + name) : tr('seniorGreetingDefault');
+
+    renderWater();
     renderMeds();
     renderAppts();
     renderEmergency();
@@ -485,68 +994,223 @@
 
   $('langToggle').addEventListener('click', () => {
     state.lang = state.lang === 'ar' ? 'en' : 'ar';
+    saveState();
     applyLang();
   });
 
-  // Voice Chime + Speech
-  function playChime() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.18);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.42);
-    } catch (_) {}
-  }
-
+  // Voice Reminder
   $('voiceBtn').addEventListener('click', () => {
-    playChime();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(tr('voiceSpeak'));
-      u.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
-      window.speechSynthesis.speak(u);
+    playStrongRingtone();
+    setTimeout(() => speakText(tr('voiceSpeak')), 900);
+  });
+
+  // Water Tracker & Automatic 2-Hour Timer
+  $('drankWaterBtn').addEventListener('click', () => {
+    state.waterCount = Math.min(8, state.waterCount + 1);
+    state.lastWaterReminderAt = Date.now();
+    saveState();
+    renderWater();
+    const fb = $('waterAiFeedback');
+    fb.textContent = state.lang === 'ar'
+      ? `أحسنت! سجّلت الكأس رقم ${state.waterCount} من 8.`
+      : `Great job! Recorded glass ${state.waterCount} of 8.`;
+    fb.classList.remove('hidden');
+  });
+
+  $('testWaterAlertBtn').addEventListener('click', () => triggerWaterReminder(true));
+
+  setInterval(() => {
+    const nowHour = new Date().getHours();
+    const twoHoursMs = 2 * 60 * 60 * 1000;
+    if (nowHour >= 7 && nowHour <= 22 && Date.now() - (state.lastWaterReminderAt || 0) >= twoHoursMs) {
+      triggerWaterReminder(false);
+    }
+    renderWater();
+  }, 60000);
+
+  // Upload Prescription / Medication Box Image Modal
+  $('openUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.remove('hidden'));
+  $('closeUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.add('hidden'));
+  $('rxConfirmCheck').addEventListener('change', (e) => { $('saveNewMedBtn').disabled = !e.target.checked; });
+
+  $('medImageInput').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      pendingImageDataUrl = String(reader.result || '');
+      $('medImagePreview').src = pendingImageDataUrl;
+      $('downloadPreviewLink').href = pendingImageDataUrl;
+      $('medImagePreviewWrap').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('aiAnalyzePhotoBtn').addEventListener('click', async () => {
+    const st = $('aiPhotoStatus');
+    st.classList.remove('hidden');
+    if (!pendingImageDataUrl) return;
+    const key = localStorage.getItem(AI_KEY_STORAGE) || '';
+    if (!key) {
+      st.textContent = state.lang === 'ar'
+        ? 'لتفعيل قراءة الصورة بالذكاء الاصطناعي، أضف مفتاح Gemini من زر «إعداد AI»، أو اكتب اسم الدواء يدوياً بالأسفل.'
+        : 'To read photos with AI, add your Gemini API key in AI Setup, or type the medication name below.';
+      return;
+    }
+    st.textContent = state.lang === 'ar' ? 'جارٍ قراءة الصورة بالذكاء الاصطناعي...' : 'Analyzing photo with AI...';
+    try {
+      const b64 = pendingImageDataUrl.split(',')[1] || '';
+      const mime = (pendingImageDataUrl.match(/^data:([^;]+);/) || [])[1] || 'image/jpeg';
+      const prompt = state.lang === 'ar'
+        ? 'اقرأ اسم الدواء والجرعة من هذه الصورة وأجب بسطر واحد مختصر فقط لكتابته في خانة اسم الدواء.'
+        : 'Read the medication name and dose from this photo and reply with one short line only.';
+      const ans = await callGeminiText(prompt, b64, mime);
+      if (ans) {
+        $('newMedNameInput').value = ans.trim();
+        st.textContent = state.lang === 'ar' ? 'تم استخراج الدواء! تأكد منه أمام وصفة الطبيب ثم احفظ.' : 'Extracted! Confirm against your prescription and save.';
+      }
+    } catch (err) {
+      st.textContent = (state.lang === 'ar' ? 'تعذر التحليل: ' : 'Analysis failed: ') + (err.message || 'Error');
     }
   });
 
-  // Modals
-  $('openRxModalBtn').addEventListener('click', () => $('rxModal').classList.remove('hidden'));
-  $('closeRxModalBtn').addEventListener('click', () => $('rxModal').classList.add('hidden'));
-  $('rxConfirmCheck').addEventListener('change', (e) => { $('rxSaveBtn').disabled = !e.target.checked; });
-  $('rxSaveBtn').addEventListener('click', () => {
+  $('saveNewMedBtn').addEventListener('click', () => {
+    const name = $('newMedNameInput').value.trim();
+    const time = $('newMedTimeInput').value || '08:00';
+    if (!name) return;
     state.meds.push({
       id: 'm' + Date.now(),
-      nameAr: 'ميتفورمين 500 ملغ (موثّق)',
-      nameEn: 'Metformin 500 mg (Verified)',
-      time: '09:00',
-      taken: false
+      nameAr: name,
+      nameEn: name,
+      time,
+      taken: false,
+      imageData: pendingImageDataUrl || ''
     });
+    saveState();
     renderMeds();
+    pendingImageDataUrl = '';
+    $('newMedNameInput').value = '';
+    $('medImagePreviewWrap').classList.add('hidden');
     $('rxConfirmCheck').checked = false;
-    $('rxSaveBtn').disabled = true;
-    $('rxModal').classList.add('hidden');
+    $('saveNewMedBtn').disabled = true;
+    $('uploadMedModal').classList.add('hidden');
   });
 
+  // Update Senior Profile Modal
+  $('openProfileModalBtn').addEventListener('click', () => {
+    $('profNameInput').value = state.profile.name || '';
+    $('profBloodInput').value = state.profile.bloodType || '';
+    $('profAllergiesInput').value = state.profile.allergies || '';
+    $('profConditionsInput').value = state.profile.conditions || '';
+    $('profEmergencyPhoneInput').value = state.profile.emergencyPhone || '';
+    $('profileSaveFeedback').classList.add('hidden');
+    $('profileModal').classList.remove('hidden');
+  });
+  $('closeProfileModalBtn').addEventListener('click', () => $('profileModal').classList.add('hidden'));
+  $('saveProfileBtn').addEventListener('click', async () => {
+    state.profile.name = $('profNameInput').value.trim();
+    state.profile.bloodType = $('profBloodInput').value.trim();
+    state.profile.allergies = $('profAllergiesInput').value.trim();
+    state.profile.conditions = $('profConditionsInput').value.trim();
+    state.profile.emergencyPhone = $('profEmergencyPhoneInput').value.trim();
+    saveState();
+    applyLang();
+    if (client && currentUser && state.profile.name) {
+      try {
+        await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' });
+      } catch (_) {}
+    }
+    const fb = $('profileSaveFeedback');
+    fb.textContent = state.lang === 'ar' ? 'تم حفظ البيانات بنجاح!' : 'Information saved!';
+    fb.classList.remove('hidden');
+    setTimeout(() => $('profileModal').classList.add('hidden'), 700);
+  });
+
+  // Ringtone Settings Modal
+  $('openRingtoneModalBtn').addEventListener('click', () => {
+    $('ringtonePresetSelect').value = state.ringtonePreset || 'loud_phone';
+    $('customRingtoneStatus').textContent = state.customRingtoneName
+      ? ((state.lang === 'ar' ? 'النغمة المحفوظة: ' : 'Saved ringtone: ') + state.customRingtoneName)
+      : '';
+    $('ringtoneModal').classList.remove('hidden');
+  });
+  $('closeRingtoneModalBtn').addEventListener('click', () => $('ringtoneModal').classList.add('hidden'));
+  $('ringtonePresetSelect').addEventListener('change', (e) => {
+    state.ringtonePreset = e.target.value;
+    saveState();
+  });
+  $('customRingtoneInput').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      await saveCustomRingtone(String(reader.result || ''));
+      state.ringtonePreset = 'custom_file';
+      state.customRingtoneName = file.name;
+      $('ringtonePresetSelect').value = 'custom_file';
+      $('customRingtoneStatus').textContent = (state.lang === 'ar' ? 'تم حفظ النغمة: ' : 'Saved: ') + file.name;
+      saveState();
+    };
+    reader.readAsDataURL(file);
+  });
+  $('testRingtoneBtn').addEventListener('click', playStrongRingtone);
+
+  // AI Assistant & Config
+  $('openAiConfigBtn').addEventListener('click', () => {
+    $('geminiKeyInput').value = localStorage.getItem(AI_KEY_STORAGE) || '';
+    $('aiKeyFeedback').classList.add('hidden');
+    $('aiConfigModal').classList.remove('hidden');
+  });
+  $('closeAiConfigBtn').addEventListener('click', () => $('aiConfigModal').classList.add('hidden'));
+  $('saveAiKeyBtn').addEventListener('click', () => {
+    localStorage.setItem(AI_KEY_STORAGE, $('geminiKeyInput').value.trim());
+    const fb = $('aiKeyFeedback');
+    fb.textContent = state.lang === 'ar' ? 'تم الحفظ على هذا الجهاز!' : 'Saved on this device!';
+    fb.classList.remove('hidden');
+    setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
+  });
+
+  $('askAiBtn').addEventListener('click', async () => {
+    const q = $('aiQuestionInput').value.trim();
+    if (!q) return;
+    const box = $('aiAnswerBox');
+    box.classList.remove('hidden');
+    box.textContent = state.lang === 'ar' ? 'جارٍ التفكير...' : 'Thinking...';
+
+    const medsSummary = state.meds.map((m) => `${state.lang === 'ar' ? m.nameAr : m.nameEn} (${m.time})`).join(', ');
+    let reply = '';
+    try {
+      const prompt = state.lang === 'ar'
+        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. أجب ببساطة ووضوح في 3 أسطر كحد أقصى. أدوية اليوم: ${medsSummary}. أكواب الماء اليوم: ${state.waterCount}/8. السؤال: ${q}`
+        : `You are a gentle senior-care assistant in CareGuard. Answer simply in max 3 lines. Today's meds: ${medsSummary}. Water today: ${state.waterCount}/8. Question: ${q}`;
+      reply = (await callGeminiText(prompt)) || '';
+    } catch (_) {}
+
+    if (!reply) {
+      reply = state.lang === 'ar'
+        ? `أدويتك اليوم: ${medsSummary}. وشربت حتى الآن ${state.waterCount} من 8 أكواب ماء. تذكّر الضغط على زر «أنا بخير» لطمأنة عائلتك.`
+        : `Your meds today: ${medsSummary}. Water today: ${state.waterCount} of 8 glasses. Remember to tap I'm OK.`;
+    }
+    box.textContent = reply;
+    speakText(reply);
+  });
+
+  // Appointments Modal
   $('openApptModalBtn').addEventListener('click', () => $('apptModal').classList.remove('hidden'));
   $('closeApptModalBtn').addEventListener('click', () => $('apptModal').classList.add('hidden'));
   $('apptSaveBtn').addEventListener('click', () => {
     const doc = $('apptDoctorInput').value.trim();
     const date = $('apptDateInput').value;
-    const time = $('apptTimeInput').value || '09:00';
+    const time = $('apptTimeInput').value || '10:00';
     if (!doc || !date) return;
     state.appts.unshift({ id: 'a' + Date.now(), doctorAr: doc, doctorEn: doc, date, time });
+    saveState();
     renderAppts();
     $('apptDoctorInput').value = '';
     $('apptModal').classList.add('hidden');
   });
 
+  // Emergency Modal
   $('openEmergencyBtn').addEventListener('click', () => {
     renderEmergency();
     $('emergencyModal').classList.remove('hidden');
@@ -564,7 +1228,7 @@
   async function ensureSeniorProfile(user) {
     if (!client || !user) return;
     try {
-      const displayName = user.user_metadata?.full_name || user.user_metadata?.display_name || (user.email ? user.email.split('@')[0] : 'Senior');
+      const displayName = state.profile.name || user.user_metadata?.full_name || user.user_metadata?.display_name || (user.email ? user.email.split('@')[0] : 'Senior');
       await client.from('profiles').upsert({ id: user.id, display_name: displayName }, { onConflict: 'id' });
       const { data: existing } = await client.from('senior_profiles').select('id').eq('user_id', user.id).limit(1);
       if (!existing || !existing.length) {
@@ -577,12 +1241,10 @@
   }
 
   function updateAuthUI(user) {
-    state.user = user || null;
+    currentUser = user || null;
     $('authCard').classList.toggle('hidden', !!user);
     $('signedInBar').classList.toggle('hidden', !user);
-    if (user) {
-      $('signedInEmail').textContent = user.email || '';
-    }
+    if (user) $('signedInEmail').textContent = user.email || '';
     applyLang();
   }
 
@@ -600,10 +1262,8 @@
     });
   }
 
-  // Google OAuth Button (Opens Google Account Chooser)
   $('googleAuthBtn').addEventListener('click', async () => {
     if (!client) return showAuthMsg('Supabase library failed to load.', 'error');
-    showAuthMsg(tr('googleConnecting'), 'info');
     try {
       const redirectTo = window.location.origin + window.location.pathname;
       const { error } = await client.auth.signInWithOAuth({
@@ -612,20 +1272,19 @@
       });
       if (error) throw error;
     } catch (e) {
-      showAuthMsg(tr('googleError') + (e.message || 'Error'), 'error');
+      const raw = String(e.message || '');
+      showAuthMsg(raw.includes('not enabled') ? tr('googleNotEnabled') : raw, 'error');
     }
   });
 
-  // Email Sign-In / Sign-Up Fallback
   $('emailSignInBtn').addEventListener('click', async () => {
     if (!client) return;
     const email = $('emailInput').value.trim();
     const password = $('passwordInput').value;
-    if (!email || !password) return showAuthMsg(tr('emailRequired'), 'error');
+    if (!email || !password) return showAuthMsg(state.lang === 'ar' ? 'أدخل البريد وكلمة المرور.' : 'Enter email and password.', 'error');
     try {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      showAuthMsg(tr('signedInOk'), 'success');
       if (data.user) updateAuthUI(data.user);
     } catch (e) {
       showAuthMsg(e.message || 'Sign in failed', 'error');
@@ -637,15 +1296,12 @@
     const display_name = $('emailName').value.trim() || 'Senior';
     const email = $('emailInput').value.trim();
     const password = $('passwordInput').value;
-    if (!email || !password) return showAuthMsg(tr('emailRequired'), 'error');
+    if (!email || !password) return showAuthMsg(state.lang === 'ar' ? 'أدخل البريد وكلمة المرور.' : 'Enter email and password.', 'error');
     try {
       const { data, error } = await client.auth.signUp({ email, password, options: { data: { display_name } } });
       if (error) throw error;
-      if (data.session && data.user) {
-        updateAuthUI(data.user);
-      } else {
-        showAuthMsg(tr('signupCheckEmail'), 'success');
-      }
+      if (data.session && data.user) updateAuthUI(data.user);
+      else showAuthMsg(state.lang === 'ar' ? 'تم إنشاء الحساب! افتح بريدك للتأكيد.' : 'Account created! Check your email to confirm.', 'success');
     } catch (e) {
       showAuthMsg(e.message || 'Sign up failed', 'error');
     }
@@ -656,18 +1312,18 @@
     updateAuthUI(null);
   });
 
-  // I'm OK Check-In Button (Local + Supabase safety_checkins)
   $('imOkBtn').addEventListener('click', async () => {
-    playChime();
+    playStrongRingtone();
     state.lastCheckInIso = new Date().toISOString();
+    saveState();
     $('lastCheckInText').textContent = tr('lastCheckJustNow');
     const fb = $('checkInFeedback');
     fb.classList.remove('hidden');
     fb.textContent = tr('checkInDone');
 
-    if (client && state.user) {
+    if (client && currentUser) {
       try {
-        const { data: sp } = await client.from('senior_profiles').select('id').eq('user_id', state.user.id).limit(1);
+        const { data: sp } = await client.from('senior_profiles').select('id').eq('user_id', currentUser.id).limit(1);
         if (sp && sp.length) {
           const { error } = await client.from('safety_checkins').insert({ senior_id: sp[0].id, source: 'senior_button' });
           if (!error) fb.textContent = tr('checkInSavedCloud');
@@ -676,6 +1332,7 @@
     }
   });
 
+  loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
   applyLang();
 })();
 </script>
