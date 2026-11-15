@@ -293,7 +293,7 @@
   <section id="chatPageView" class="hidden fixed inset-0 z-40 flex flex-col bg-slate-100">
     <!-- Slim Fixed Top Bar -->
     <div class="shrink-0 flex items-center justify-between gap-2 border-b-2 border-amber-200 bg-white px-3 py-2.5 shadow-sm">
-      <button id="backFromChatBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-base font-extrabold text-slate-900 hover:bg-slate-100" style="min-height:42px;">
+      <button id="backFromChatBtn" type="button" class="tap-btn shrink-0 whitespace-nowrap rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-sm font-extrabold text-slate-900 hover:bg-slate-100" style="min-height:42px;">
         ← رجوع
       </button>
       <div class="text-center min-w-0">
@@ -351,7 +351,7 @@
 
         <!-- Slim Icebreaker Strip -->
         <div class="flex items-center justify-between gap-2 rounded-xl bg-amber-50 px-3 py-1.5">
-          <p class="text-xs font-bold text-slate-900 truncate">
+          <p class="text-xs font-bold text-slate-900 leading-snug">
             <span id="icebreakerBadge" class="font-black text-amber-900">سؤال اليوم: </span>
             <span id="icebreakerQuestion"></span>
           </p>
@@ -366,6 +366,12 @@
       <div class="shrink-0 border-t-2 border-slate-200 bg-white px-2.5 py-2 space-y-1.5">
         <!-- Horizontal 1-Line Quick Greeting Chips -->
         <div id="chatQuickChips" class="flex items-center gap-1.5 overflow-x-auto pb-0.5"></div>
+
+        <!-- Reply-To Preview Bar (shown when replying to a voice/text message) -->
+        <div id="chatReplyBar" class="hidden flex items-center justify-between gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs">
+          <p id="chatReplyBarText" class="truncate font-extrabold text-emerald-950"></p>
+          <button id="chatCancelReplyBtn" type="button" class="shrink-0 font-black text-rose-700 px-1.5" style="min-height:28px;">✕</button>
+        </div>
 
         <!-- Voice Preview (only shown after recording) -->
         <div id="chatVoicePreviewBox" class="hidden space-y-2 rounded-xl border border-amber-300 bg-amber-50 p-2.5">
@@ -614,13 +620,14 @@
     ]
   };
 
-  let state = loadState();
   let currentUser = null;
+  let state = loadState('guest');
   let currentSeniorId = null;
   let pendingImageDataUrl = '';
   let customAudioDataUrl = '';
   let alertedMedKeys = new Set();
   let activeDueMedId = null;
+  let activeReplyTo = null;
   let batteryLowAlerted = false;
   let pendingLowBatterySpeak = '';
   let mediaRecorder = null;
@@ -630,9 +637,12 @@
   let activeRingtoneAudio = null;
   let ringtoneStopTimer = null;
 
-  function loadState() {
+  function getStorageKey(uid) {
+    return STORAGE_KEY + '_' + (uid || (currentUser && currentUser.id) || 'guest');
+  }
+  function loadState(uid) {
     try {
-      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      const raw = JSON.parse(localStorage.getItem(getStorageKey(uid)) || 'null');
       if (raw && typeof raw === 'object') {
         const merged = Object.assign({}, defaultState, raw);
         merged.profile = Object.assign({}, defaultState.profile, raw.profile || {});
@@ -643,7 +653,7 @@
     } catch (_) {}
     return JSON.parse(JSON.stringify(defaultState));
   }
-  function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {} }
+  function saveState() { try { localStorage.setItem(getStorageKey(), JSON.stringify(state)); } catch (_) {} }
 
   // IndexedDB for custom phone ringtone
   function openRingtoneDb() {
@@ -687,7 +697,7 @@
       aiVoiceBtn: 'تحدّث مع المساعد بالصوت', aiInputPh: 'مثال: متى موعد دوائي القادم؟', askBtn: 'اسأل',
       chatLauncherTitle: 'مجلس طمأنينة — غرفة الدردشة',
       chatLauncherSub: 'تحدّث مع المسنين المسجلين بالصوت أو الكتابة (تُحفظ المشاركات 24 ساعة).',
-      openChatPageLabel: 'دخول غرفة الدردشة', backFromChat: '← رجوع لواجهة المسن',
+      openChatPageLabel: 'دخول غرفة الدردشة', backFromChat: '← رجوع',
       chatHeading: 'مجلس طمأنينة', chatSub: 'تُحفظ المشاركات الصوتية والكتابية لمدة 24 ساعة ثم تُمحى تلقائياً.',
       chatIdentityTitle: 'الاسم الظاهر في الدردشة:', chatUseNicknameLabel: 'الدخول باسم مستعار بدل اسمي الحقيقي',
       chatNicknamePh: 'اكتب الاسم المستعار هنا (مثال: أبو أحمد)', chatMembersLabel: 'المشاركون (آخر 24 ساعة):',
@@ -726,7 +736,7 @@
       aiVoiceBtn: 'Talk to AI Assistant', aiInputPh: 'e.g. When is my next medication?', askBtn: 'Ask',
       chatLauncherTitle: 'CareGuard Lounge — Chat Room',
       chatLauncherSub: 'Talk with registered seniors by voice or text (posts kept for 24 hours).',
-      openChatPageLabel: 'Enter Chat Room', backFromChat: '← Back to Senior View',
+      openChatPageLabel: 'Enter Chat Room', backFromChat: '← Back',
       chatHeading: 'CareGuard Lounge', chatSub: 'Voice & text posts are kept for 24 hours, then automatically deleted.',
       chatIdentityTitle: 'Display name in chat:', chatUseNicknameLabel: 'Join with a nickname instead of my real name',
       chatNicknamePh: 'Enter nickname (e.g. Uncle Ahmed)', chatMembersLabel: 'Participants (last 24h):',
@@ -887,17 +897,38 @@
   async function loadCloudSeniorData() {
     if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
     try {
-      const { data: chk } = await client
-        .from('safety_checkins')
-        .select('checked_in_at')
-        .eq('senior_id', currentSeniorId)
-        .order('checked_in_at', { ascending: false })
-        .limit(1);
+      const [{ data: chk }, { data: meds }, { data: appts }] = await Promise.all([
+        client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
+        client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
+        client.from('appointments').select('id, title, appointment_at').eq('senior_id', currentSeniorId).order('appointment_at', { ascending: true })
+      ]);
       if (chk && chk.length && chk[0].checked_in_at) {
         state.lastServerCheckInIso = chk[0].checked_in_at;
-        saveState();
-        applyLang();
       }
+      if (Array.isArray(meds) && meds.length) {
+        state.meds = meds.map((m) => ({
+          id: m.id,
+          nameAr: m.name,
+          nameEn: m.name,
+          time: m.dosage || '08:00',
+          taken: false,
+          imageData: ''
+        }));
+      }
+      if (Array.isArray(appts) && appts.length) {
+        state.appts = appts.map((a) => {
+          const dt = a.appointment_at ? String(a.appointment_at) : '';
+          return {
+            id: a.id,
+            doctorAr: a.title,
+            doctorEn: a.title,
+            date: dt.slice(0, 10) || '',
+            time: dt.slice(11, 16) || '10:00'
+          };
+        });
+      }
+      saveState();
+      applyLang();
     } catch (_) {}
   }
 
@@ -1095,17 +1126,25 @@
   setInterval(checkDueMedications, 10000);
 
   async function callGeminiText(prompt, imageBase64, mimeType) {
-    const key = localStorage.getItem(AI_KEY_STORAGE) || '';
+    const key = (localStorage.getItem(AI_KEY_STORAGE) || '').trim();
     if (!key) return null;
     const parts = [{ text: prompt }];
     if (imageBase64) parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: imageBase64 } });
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key),
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }) }
-    );
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    for (const model of ['gemini-2.5-flash', 'gemini-2.0-flash']) {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + encodeURIComponent(key),
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }) }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      }
+      if (res.status !== 404) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson?.error?.message || ('HTTP ' + res.status));
+      }
+    }
+    throw new Error('Model unavailable');
   }
 
   async function triggerWaterReminder(manualTest) {
@@ -1407,7 +1446,8 @@
     $('uploadMedBtnLabel').textContent = tr('uploadMedBtn');
     $('aiHeading').textContent = tr('aiHeading');
     $('aiSubheading').textContent = tr('aiSub');
-    $('openAiConfigBtn').textContent = tr('aiConfigBtn');
+    const hasAiKey = !!(localStorage.getItem(AI_KEY_STORAGE) || '').trim();
+    $('openAiConfigBtn').textContent = hasAiKey ? (state.lang === 'ar' ? 'AI متصل ✓' : 'AI Connected ✓') : tr('aiConfigBtn');
     $('aiVoiceBtnLabel').textContent = tr('aiVoiceBtn');
     $('aiQuestionInput').placeholder = tr('aiInputPh');
     $('askAiBtn').textContent = tr('askBtn');
@@ -1693,6 +1733,7 @@
   $('saveAiKeyBtn').addEventListener('click', () => {
     localStorage.setItem(AI_KEY_STORAGE, $('geminiKeyInput').value.trim());
     const fb = $('aiKeyFeedback'); fb.textContent = state.lang === 'ar' ? 'تم الحفظ!' : 'Saved!'; fb.classList.remove('hidden');
+    applyLang();
     setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
   });
 
@@ -1712,12 +1753,15 @@
 
     const medsSummary = state.meds.map((m) => `${state.lang === 'ar' ? m.nameAr : m.nameEn} (${m.time}${m.taken ? ' ✓' : ''})`).join(', ');
     let reply = '';
+    let aiErrNote = '';
     try {
       const prompt = state.lang === 'ar'
-        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. الساعة الآن ${nowStr}. ${nextTextAr} جميع الأدوية: ${medsSummary}. الماء اليوم: ${state.waterCount}/8. أجب بوضوح واختصار (3 أسطر كحد أقصى) عن سؤال المسن: ${q}`
-        : `You are a gentle senior-care assistant. Current time: ${nowStr}. ${nextTextEn} All meds: ${medsSummary}. Water: ${state.waterCount}/8. Answer clearly in max 3 lines: ${q}`;
+        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. الساعة الآن ${nowStr}. ${nextTextAr} جميع الأدوية: ${medsSummary}. الماء اليوم: ${state.waterCount}/8. أجب بوضوح ولطف (3 أسطر كحد أقصى) عن كلام المسن: ${q}`
+        : `You are a gentle senior-care assistant. Current time: ${nowStr}. ${nextTextEn} All meds: ${medsSummary}. Water: ${state.waterCount}/8. Answer kindly in max 3 lines: ${q}`;
       reply = (await callGeminiText(prompt)) || '';
-    } catch (_) {}
+    } catch (e) {
+      aiErrNote = e && e.message ? ` (${e.message})` : '';
+    }
 
     if (!reply) {
       const isAskingNextMed = /دواء|موعد|القادم|متى|حبة|علاج|med|next|when|pill/i.test(q);
@@ -1727,7 +1771,7 @@
           ? `${nextTextAr} وشربت حتى الآن ${state.waterCount} من 8 أكواب ماء.`
           : `${nextTextEn} You have had ${state.waterCount} of 8 glasses of water today.`);
     }
-    box.textContent = reply;
+    box.textContent = reply + (aiErrNote ? '\n[Gemini: ' + aiErrNote + ']' : '');
     speakText(reply);
   }
 
@@ -1837,10 +1881,33 @@
       hdr.append(authorWrap, dt);
       card.appendChild(hdr);
 
-      if (r.message_text) {
+      // Quoted Reply Box if this message is a reply
+      let displayBody = r.message_text || '';
+      let replyAuthor = r.reply_author || '';
+      let replySnippet = r.reply_snippet || '';
+      if (!replyAuthor && displayBody.startsWith('↩️ ')) {
+        const lines = displayBody.split('\n');
+        const first = lines[0] || '';
+        const sepIdx = first.indexOf(': ');
+        if (sepIdx > 3) {
+          replyAuthor = first.slice(3, sepIdx).trim();
+          replySnippet = first.slice(sepIdx + 2).trim();
+          displayBody = lines.slice(1).join('\n').trim();
+        }
+      }
+      if (replyAuthor) {
+        const qBox = document.createElement('div');
+        qBox.className = 'rounded-xl border-s-4 border-amber-500 bg-amber-50/90 px-3 py-1.5 text-xs';
+        const qa = document.createElement('p'); qa.className = 'font-black text-amber-950'; qa.textContent = '↩️ ' + replyAuthor;
+        const qs = document.createElement('p'); qs.className = 'truncate font-semibold text-slate-700'; qs.textContent = replySnippet || '';
+        qBox.append(qa, qs);
+        card.appendChild(qBox);
+      }
+
+      if (displayBody) {
         const body = document.createElement('p');
         body.className = 'text-lg font-semibold text-slate-900';
-        body.textContent = r.message_text;
+        body.textContent = displayBody;
         card.appendChild(body);
       }
       if (r.audio_data) {
@@ -1873,6 +1940,20 @@
         });
         reactRow.appendChild(rb);
       });
+      const replyBtn = document.createElement('button');
+      replyBtn.type = 'button';
+      replyBtn.className = 'rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-extrabold text-slate-800 hover:bg-emerald-50';
+      replyBtn.textContent = state.lang === 'ar' ? '↩️ رد' : '↩️ Reply';
+      replyBtn.addEventListener('click', () => {
+        const snip = r.audio_data && !r.message_text
+          ? (state.lang === 'ar' ? '🎤 رسالة صوتية' : '🎤 Voice message')
+          : (r.message_text || '').slice(0, 45);
+        activeReplyTo = { id: r.id, author: nameStr, snippet: snip };
+        $('chatReplyBarText').textContent = (state.lang === 'ar' ? 'الرد على ' : 'Replying to ') + nameStr + ': ' + snip;
+        $('chatReplyBar').classList.remove('hidden');
+        $('chatTextInput').focus();
+      });
+      reactRow.appendChild(replyBtn);
       if (isMine) {
         const del = document.createElement('button'); del.type = 'button';
         del.className = 'rounded-xl px-3 py-1 text-xs font-extrabold text-rose-700 hover:bg-rose-50';
@@ -1931,16 +2012,23 @@
       return false;
     }
     const author_name = getChatAuthorName();
+    let finalText = text || null;
+    if (activeReplyTo) {
+      const prefix = `↩️ ${activeReplyTo.author}: ${activeReplyTo.snippet}`;
+      finalText = finalText ? (prefix + '\n' + finalText) : prefix;
+    }
     const { error } = await client.from('community_messages').insert({
       user_id: currentUser.id,
       author_name,
-      message_text: text || null,
+      message_text: finalText,
       audio_data: audioData || null
     });
     if (error) {
       showChatMsg(friendlyError(error), true);
       return false;
     }
+    activeReplyTo = null;
+    $('chatReplyBar').classList.add('hidden');
     showChatMsg(state.lang === 'ar' ? 'تم إرسال مشاركتك بنجاح (تحفظ لمدة 24 ساعة).' : 'Sent! (Kept for 24 hours).', false);
     await loadCommunityMessages();
     return true;
@@ -1995,6 +2083,7 @@
     if (ok) { pendingVoiceDataUrl = ''; $('chatVoicePreviewBox').classList.add('hidden'); }
   });
   $('chatDiscardVoiceBtn').addEventListener('click', () => { pendingVoiceDataUrl = ''; $('chatVoicePreviewBox').classList.add('hidden'); });
+  $('chatCancelReplyBtn').addEventListener('click', () => { activeReplyTo = null; $('chatReplyBar').classList.add('hidden'); });
 
   // Appointments & Emergency Modals
   $('openApptModalBtn').addEventListener('click', () => $('apptModal').classList.remove('hidden'));
@@ -2042,7 +2131,14 @@
   }
 
   function updateAuthUI(user) {
+    const prevUid = currentUser && currentUser.id;
+    const nextUid = user && user.id;
     currentUser = user || null;
+    if (prevUid !== nextUid) {
+      currentSeniorId = null;
+      alertedMedKeys = new Set();
+      state = loadState(nextUid || 'guest');
+    }
     $('authCard').classList.toggle('hidden', !!user);
     $('signedInBar').classList.toggle('hidden', !user);
     if (user) $('signedInEmail').textContent = user.email || '';
