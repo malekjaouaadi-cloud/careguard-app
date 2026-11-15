@@ -288,32 +288,29 @@
 
   </section>
 
-  <!-- ISOLATED CHAT ROOM PAGE (Streamlined WhatsApp-style Senior Lounge) -->
-  <section id="chatPageView" class="hidden space-y-3">
-    <!-- Compact Top Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 border-amber-300 bg-white px-3.5 py-2.5 shadow-sm">
-      <button id="backFromChatBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-base font-extrabold text-slate-900 hover:bg-slate-100">
-        ← رجوع لواجهة المسن
+  <!-- ISOLATED FULL-SCREEN CHAT ROOM PAGE (Separate App Screen) -->
+  <section id="chatPageView" class="hidden fixed inset-0 z-40 flex flex-col bg-slate-100">
+    <!-- Slim Fixed Top Bar -->
+    <div class="shrink-0 flex items-center justify-between gap-2 border-b-2 border-amber-200 bg-white px-3 py-2.5 shadow-sm">
+      <button id="backFromChatBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-base font-extrabold text-slate-900 hover:bg-slate-100" style="min-height:42px;">
+        ← رجوع
       </button>
-      <div class="flex items-center gap-2">
-        <span id="chatMembersCountBadge" class="rounded-full bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-950">👥 0</span>
-        <button id="refreshChatBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-2 text-sm font-extrabold text-amber-900">
-          تحديث
+      <div class="text-center min-w-0">
+        <h2 id="chatHeading" class="truncate text-lg font-black text-slate-900">مجلس طمأنينة</h2>
+        <p id="chatSubheading" class="truncate text-[11px] font-bold text-amber-800">تحفظ 24 ساعة ثم تمحى</p>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span id="chatMembersCountBadge" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-extrabold text-amber-950">👥 0</span>
+        <button id="refreshChatBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-xs font-extrabold text-amber-900" style="min-height:40px;">
+          ↻
         </button>
       </div>
     </div>
 
-    <div class="rounded-3xl border-2 border-amber-200 bg-white p-4 shadow-sm space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 id="chatHeading" class="text-xl font-black text-slate-900">مجلس طمأنينة</h2>
-          <p id="chatSubheading" class="text-sm font-bold text-amber-800">تُحفظ المشاركات 24 ساعة ثم تُمحى تلقائياً</p>
-        </div>
-      </div>
-
-      <!-- Step 1: Choose Real Name or Nickname, then tap Enter Room -->
-      <div id="chatJoinStep" class="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 space-y-3">
-        <p id="chatIdentityTitle" class="text-base font-extrabold text-slate-900">الاسم الظاهر في الدردشة:</p>
+    <!-- Step 1: Choose Real Name or Nickname, then tap Enter Room -->
+    <div id="chatJoinStep" class="m-auto w-full max-w-md p-4">
+      <div class="rounded-3xl border-2 border-amber-200 bg-white p-5 shadow-md space-y-4">
+        <p id="chatIdentityTitle" class="text-lg font-black text-slate-900">الاسم الظاهر في الدردشة:</p>
         <label class="flex items-center gap-3 text-base font-bold text-slate-800">
           <input id="chatUseNickname" type="checkbox" class="h-6 w-6 accent-amber-600" />
           <span id="chatUseNicknameLabel">الدخول باسم مستعار بدل اسمي الحقيقي</span>
@@ -324,57 +321,72 @@
           <span id="chatEnterRoomLabel">دخول إلى الغرفة</span>
         </button>
       </div>
+    </div>
 
-      <!-- Step 2: Inside the Chat Room -->
-      <div id="chatRoomStep" class="hidden space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-emerald-50 px-3.5 py-2">
-          <span id="chatJoinedAsBadge" class="text-sm font-extrabold text-emerald-900"></span>
-          <button id="chatChangeNameBtn" type="button" class="rounded-xl border border-emerald-300 bg-white px-3 py-1 text-xs font-extrabold text-emerald-900">تغيير الاسم</button>
-        </div>
-
-        <!-- Compact Global Icebreaker Strip -->
-        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2.5">
-          <div class="flex-1 min-w-[200px]">
-            <span id="icebreakerBadge" class="text-xs font-black text-amber-900">سؤال اليوم العالمي: </span>
-            <span id="icebreakerQuestion" class="text-base font-extrabold text-slate-900"></span>
+    <!-- Step 2: Full-Screen Chat Room -->
+    <div id="chatRoomStep" class="hidden flex-1 flex flex-col min-h-0">
+      <!-- Slim Info Strip (Identity + Icebreaker + Birthday + Blocked) -->
+      <div class="shrink-0 space-y-1.5 border-b border-slate-200 bg-white/90 px-3 py-2">
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <span id="chatJoinedAsBadge" class="font-extrabold text-emerald-900 truncate"></span>
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="chatMembersLabel" class="hidden"></span>
+            <div id="chatMembersList" class="hidden"></div>
+            <button id="chatChangeNameBtn" type="button" class="rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-900" style="min-height:32px;">تغيير الاسم</button>
           </div>
-          <button id="nextIcebreakerBtn" type="button" class="rounded-xl border border-amber-300 bg-white px-2.5 py-1 text-xs font-extrabold text-amber-900">سؤال آخر</button>
         </div>
 
-        <!-- Compact Participants Strip -->
-        <div class="flex flex-wrap items-center gap-1.5">
-          <span id="chatMembersLabel" class="text-xs font-extrabold text-slate-500">المشاركون:</span>
-          <div id="chatMembersList" class="flex flex-wrap gap-1.5"></div>
+        <!-- Birthday Banner -->
+        <div id="chatBirthdayBanner" class="hidden flex items-center justify-between gap-2 rounded-xl border border-pink-300 bg-pink-50 px-3 py-1.5">
+          <p id="chatBirthdayText" class="text-xs font-black text-pink-950 truncate"></p>
+          <button id="chatSendBirthdayBtn" type="button" class="shrink-0 rounded-lg bg-pink-600 px-2.5 py-1 text-xs font-extrabold text-white" style="min-height:32px;">🎉 تهنئة</button>
         </div>
 
-        <!-- Tall WhatsApp-Style Messages Area -->
-        <div id="chatMessagesList" class="min-h-[280px] max-h-[52vh] space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-100 p-3"></div>
+        <!-- Blocked Users Strip -->
+        <div id="chatBlockedBar" class="hidden flex items-center justify-between gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+          <span id="chatBlockedCountText"></span>
+          <button id="chatUnblockAllBtn" type="button" class="underline text-rose-700 font-extrabold" style="min-height:28px;">إلغاء الإخفاء</button>
+        </div>
 
-        <!-- Sticky Bottom Voice + Quick Chips + Text Composer -->
-        <div class="sticky bottom-2 z-20 space-y-2.5 rounded-2xl border-2 border-slate-200 bg-white/95 p-3 shadow-md backdrop-blur">
-          <div id="chatQuickChips" class="flex flex-wrap gap-1.5"></div>
+        <!-- Slim Icebreaker Strip -->
+        <div class="flex items-center justify-between gap-2 rounded-xl bg-amber-50 px-3 py-1.5">
+          <p class="text-xs font-bold text-slate-900 truncate">
+            <span id="icebreakerBadge" class="font-black text-amber-900">سؤال اليوم: </span>
+            <span id="icebreakerQuestion"></span>
+          </p>
+          <button id="nextIcebreakerBtn" type="button" class="shrink-0 rounded-lg border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-extrabold text-amber-900" style="min-height:28px;">آخر</button>
+        </div>
+      </div>
 
-          <button id="chatRecordBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2.5 rounded-2xl bg-amber-600 px-4 py-3.5 text-lg font-black text-white shadow-sm hover:bg-amber-700">
-            <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+      <!-- Full-Height Scrollable Messages Area (~75-80% of screen!) -->
+      <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-2.5 px-3 py-3"></div>
+
+      <!-- Compact 1-Row Bottom Bar -->
+      <div class="shrink-0 border-t-2 border-slate-200 bg-white px-2.5 py-2 space-y-1.5">
+        <!-- Horizontal 1-Line Quick Greeting Chips -->
+        <div id="chatQuickChips" class="flex items-center gap-1.5 overflow-x-auto pb-0.5"></div>
+
+        <!-- Voice Preview (only shown after recording) -->
+        <div id="chatVoicePreviewBox" class="hidden space-y-2 rounded-xl border border-amber-300 bg-amber-50 p-2.5">
+          <audio id="chatVoicePreview" controls class="w-full h-9"></audio>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="chatSendVoiceBtn" type="button" class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">إرسال الصوت</button>
+            <button id="chatDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">إلغاء</button>
+          </div>
+        </div>
+
+        <!-- Single Compact Input Row: Mic + Text + Send -->
+        <div class="flex items-center gap-1.5">
+          <button id="chatRecordBtn" type="button" title="تسجيل صوتي" class="tap-btn flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-600 text-white shadow-sm hover:bg-amber-700" style="min-height:48px;">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
-            <span id="chatRecordBtnLabel">تسجيل مشاركة صوتية</span>
+            <span id="chatRecordBtnLabel" class="sr-only">تسجيل مشاركة صوتية</span>
           </button>
-
-          <div id="chatVoicePreviewBox" class="hidden space-y-2 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3">
-            <audio id="chatVoicePreview" controls class="w-full"></audio>
-            <div class="grid grid-cols-2 gap-2">
-              <button id="chatSendVoiceBtn" type="button" class="tap-btn rounded-xl bg-emerald-700 px-3 py-2.5 text-base font-extrabold text-white">إرسال الصوت</button>
-              <button id="chatDiscardVoiceBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-base font-extrabold text-slate-800">إلغاء</button>
-            </div>
-          </div>
-
-          <div class="flex gap-2">
-            <input id="chatTextInput" autocomplete="off" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-3.5 py-2.5 text-lg text-slate-900" />
-            <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-slate-900 px-5 py-2.5 text-lg font-extrabold text-white">إرسال</button>
-          </div>
-          <p id="chatStatusMsg" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-900"></p>
+          <input id="chatTextInput" autocomplete="off" type="text" placeholder="اكتب رسالة..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base text-slate-900" style="min-height:46px;" />
+          <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white hover:bg-emerald-800" style="min-height:46px;">إرسال</button>
         </div>
+        <p id="chatStatusMsg" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-900"></p>
       </div>
     </div>
   </section>
@@ -446,6 +458,10 @@
       <label class="block text-sm font-extrabold text-slate-700">
         <span id="profDobLabel">تاريخ الميلاد:</span>
         <input id="profDobInput" type="date" class="mt-1 w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      </label>
+      <label class="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm font-extrabold text-amber-950">
+        <input id="profShareBirthday" type="checkbox" class="h-5 w-5 accent-amber-600" />
+        <span id="profShareBirthdayLabel">مشاركة يوم ميلادي للتهنئة في المجلس (اليوم والشهر فقط)</span>
       </label>
       <input id="profPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="رقم هاتف المسن" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -562,6 +578,8 @@
       backupPhone: '', doctorName: '', doctorPhone: '', address: '',
       bloodType: 'O+', allergies: 'البنسلين', conditions: 'السكري، ضغط الدم', medicalNotes: ''
     },
+    shareBirthday: true,
+    blockedUserIds: [],
     reactions: {},
     chatUseNickname: false,
     chatNickname: '',
@@ -1118,12 +1136,60 @@
     chips.forEach((txt) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'tap-btn rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-extrabold text-amber-950 hover:bg-amber-100';
+      b.className = 'tap-btn shrink-0 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-extrabold text-amber-950 hover:bg-amber-100';
+      b.style.minHeight = '32px';
       b.textContent = txt;
       b.addEventListener('click', () => sendCommunityPost(txt, null));
       box.appendChild(b);
     });
   }
+
+  let activeBirthdayNames = [];
+  async function loadTodayBirthdays() {
+    const banner = $('chatBirthdayBanner');
+    if (!banner) return;
+    const now = new Date();
+    const m = now.getMonth() + 1;
+    const d = now.getDate();
+    const names = [];
+    if (state.shareBirthday !== false && state.profile.dob && state.profile.dob.includes('-')) {
+      const parts = state.profile.dob.split('-');
+      if (parseInt(parts[1], 10) === m && parseInt(parts[2], 10) === d) {
+        names.push(getChatAuthorName());
+      }
+    }
+    if (client && currentUser) {
+      try {
+        const { data } = await client.from('community_birthdays').select('display_name').eq('birth_month', m).eq('birth_day', d);
+        if (data && data.length) {
+          data.forEach((row) => { if (row.display_name && !names.includes(row.display_name)) names.push(row.display_name); });
+        }
+      } catch (_) {}
+    }
+    activeBirthdayNames = names;
+    if (!names.length) {
+      banner.classList.add('hidden');
+      return;
+    }
+    banner.classList.remove('hidden');
+    const joined = names.join('، ');
+    $('chatBirthdayText').textContent = state.lang === 'ar'
+      ? `🎂 اليوم عيد ميلاد: ${joined}! أرسل له تهنئة دافئة.`
+      : `🎂 Today is ${joined}'s birthday! Send a warm wish.`;
+  }
+  $('chatSendBirthdayBtn').addEventListener('click', () => {
+    const who = activeBirthdayNames.join(' & ') || '';
+    const wish = state.lang === 'ar'
+      ? `🎂🎉 عيد ميلاد سعيد يا ${who}! أتمنى لك دوام الصحة والسعادة.`
+      : `🎂🎉 Happy Birthday ${who}! Wishing you health and happiness!`;
+    sendCommunityPost(wish, null);
+  });
+  $('chatUnblockAllBtn').addEventListener('click', () => {
+    state.blockedUserIds = [];
+    saveState();
+    loadCommunityMessages();
+    loadTodayBirthdays();
+  });
 
   function applyLang() {
     const ar = state.lang === 'ar';
@@ -1170,7 +1236,7 @@
     $('chatUseNicknameLabel').textContent = tr('chatUseNicknameLabel');
     $('chatNicknameInput').placeholder = tr('chatNicknamePh');
     $('chatMembersLabel').textContent = tr('chatMembersLabel');
-    $('refreshChatBtn').textContent = tr('refreshChat');
+    $('refreshChatBtn').textContent = '↻';
     $('chatEnterRoomLabel').textContent = state.lang === 'ar' ? 'دخول إلى الغرفة' : 'Enter Chat Room';
     $('chatChangeNameBtn').textContent = state.lang === 'ar' ? 'تغيير الاسم' : 'Change Name';
     $('chatRecordBtnLabel').textContent = isRecording ? tr('stopRecord') : tr('recordVoice');
@@ -1221,6 +1287,9 @@
     $('profAllergiesInput').placeholder = state.lang === 'ar' ? 'الحساسية (مثال: البنسلين)' : 'Allergies (e.g. Penicillin)';
     $('profConditionsInput').placeholder = state.lang === 'ar' ? 'الأمراض المزمنة (مثال: السكري، الضغط)' : 'Medical Conditions';
     $('profMedicalNotesInput').placeholder = state.lang === 'ar' ? 'ملاحظات طبية خاصة (مثل صعوبة السمع)' : 'Special Medical Notes (optional)';
+    $('profShareBirthdayLabel').textContent = state.lang === 'ar' ? 'مشاركة يوم ميلادي للتهنئة في المجلس (اليوم والشهر فقط)' : 'Share my birthday month & day in the lounge';
+    $('chatSendBirthdayBtn').textContent = state.lang === 'ar' ? '🎉 عيد ميلاد سعيد!' : '🎉 Send Birthday Wish!';
+    $('chatUnblockAllBtn').textContent = state.lang === 'ar' ? 'إلغاء الإخفاء للجميع' : 'Unhide everyone';
     renderIcebreaker();
     renderQuickChips();
 
@@ -1254,11 +1323,13 @@
 
   // Isolated Chat Page Navigation
   $('openChatPageBtn').addEventListener('click', () => {
+    const hdr = document.querySelector('header');
+    if (hdr) hdr.classList.add('hidden');
     $('seniorView').classList.add('hidden');
+    $('signedInBar').classList.add('hidden');
     $('chatPageView').classList.remove('hidden');
     $('chatJoinStep').classList.remove('hidden');
     $('chatRoomStep').classList.add('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     syncChatIdentityUI();
   });
   $('chatEnterRoomBtn').addEventListener('click', () => {
@@ -1277,8 +1348,11 @@
     syncChatIdentityUI();
   });
   $('backFromChatBtn').addEventListener('click', () => {
+    const hdr = document.querySelector('header');
+    if (hdr) hdr.classList.remove('hidden');
     $('chatPageView').classList.add('hidden');
     $('seniorView').classList.remove('hidden');
+    if (currentUser) $('signedInBar').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   $('chatUseNickname').addEventListener('change', (e) => {
@@ -1335,6 +1409,7 @@
     const p = state.profile;
     $('profNameInput').value = p.name || '';
     $('profDobInput').value = p.dob || '';
+    $('profShareBirthday').checked = state.shareBirthday !== false;
     $('profPhoneInput').value = p.phone || '';
     $('profEmergencyPhoneInput').value = p.emergencyPhone || '';
     $('profFamilyRelInput').value = p.familyRelation || '';
@@ -1365,8 +1440,29 @@
     state.profile.conditions = $('profConditionsInput').value.trim();
     state.profile.medicalNotes = $('profMedicalNotesInput').value.trim();
     saveState(); applyLang();
-    if (client && currentUser && state.profile.name) {
-      try { await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' }); } catch (_) {}
+    state.shareBirthday = !!$('profShareBirthday').checked;
+    saveState();
+    if (client && currentUser) {
+      if (state.profile.name) {
+        try { await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' }); } catch (_) {}
+      }
+      if (state.shareBirthday && state.profile.dob && state.profile.dob.includes('-')) {
+        const parts = state.profile.dob.split('-');
+        const bMonth = parseInt(parts[1], 10);
+        const bDay = parseInt(parts[2], 10);
+        if (bMonth && bDay) {
+          try {
+            await client.from('community_birthdays').upsert({
+              user_id: currentUser.id,
+              display_name: getChatAuthorName(),
+              birth_month: bMonth,
+              birth_day: bDay
+            }, { onConflict: 'user_id' });
+          } catch (_) {}
+        }
+      } else {
+        try { await client.from('community_birthdays').delete().eq('user_id', currentUser.id); } catch (_) {}
+      }
     }
     const fb = $('profileSaveFeedback'); fb.textContent = state.lang === 'ar' ? 'تم حفظ البيانات بنجاح!' : 'Saved!'; fb.classList.remove('hidden');
     setTimeout(() => $('profileModal').classList.add('hidden'), 650);
@@ -1509,8 +1605,15 @@
       return;
     }
 
+    const blocked = Array.isArray(state.blockedUserIds) ? state.blockedUserIds : [];
+    const visibleRows = rows.filter((r) => !blocked.includes(r.user_id));
+    if ($('chatBlockedBar')) {
+      $('chatBlockedBar').classList.toggle('hidden', blocked.length === 0);
+      $('chatBlockedCountText').textContent = state.lang === 'ar' ? `تم إخفاء مشاركات (${blocked.length}) شخص` : `Hidden users: ${blocked.length}`;
+    }
+
     const avatarColors = ['bg-emerald-600', 'bg-sky-600', 'bg-amber-600', 'bg-violet-600', 'bg-rose-600'];
-    rows.forEach((r) => {
+    visibleRows.forEach((r) => {
       const isMine = !!(currentUser && r.user_id === currentUser.id);
       const wrap = document.createElement('div');
       wrap.className = 'flex ' + (isMine ? 'justify-start' : 'justify-end');
@@ -1583,6 +1686,17 @@
         del.textContent = tr('deleteMed');
         del.addEventListener('click', async () => { await client.from('community_messages').delete().eq('id', r.id); loadCommunityMessages(); });
         reactRow.appendChild(del);
+      } else if (r.user_id) {
+        const hideBtn = document.createElement('button'); hideBtn.type = 'button';
+        hideBtn.className = 'rounded-xl px-2.5 py-1 text-xs font-extrabold text-slate-600 hover:bg-rose-50 hover:text-rose-700';
+        hideBtn.textContent = state.lang === 'ar' ? '🚫 إخفاء هذا الشخص' : '🚫 Hide user';
+        hideBtn.addEventListener('click', () => {
+          if (!Array.isArray(state.blockedUserIds)) state.blockedUserIds = [];
+          if (!state.blockedUserIds.includes(r.user_id)) state.blockedUserIds.push(r.user_id);
+          saveState();
+          renderChatMessages(rows);
+        });
+        reactRow.appendChild(hideBtn);
       }
       card.appendChild(reactRow);
       wrap.appendChild(card);
