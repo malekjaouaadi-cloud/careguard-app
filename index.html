@@ -505,6 +505,20 @@
 
 <!-- Modals (Med Due, Upload Rx, Profile, Ringtone, AI Config, Appointment, Emergency, Confirm Delete) -->
 <!-- Modal: Direct Voice & Text Messages between Senior and Nurse / Family -->
+
+<div id="careFullStatusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
+      <div>
+        <h3 id="cfsTitle" class="text-xl font-black text-slate-900">État complet</h3>
+        <p id="cfsSub" class="text-xs font-bold text-teal-800"></p>
+      </div>
+      <button id="closeCfsModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <div id="cfsBody" class="max-h-[70vh] space-y-3 overflow-y-auto pr-1"></div>
+  </div>
+</div>
+
 <div id="directCareModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-3">
   <div class="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-white p-4 shadow-2xl">
     <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
@@ -1120,6 +1134,28 @@
     if (activeRingtoneAudio) { try { activeRingtoneAudio.pause(); activeRingtoneAudio.currentTime = 0; } catch (_) {} activeRingtoneAudio = null; }
     if (navigator.vibrate) { try { navigator.vibrate(0); } catch (_) {} }
   }
+
+  function playMessengerChime() {
+    try {
+      if (!window.__cgAudioCtx) window.__cgAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = window.__cgAudioCtx;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      const t = ctx.currentTime;
+      [[1046.5, 0, 0.09], [1567.98, 0.075, 0.14]].forEach(([freq, delay, dur]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + delay);
+        gain.gain.setValueAtTime(0.001, t + delay);
+        gain.gain.exponentialRampToValueAtTime(0.32, t + delay + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t + delay); osc.stop(t + delay + dur + 0.02);
+      });
+      if (navigator.vibrate) { try { navigator.vibrate([80, 50, 80]); } catch (_) {} }
+    } catch (_) {}
+  }
+
   function playStrongRingtone() {
     stopRingtone();
     if (navigator.vibrate) { try { navigator.vibrate([500, 200, 500, 200, 700]); } catch (_) {} }
@@ -2312,17 +2348,33 @@
 
   if (client) {
     client.auth.getSession().then(({ data }) => {
-      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(() => { loadCloudSeniorData(); flushPendingQueue(); }); }
+      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(() => { loadCloudSeniorData(); flushPendingQueue(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); }); }
     });
     client.auth.onAuthStateChange((_e, session) => {
       const u = session && session.user ? session.user : null;
       if (_e === 'SIGNED_OUT') { activeTab = 'home'; setRole(''); }
       updateAuthUI(u);
-      if (u) ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); });
+      if (u) ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
     });
     client.channel('cg-community-live').on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => { if (activeTab === 'chat') loadCommunityMessages(); }).subscribe();
     client.channel('cg-care-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'care_direct_messages' }, () => { if (!$('directCareModal').classList.contains('hidden')) loadDirectCareMessages(); })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'care_direct_messages' }, (payload) => {
+        const msg = payload && payload.new;
+        if (!msg) return;
+        if (!$('directCareModal').classList.contains('hidden')) loadDirectCareMessages();
+        if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData();
+        if (currentUser && msg.sender_user_id !== currentUser.id) {
+          playMessengerChime();
+          const preview = msg.message_text || (state.lang === 'fr' ? '🎤 Message vocal' : '🎤 Voice message');
+          sendSwNotification('💬 ' + (msg.sender_name || 'CareGuard'), preview, 'dm-' + (msg.id || Date.now()));
+          if (userRole === 'senior' && $('directCareSub')) {
+            $('directCareSub').textContent = '💬 ' + (msg.sender_name || '') + ': ' + preview.slice(0, 45);
+            $('directCareSub').className = 'text-xs font-black text-rose-700 animate-pulse';
+            const bell = $('headerBellCount');
+            if (bell) bell.textContent = String((Number(bell.textContent) || 0) + 1);
+          }
+        }
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'senior_care_links' }, () => { if (userRole === 'senior') loadPendingCareLinksForSenior(); else if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'safety_checkins' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'medication_logs' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
@@ -2535,7 +2587,7 @@
     try {
       const { data: links, error } = await client
         .from('senior_care_links')
-        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, blood_type, allergies, conditions, water_count, water_date)')
+        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date)')
         .eq('requester_user_id', currentUser.id);
       if (error) throw error;
       list.replaceChildren();
@@ -2563,13 +2615,14 @@
         // Fetch latest check-in, battery, meds, today's med logs, and appointments for this linked senior
         const todayStr = getLocalDateStr();
         const todayStart = getLocalDayStartIso();
-        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }, { data: openAlerts }] = await Promise.all([
+        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }, { data: openAlerts }, { data: lastDm }] = await Promise.all([
           client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
           client.from('device_status').select('battery_percent').eq('senior_id', sp.id).order('recorded_at', { ascending: false }).limit(1),
           client.from('medications').select('id, name, dosage').eq('senior_id', sp.id).order('created_at', { ascending: true }),
           client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
           client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
-          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(5)
+          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(5),
+          client.from('care_direct_messages').select('sender_name, message_text, audio_data, created_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(1)
         ]);
         const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (isFr ? 'Aucun' : 'None');
         const batVal = bat && bat[0] ? bat[0].battery_percent : null;
@@ -2666,8 +2719,23 @@
         }
         card.appendChild(apptSec);
 
+        if (Array.isArray(lastDm) && lastDm[0]) {
+          const dm = lastDm[0];
+          const tm = dm.created_at ? new Date(dm.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+          const dmBar = document.createElement('div');
+          dmBar.className = 'rounded-xl border border-teal-200 bg-teal-50/70 px-3 py-2 text-xs font-bold text-teal-950';
+          dmBar.textContent = `💬 ${dm.sender_name || ''} (${tm}): ` + (dm.message_text || (isFr ? '🎤 Message vocal' : '🎤 Voice message'));
+          card.appendChild(dmBar);
+        }
+
         const acts = document.createElement('div');
         acts.className = 'flex flex-wrap gap-2';
+        const fullBtn = document.createElement('button');
+        fullBtn.type = 'button';
+        fullBtn.className = 'tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-900';
+        fullBtn.textContent = isFr ? '📋 État complet' : '📋 Full Status';
+        fullBtn.addEventListener('click', () => openCareFullStatusModal({ sp, lastChk, batPct, batVal, medList, takenSet, waterToday, apptList, openAlerts }));
+        acts.appendChild(fullBtn);
         const spTelHref = safeTelHref(sp.senior_phone);
         if (spTelHref) {
           const callA = document.createElement('a');
@@ -2691,6 +2759,90 @@
       list.textContent = friendlyError(e);
     }
   }
+
+
+  function openCareFullStatusModal(ctx) {
+    const isFr = state.lang === 'fr';
+    const { sp, lastChk, batPct, batVal, medList, takenSet, waterToday, apptList, openAlerts } = ctx;
+    $('cfsTitle').textContent = sp.display_name || 'Senior';
+    $('cfsSub').textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
+    const body = $('cfsBody'); body.replaceChildren();
+
+    const makeSec = (title, cls) => {
+      const box = document.createElement('div');
+      box.className = 'rounded-2xl border p-3.5 space-y-1.5 ' + cls;
+      const h = document.createElement('p'); h.className = 'text-xs font-black text-slate-800'; h.textContent = title;
+      box.appendChild(h);
+      return box;
+    };
+
+    // Overview KPIs
+    const kpi = makeSec(isFr ? '📊 Résumé en direct' : '📊 Live Summary', 'border-teal-200 bg-teal-50/50');
+    const kRow = document.createElement('div'); kRow.className = 'flex flex-wrap gap-2 text-xs font-extrabold';
+    [
+      '✓ ' + (isFr ? 'Confirmation : ' : 'Check-in: ') + lastChk,
+      '🔋 ' + (isFr ? 'Batterie : ' : 'Battery: ') + batPct,
+      '💧 ' + (isFr ? 'Eau : ' : 'Water: ') + waterToday + '/8',
+      '💊 ' + (isFr ? 'Pris : ' : 'Taken: ') + medList.filter((m) => takenSet.has(m.id)).length + '/' + medList.length
+    ].forEach((t) => { const s = document.createElement('span'); s.className = 'rounded-full bg-white px-2.5 py-1 border border-teal-200 text-slate-900'; s.textContent = t; kRow.appendChild(s); });
+    kpi.appendChild(kRow); body.appendChild(kpi);
+
+    // Medical Profile
+    const medProf = makeSec(isFr ? '🩺 Profil médical & Contacts' : '🩺 Medical Profile & Contacts', 'border-slate-200 bg-slate-50');
+    [
+      [isFr ? 'Groupe sanguin' : 'Blood Type', sp.blood_type || '-'],
+      [isFr ? 'Allergies' : 'Allergies', sp.allergies || '-'],
+      [isFr ? 'Pathologies' : 'Conditions', sp.conditions || '-'],
+      [isFr ? 'Médecin' : 'Doctor', (sp.doctor_name || '-') + (sp.doctor_phone ? ' (' + sp.doctor_phone + ')' : '')],
+      [isFr ? 'Tél. urgence' : 'Emergency Phone', sp.emergency_phone || '-'],
+      [isFr ? 'Notes' : 'Notes', sp.medical_notes || '-']
+    ].forEach(([k, v]) => {
+      const r = document.createElement('p'); r.className = 'text-xs font-bold text-slate-700';
+      r.textContent = k + ': ' + v; medProf.appendChild(r);
+    });
+    body.appendChild(medProf);
+
+    // Medications Today
+    const medSec = makeSec(isFr ? '💊 Détail des médicaments' : '💊 Medication Details', 'border-sky-200 bg-sky-50/40');
+    if (!medList.length) {
+      const p = document.createElement('p'); p.className = 'text-xs font-bold text-slate-500'; p.textContent = isFr ? 'Aucun médicament' : 'No medications'; medSec.appendChild(p);
+    } else {
+      medList.forEach((m) => {
+        const isT = takenSet.has(m.id);
+        const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold';
+        const l = document.createElement('span'); l.textContent = m.name + (m.dosage ? ` (${m.dosage})` : '');
+        const b = document.createElement('span'); b.className = isT ? 'text-emerald-800' : 'text-amber-800';
+        b.textContent = isT ? (isFr ? '✓ Pris' : '✓ Taken') : (isFr ? '⏳ En attente' : '⏳ Pending');
+        r.append(l, b); medSec.appendChild(r);
+      });
+    }
+    body.appendChild(medSec);
+
+    // Appointments
+    const apSec = makeSec(isFr ? '📅 Rendez-vous' : '📅 Appointments', 'border-purple-200 bg-purple-50/40');
+    if (!apptList.length) {
+      const p = document.createElement('p'); p.className = 'text-xs font-bold text-slate-500'; p.textContent = isFr ? 'Aucun rendez-vous' : 'No appointments'; apSec.appendChild(p);
+    } else {
+      apptList.forEach((a) => {
+        const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold';
+        const iso = String(a.appointment_at || '').slice(0, 16).replace('T', ' ');
+        const l = document.createElement('span'); l.textContent = (a.title || 'RDV') + (iso ? ' • ' + iso : '');
+        const b = document.createElement('span'); b.className = a.attended ? 'text-emerald-800' : 'text-purple-800';
+        b.textContent = a.attended ? (isFr ? '✓ Honoré' : '✓ Attended') : (isFr ? '⏳ À venir' : '⏳ Upcoming');
+        r.append(l, b); apSec.appendChild(r);
+      });
+    }
+    body.appendChild(apSec);
+
+    if (Array.isArray(openAlerts) && openAlerts.length) {
+      const alSec = makeSec(isFr ? '🚨 Alertes ouvertes' : '🚨 Open Alerts', 'border-rose-300 bg-rose-50');
+      openAlerts.forEach((al) => { const p = document.createElement('p'); p.className = 'text-xs font-extrabold text-rose-900'; p.textContent = '• ' + (al.message || al.alert_type); alSec.appendChild(p); });
+      body.appendChild(alSec);
+    }
+
+    $('careFullStatusModal').classList.remove('hidden');
+  }
+  if ($('closeCfsModalBtn')) $('closeCfsModalBtn').addEventListener('click', () => $('careFullStatusModal').classList.add('hidden'));
 
   // Direct Voice & Text Messaging (Senior <-> Nurse / Family)
   function renderDcQuickChips() {
@@ -2750,8 +2902,12 @@
         const mine = m.sender_user_id === currentUser.id;
         const c = document.createElement('div');
         c.className = mine ? 'rounded-2xl border border-emerald-200 bg-emerald-50 p-3 space-y-1' : 'rounded-2xl border border-slate-200 bg-white p-3 space-y-1';
-        const top = document.createElement('div'); top.className = 'flex justify-between text-xs font-black text-slate-700';
-        top.textContent = m.sender_name || '';
+        const top = document.createElement('div'); top.className = 'flex items-center justify-between gap-2 text-xs font-black text-slate-700';
+        const roleIcon = m.sender_role === 'nurse' ? '🩺' : (m.sender_role === 'center' ? '🏥' : (m.sender_role === 'family' ? '👨‍👩‍👧' : '👴'));
+        const nmSpan = document.createElement('span'); nmSpan.textContent = roleIcon + ' ' + (m.sender_name || '');
+        const dtSpan = document.createElement('span'); dtSpan.className = 'text-[11px] font-bold text-slate-500';
+        dtSpan.textContent = m.created_at ? new Date(m.created_at).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        top.append(nmSpan, dtSpan);
         c.appendChild(top);
         if (m.message_text) { const p = document.createElement('p'); p.className = 'text-base font-bold text-slate-900'; p.textContent = m.message_text; c.appendChild(p); }
         if (m.audio_data) { const a = document.createElement('audio'); a.controls = true; a.src = m.audio_data; a.className = 'w-full'; c.appendChild(a); }
