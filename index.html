@@ -2296,13 +2296,14 @@
     if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
     try {
       const todayStart = getLocalDayStartIso();
-      const [{ data: sp }, { data: chk }, { data: meds }, { data: logs }, { data: appts }] = await Promise.all([
+      const [spRes, chkRes, medsRes, logsRes, apptsRes] = await Promise.all([
         client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, water_count, water_date').eq('id', currentSeniorId).single(),
         client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
         client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
         client.from('medication_logs').select('medication_id, status').eq('senior_id', currentSeniorId).gte('logged_at', todayStart),
         client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', currentSeniorId).order('appointment_at', { ascending: true })
       ]);
+      const sp = spRes.data, chk = chkRes.data, meds = medsRes.data, logs = logsRes.data, appts = apptsRes.data;
       if (sp) {
         if (sp.display_name) state.profile.name = sp.display_name;
         if (sp.date_of_birth) state.profile.dob = sp.date_of_birth;
@@ -2326,11 +2327,15 @@
       }
       if (chk && chk.length && chk[0].checked_in_at) state.lastServerCheckInIso = chk[0].checked_in_at;
       const takenIds = new Set((logs || []).filter((l) => l.status === 'taken').map((l) => l.medication_id));
-      if (Array.isArray(meds)) {
-        state.meds = meds.map((m) => ({ id: m.id, nameAr: m.name, nameEn: m.name, time: m.dosage || '08:00', taken: takenIds.has(m.id), imageData: '' }));
+      if (!medsRes.error && Array.isArray(meds)) {
+        const localUnsynced = (state.meds || []).filter((m) => String(m.id).startsWith('m'));
+        const cloudMapped = meds.map((m) => ({ id: m.id, nameAr: m.name, nameEn: m.name, time: m.dosage || '08:00', taken: takenIds.has(m.id), imageData: '' }));
+        state.meds = cloudMapped.concat(localUnsynced);
       }
-      if (Array.isArray(appts)) {
-        state.appts = appts.map((a) => { const dt = String(a.appointment_at || ''); return { id: a.id, doctorAr: a.title, doctorEn: a.title, date: dt.slice(0, 10), time: dt.slice(11, 16) || '10:00', attended: !!a.attended }; });
+      if (!apptsRes.error && Array.isArray(appts)) {
+        const localAppts = (state.appts || []).filter((a) => String(a.id).startsWith('a'));
+        const cloudAppts = appts.map((a) => { const dt = String(a.appointment_at || ''); return { id: a.id, doctorAr: a.title, doctorEn: a.title, date: dt.slice(0, 10), time: dt.slice(11, 16) || '10:00', attended: !!a.attended }; });
+        state.appts = cloudAppts.concat(localAppts);
       }
       saveState(); applyLang();
     } catch (_) {}
@@ -2348,13 +2353,13 @@
 
   if (client) {
     client.auth.getSession().then(({ data }) => {
-      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(() => { loadCloudSeniorData(); flushPendingQueue(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); }); }
+      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(async () => { await flushPendingQueue(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); }); }
     });
     client.auth.onAuthStateChange((_e, session) => {
       const u = session && session.user ? session.user : null;
       if (_e === 'SIGNED_OUT') { activeTab = 'home'; setRole(''); }
       updateAuthUI(u);
-      if (u) ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
+      if (u) ensureSeniorProfile(u).then(async () => { await flushPendingQueue(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
     });
     client.channel('cg-community-live').on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => { if (activeTab === 'chat') loadCommunityMessages(); }).subscribe();
     client.channel('cg-care-live')
