@@ -121,6 +121,7 @@
         </div>
       </div>
     </details>
+    <button id="authSwitchRoleBtn" type="button" class="tap-btn mt-3 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-extrabold text-slate-800">🔄 تغيير نوع الحساب (المسن / العائلة / الممرض / الرعاية)</button>
   </section>
 
   <!-- TAB 1: HOME DASHBOARD (Matches Mockup 1000061436.png) -->
@@ -369,6 +370,7 @@
         <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
       </div>
       <div class="flex items-center gap-2">
+        <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 تحديث</button>
         <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">تغيير الدور</button>
         <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">خروج</button>
       </div>
@@ -770,6 +772,10 @@
 
   // Bottom Navigation & View Switching
   function switchTab(tab) {
+    if (!['senior', 'family', 'nurse', 'center'].includes(userRole)) {
+      renderRoleViews();
+      return;
+    }
     activeTab = tab;
     const isChat = tab === 'chat';
     $('mainHeader').classList.toggle('hidden', isChat);
@@ -1625,6 +1631,7 @@
     $('voiceBtn').textContent = ar ? '🔊 استماع للتذكير الصوتي' : '🔊 Voice Reminder';
     $('openRingtoneModalBtn').textContent = ar ? '🔔 نغمة التنبيه' : '🔔 Alert Ringtone';
     $('signOutBtn').textContent = ar ? 'تسجيل الخروج' : 'Sign Out';
+    if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = ar ? '🔄 تغيير نوع الحساب (المسن / العائلة / الممرض / الرعاية)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
     $('backFromChatBtn').textContent = ar ? '← رجوع' : '← Back';
     $('chatHeading').textContent = ar ? 'مجلس طمأنينة' : 'CareGuard Lounge';
     $('chatSubheading').textContent = ar ? 'تحفظ 24 ساعة ثم تمحى' : 'Kept 24h then deleted';
@@ -1985,6 +1992,7 @@
     });
     client.auth.onAuthStateChange((_e, session) => {
       const u = session && session.user ? session.user : null;
+      if (_e === 'SIGNED_OUT') { activeTab = 'home'; setRole(''); }
       updateAuthUI(u);
       if (u) ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); });
     });
@@ -2114,8 +2122,10 @@
   $('chooseNurseRoleBtn').addEventListener('click', () => setRole('nurse'));
   $('chooseCenterRoleBtn').addEventListener('click', () => setRole('center'));
   $('switchRoleBtn').addEventListener('click', () => setRole(''));
+  if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').addEventListener('click', () => setRole(''));
   $('careSwitchRoleBtn').addEventListener('click', () => setRole(''));
   $('careSignOutBtn').addEventListener('click', handleSignOut);
+  if ($('careRefreshBtn')) $('careRefreshBtn').addEventListener('click', loadCarePortalData);
 
   $('copySeniorCodeBtn').addEventListener('click', async () => {
     if (!myRegistrationCode) return;
@@ -2144,7 +2154,8 @@
         okBtn.className = 'rounded-xl bg-emerald-700 px-3 py-1 text-xs font-extrabold text-white';
         okBtn.textContent = ar ? 'موافقة ✓' : 'Approve ✓';
         okBtn.addEventListener('click', async () => {
-          await client.from('senior_care_links').update({ status: 'approved' }).eq('id', lk.id);
+          const { error } = await client.from('senior_care_links').update({ status: 'approved' }).eq('id', lk.id);
+          if (error) { const errP = document.createElement('p'); errP.className = 'text-xs font-bold text-rose-700'; errP.textContent = friendlyError(error); list.prepend(errP); return; }
           loadPendingCareLinksForSenior();
         });
         const noBtn = document.createElement('button'); noBtn.type = 'button'; noBtn.style.minHeight = '36px';
@@ -2202,14 +2213,19 @@
         return;
       }
       for (const lk of links) {
-        const sp = lk.senior_profiles;
-        if (lk.status !== 'approved' || !sp) {
+        if (lk.status !== 'approved') {
           const pend = document.createElement('div');
-          pend.className = 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
-          pend.textContent = ar ? '⏳ طلب ربط قيد انتظار موافقة المسن.' : '⏳ Link request pending senior approval.';
+          const isRej = lk.status === 'rejected';
+          pend.className = isRej
+            ? 'rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
+            : 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
+          pend.textContent = isRej
+            ? (ar ? '❌ تم رفض طلب الربط.' : '❌ Link request was declined.')
+            : (ar ? '⏳ طلب ربط قيد انتظار موافقة المسن.' : '⏳ Link request pending senior approval.');
           list.appendChild(pend);
           continue;
         }
+        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: ar ? 'مسن مربوط' : 'Linked Senior' };
         // Fetch latest check-in, battery, and meds for this linked senior
         const [{ data: chk }, { data: bat }, { data: meds }] = await Promise.all([
           client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
