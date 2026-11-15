@@ -41,7 +41,7 @@
 </head>
 <body class="min-h-screen pb-14">
 
-<!-- Clean Single-Bar Header (Large Text & Icons, Zero Tabs) -->
+<!-- Clean Single-Bar Header -->
 <header class="sticky top-0 z-30 border-b-2 border-slate-200 bg-white/95 backdrop-blur">
   <div class="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 py-3.5">
     <div class="flex items-center gap-3.5">
@@ -63,7 +63,7 @@
 
 <main class="mx-auto max-w-xl space-y-5 px-4 pt-5">
 
-  <!-- Signed-In Bar (Shown only when signed in) -->
+  <!-- Signed-In Bar -->
   <section id="signedInBar" class="hidden flex flex-wrap items-center justify-between gap-3 rounded-3xl border-2 border-emerald-300 bg-emerald-50 p-4">
     <div class="flex items-center gap-3">
       <span class="h-4 w-4 shrink-0 rounded-full bg-emerald-600"></span>
@@ -77,7 +77,7 @@
     </button>
   </section>
 
-  <!-- Google-First Auth Card (Hidden automatically when signed in) -->
+  <!-- Google-First Auth Card -->
   <section id="authCard" class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
     <div class="text-center">
       <h2 id="authHeading" class="text-2xl font-black text-slate-900">الدخول السريع</h2>
@@ -112,7 +112,7 @@
     </details>
   </section>
 
-  <!-- SENIOR VIEW (High Contrast, Large Text, Big Icons) -->
+  <!-- SENIOR VIEW -->
   <section id="seniorView" class="space-y-5">
 
     <!-- Quick Action Bar: Update Info & Ringtone Settings -->
@@ -132,17 +132,25 @@
       </button>
     </div>
 
-    <!-- Card 1: Daily Check-In -->
+    <!-- Card 1: Daily Check-In + Real Battery Monitor (<= 30% Alert) -->
     <div class="rounded-3xl border-2 border-emerald-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-base font-extrabold text-emerald-900">
           <span class="h-3 w-3 rounded-full bg-emerald-600"></span>
           <span id="safetyBadgeText">الحالة طبيعية</span>
         </span>
-        <span id="lastCheckInText" class="text-base font-bold text-slate-600">آخر طمأنة: منذ ساعتين</span>
+        <span id="batteryBadge" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-1.5 text-base font-extrabold text-slate-800">
+          <svg class="h-5 w-5 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm18 2v4" />
+          </svg>
+          <span id="batteryText">--%</span>
+        </span>
       </div>
 
-      <h2 id="seniorGreeting" class="mt-4 text-3xl font-black text-slate-900">مرحباً بك</h2>
+      <div id="batteryAlertBanner" class="hidden mt-3 rounded-2xl border-2 border-rose-400 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900"></div>
+
+      <p id="lastCheckInText" class="mt-3 text-base font-bold text-slate-600">آخر طمأنة: منذ ساعتين</p>
+      <h2 id="seniorGreeting" class="mt-2 text-3xl font-black text-slate-900">مرحباً بك</h2>
       <p id="seniorPromptText" class="mt-1.5 text-lg font-semibold text-slate-700">اضغط الزر الأخضر لتخبر عائلتك أنك بخير.</p>
 
       <button id="imOkBtn" type="button" class="tap-btn mt-5 flex w-full items-center justify-center gap-3 rounded-3xl bg-emerald-700 px-6 py-5 text-2xl font-black text-white shadow-md hover:bg-emerald-800">
@@ -162,7 +170,7 @@
       <div id="checkInFeedback" class="hidden mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900"></div>
     </div>
 
-    <!-- Card 2: Automatic 2-Hour Water Reminder (AI-Powered Voice) -->
+    <!-- Card 2: Automatic 2-Hour Water Reminder -->
     <div class="rounded-3xl border-2 border-sky-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -203,7 +211,7 @@
       <div id="waterAiFeedback" class="hidden mt-3 rounded-2xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-base font-bold text-sky-950"></div>
     </div>
 
-    <!-- Card 3: Today's Medications (With Upload Photo & Add/Delete) -->
+    <!-- Card 3: Today's Medications (Real-Time Alarm + Photo Upload + Add/Delete) -->
     <div class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -225,7 +233,7 @@
       <div id="medsList" class="mt-4 space-y-3"></div>
     </div>
 
-    <!-- Card 4: AI Assistant (Smart Helper for Senior) -->
+    <!-- Card 4: AI Assistant (Text + Voice Conversation) -->
     <div class="rounded-3xl border-2 border-violet-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -236,7 +244,7 @@
           </div>
           <div>
             <h3 id="aiHeading" class="text-2xl font-black text-slate-900">المساعد الذكي</h3>
-            <p id="aiSubheading" class="text-base font-bold text-slate-600">اسأل عن أدويتك أو صحتك بصوت واضح</p>
+            <p id="aiSubheading" class="text-base font-bold text-slate-600">اسأل بالكتابة أو بالصوت</p>
           </div>
         </div>
         <button id="openAiConfigBtn" type="button" class="tap-btn rounded-2xl border-2 border-violet-200 bg-violet-50 px-3.5 py-2 text-sm font-extrabold text-violet-900">
@@ -244,16 +252,71 @@
         </button>
       </div>
 
-      <div class="mt-4 flex flex-col gap-3 sm:flex-row">
-        <input id="aiQuestionInput" type="text" placeholder="اكتب سؤالك هنا (مثال: ما هي أدويتي اليوم؟)" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
-        <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-violet-700 px-6 py-3.5 text-lg font-extrabold text-white hover:bg-violet-800">
+      <button id="aiVoiceTalkBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-violet-700 px-5 py-4 text-xl font-black text-white shadow-sm hover:bg-violet-800">
+        <svg class="h-7 w-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+        <span id="aiVoiceBtnLabel">تحدّث مع المساعد بالصوت</span>
+      </button>
+
+      <div class="mt-3 flex flex-col gap-3 sm:flex-row">
+        <input id="aiQuestionInput" type="text" placeholder="أو اكتب سؤالك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
+        <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl border-2 border-violet-300 bg-violet-50 px-6 py-3.5 text-lg font-extrabold text-violet-900 hover:bg-violet-100">
           اسأل
         </button>
       </div>
       <div id="aiAnswerBox" class="hidden mt-4 rounded-2xl border-2 border-violet-200 bg-violet-50 p-4 text-lg font-bold text-slate-900"></div>
     </div>
 
-    <!-- Card 5: Next Appointment & Emergency Medical Card -->
+    <!-- Card 5: Seniors Community Lounge (Voice + Text Chat Room) -->
+    <div class="rounded-3xl border-2 border-amber-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800">
+            <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="chatHeading" class="text-2xl font-black text-slate-900">مجلس طمأنينة</h3>
+            <p id="chatSubheading" class="text-base font-bold text-slate-600">غرفة دردشة صوتية ونصية للمسنين</p>
+          </div>
+        </div>
+        <button id="refreshChatBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-200 bg-amber-50 px-4 py-2 text-base font-extrabold text-amber-900">
+          تحديث
+        </button>
+      </div>
+
+      <div id="chatMessagesList" class="mt-4 max-h-80 space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-50 p-3.5"></div>
+
+      <!-- Voice Recording Controls -->
+      <div class="mt-4 space-y-3">
+        <button id="chatRecordBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-3 rounded-2xl bg-amber-600 px-5 py-4 text-xl font-black text-white shadow-sm hover:bg-amber-700">
+          <svg class="h-7 w-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+          <span id="chatRecordBtnLabel">تسجيل مشاركة صوتية</span>
+        </button>
+
+        <div id="chatVoicePreviewBox" class="hidden space-y-2.5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3.5">
+          <audio id="chatVoicePreview" controls class="w-full"></audio>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button id="chatSendVoiceBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-3 text-lg font-extrabold text-white">إرسال الصوت</button>
+            <button id="chatDiscardVoiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg font-extrabold text-slate-800">إلغاء</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2.5 sm:flex-row">
+          <input id="chatTextInput" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+          <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-slate-900 px-6 py-3.5 text-lg font-extrabold text-white">
+            إرسال
+          </button>
+        </div>
+        <p id="chatStatusMsg" class="hidden rounded-2xl bg-slate-100 px-4 py-2.5 text-base font-bold text-slate-800"></p>
+      </div>
+    </div>
+
+    <!-- Card 6: Next Appointment & Emergency Medical Card -->
     <div class="rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h3 id="apptsHeading" class="text-2xl font-black text-slate-900">الموعد الطبي القادم</h3>
@@ -274,7 +337,25 @@
   </section>
 </main>
 
-<!-- Modal 1: Upload Prescription / Medication Box Image + AI Extract -->
+<!-- Modal: Medication Due Alarm -->
+<div id="medDueModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4">
+  <div class="w-full max-w-md rounded-3xl border-4 border-emerald-600 bg-white p-6 text-center shadow-2xl">
+    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+      <svg class="h-10 w-10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+    </div>
+    <h3 id="medDueTitle" class="mt-3 text-2xl font-black text-slate-900">حان موعد الدواء!</h3>
+    <p id="medDueName" class="mt-2 text-2xl font-extrabold text-emerald-800"></p>
+    <p id="medDueTime" class="mt-1 text-lg font-bold text-slate-600"></p>
+    <div class="mt-5 space-y-3">
+      <button id="medDueTakeBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">أخذت الدواء الآن ✓</button>
+      <button id="medDueSnoozeBtn" type="button" class="tap-btn w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-5 py-3.5 text-lg font-extrabold text-slate-800">تأجيل 10 دقائق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Upload Prescription / Medication Box Image -->
 <div id="uploadMedModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between gap-2">
@@ -320,7 +401,7 @@
   </div>
 </div>
 
-<!-- Modal 2: Update Senior Profile & Manage Meds -->
+<!-- Modal 2: Update Senior Profile -->
 <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
@@ -341,7 +422,7 @@
   </div>
 </div>
 
-<!-- Modal 3: Strong Ringtone & Phone Sound Selector -->
+<!-- Modal 3: Strong Ringtone & Phone File Picker -->
 <div id="ringtoneModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
@@ -353,16 +434,18 @@
         <span id="ringtonePresetLabel">اختر نوع الرنين:</span>
         <select id="ringtonePresetSelect" class="mt-1.5 w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg">
           <option value="loud_phone">رنين هاتف قوي متكرر</option>
-          <option value="urgent_alarm">جرس طبي عالي الوضوح</option>
-          <option value="custom_file">نغمة مخصّصة من هاتفي</option>
+          <option value="classic_bell">جرس هاتف كلاسيكي</option>
+          <option value="urgent_alarm">منبّه طبي عالي الوضوح</option>
+          <option value="custom_file">نغمة من ملفات هاتفي</option>
         </select>
       </label>
 
-      <label class="flex cursor-pointer items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50 p-4 text-center text-lg font-extrabold text-amber-950 hover:bg-amber-100">
-        <span id="pickPhoneRingtoneLabel">اختيار ملف نغمة من الهاتف (MP3 / M4A / WAV)</span>
-        <input id="customRingtoneInput" type="file" accept="audio/*" class="hidden" />
+      <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50 p-4 text-center text-lg font-extrabold text-amber-950 hover:bg-amber-100">
+        <span id="pickPhoneRingtoneLabel">فتح مدير الملفات لاختيار نغمة (MP3 / M4A / WAV)</span>
+        <input id="customRingtoneInput" type="file" accept=".mp3,.m4a,.wav,.ogg,.aac,audio/mpeg,audio/mp4,audio/ogg,*/*" class="hidden" />
       </label>
-      <p id="customRingtoneStatus" class="text-sm font-bold text-slate-600"></p>
+      <p id="ringtoneBrowserNote" class="text-sm font-semibold text-slate-600">ملاحظة: متصفح الويب لا يصل لمجلد نغمات النظام المحمي، لذا اختر ملفاً من «الملفات / التنزيلات» أو استخدم إحدى النغمات القوية المدمجة.</p>
+      <p id="customRingtoneStatus" class="text-sm font-extrabold text-emerald-800"></p>
 
       <button id="testRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl bg-amber-600 px-5 py-4 text-xl font-black text-white hover:bg-amber-700">
         تجربة صوت الرنين والاهتزاز الآن
@@ -371,7 +454,7 @@
   </div>
 </div>
 
-<!-- Modal 4: AI Key / Settings -->
+<!-- Modal 4: AI Key Settings -->
 <div id="aiConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
@@ -428,10 +511,8 @@
   'use strict';
   const $ = (id) => document.getElementById(id);
 
-  // Embedded Public Supabase Configuration (safe publishable key only)
   const SUPABASE_URL = 'https://jobzviplbwfdoyrdrblt.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi';
-
   const STORAGE_KEY = 'careguard_senior_state_v2';
   const AI_KEY_STORAGE = 'careguard_local_gemini_key';
 
@@ -462,8 +543,16 @@
 
   let state = loadState();
   let currentUser = null;
+  let currentSeniorId = null;
   let pendingImageDataUrl = '';
   let customAudioDataUrl = '';
+  let alertedMedKeys = new Set();
+  let activeDueMedId = null;
+  let batteryLowAlerted = false;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let pendingVoiceDataUrl = '';
+  let isRecording = false;
 
   function loadState() {
     try {
@@ -483,12 +572,10 @@
   }
 
   function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (_) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
   }
 
-  // IndexedDB for storing custom phone ringtone audio file
+  // IndexedDB for custom phone ringtone
   function openRingtoneDb() {
     return new Promise((resolve, reject) => {
       if (!window.indexedDB) return reject(new Error('No IndexedDB'));
@@ -505,8 +592,7 @@
     customAudioDataUrl = dataUrl;
     try {
       const db = await openRingtoneDb();
-      const tx = db.transaction('sounds', 'readwrite');
-      tx.objectStore('sounds').put(dataUrl, 'phone_ringtone');
+      db.transaction('sounds', 'readwrite').objectStore('sounds').put(dataUrl, 'phone_ringtone');
     } catch (_) {}
   }
 
@@ -514,8 +600,7 @@
     try {
       const db = await openRingtoneDb();
       return await new Promise((resolve) => {
-        const tx = db.transaction('sounds', 'readonly');
-        const req = tx.objectStore('sounds').get('phone_ringtone');
+        const req = db.transaction('sounds', 'readonly').objectStore('sounds').get('phone_ringtone');
         req.onsuccess = () => resolve(req.result || '');
         req.onerror = () => resolve('');
       });
@@ -558,13 +643,26 @@
       deleteMed: 'حذف',
       viewImg: 'عرض/تنزيل الصورة',
       aiHeading: 'المساعد الذكي',
-      aiSub: 'اسأل عن أدويتك أو صحتك بصوت واضح',
+      aiSub: 'اسأل بالكتابة أو بالصوت',
       aiConfigBtn: 'إعداد AI',
-      aiInputPh: 'اكتب سؤالك هنا (مثال: ما هي أدويتي اليوم؟)',
+      aiVoiceBtn: 'تحدّث مع المساعد بالصوت',
+      aiInputPh: 'أو اكتب سؤالك هنا...',
       askBtn: 'اسأل',
+      chatHeading: 'مجلس طمأنينة',
+      chatSub: 'غرفة دردشة صوتية ونصية للمسنين',
+      refreshChat: 'تحديث',
+      recordVoice: 'تسجيل مشاركة صوتية',
+      stopRecord: 'إيقاف التسجيل',
+      sendVoice: 'إرسال الصوت',
+      discardVoice: 'إلغاء',
+      chatTextPh: 'أو اكتب تجربتك هنا...',
+      sendText: 'إرسال',
       apptsHeading: 'الموعد الطبي القادم',
       addAppt: '+ موعد جديد',
       emergencyBtn: 'بطاقة الطوارئ الطبية',
+      medDueTitle: 'حان موعد الدواء!',
+      medDueTake: 'أخذت الدواء الآن ✓',
+      medDueSnooze: 'تأجيل 10 دقائق',
       uploadModalTitle: 'إضافة دواء أو صورة وصفة',
       uploadPhotoPrompt: 'اضغط لرفع صورة الوصفة الطبية أو علبة الدواء',
       aiAnalyzePhoto: 'قراءة الصورة بالذكاء الاصطناعي',
@@ -576,7 +674,8 @@
       saveProfile: 'حفظ البيانات',
       ringtoneModalTitle: 'إعداد نغمة التنبيه القوية',
       ringtonePresetLabel: 'اختر نوع الرنين:',
-      pickPhoneRingtone: 'اختيار ملف نغمة من الهاتف (MP3 / M4A / WAV)',
+      pickPhoneRingtone: 'فتح مدير الملفات لاختيار نغمة (MP3 / M4A / WAV)',
+      ringtoneNote: 'ملاحظة: متصفح الويب لا يصل لمجلد نغمات النظام المحمي، لذا اختر ملفاً من «الملفات / التنزيلات» أو استخدم إحدى النغمات القوية المدمجة.',
       testRingtone: 'تجربة صوت الرنين والاهتزاز الآن',
       aiConfigTitle: 'ربط الذكاء الاصطناعي (Gemini)',
       saveAiKey: 'حفظ في هذا الجهاز',
@@ -588,7 +687,7 @@
       checkInDone: 'تم تسجيل أنك بخير بنجاح!',
       checkInSavedCloud: 'تم تسجيل أنك بخير وحفظه في حسابك بنجاح!',
       voiceSpeak: 'مرحباً، تذكير من طمأنينة: حان موعد دوائك، ولا تنس الضغط على زر أنا بخير.',
-      googleNotEnabled: 'مزوّد Google غير مفعّل بعد في لوحة Supabase (Authentication -> Providers -> Google). يمكنك الدخول بالبريد الإلكتروني مؤقتاً.'
+      googleNotEnabled: 'مزوّد Google غير مفعّل بعد في Supabase.'
     },
     en: {
       title: 'CareGuard',
@@ -625,13 +724,26 @@
       deleteMed: 'Delete',
       viewImg: 'View / Download Photo',
       aiHeading: 'AI Assistant',
-      aiSub: 'Ask about your meds or water schedule',
+      aiSub: 'Ask by typing or voice',
       aiConfigBtn: 'AI Setup',
-      aiInputPh: 'Ask a question (e.g. What are my meds today?)',
+      aiVoiceBtn: 'Talk to AI Assistant',
+      aiInputPh: 'Or type your question here...',
       askBtn: 'Ask',
+      chatHeading: 'CareGuard Lounge',
+      chatSub: 'Voice & text chat room for seniors',
+      refreshChat: 'Refresh',
+      recordVoice: 'Record Voice Message',
+      stopRecord: 'Stop Recording',
+      sendVoice: 'Send Voice',
+      discardVoice: 'Discard',
+      chatTextPh: 'Or share your experience here...',
+      sendText: 'Send',
       apptsHeading: 'Next Medical Appointment',
       addAppt: '+ Add',
       emergencyBtn: 'Emergency Medical ID',
+      medDueTitle: 'Medication Time!',
+      medDueTake: 'I Took It Now ✓',
+      medDueSnooze: 'Snooze 10 Minutes',
       uploadModalTitle: 'Add Medication or Rx Photo',
       uploadPhotoPrompt: 'Tap to upload doctor prescription or pillbox photo',
       aiAnalyzePhoto: 'Read Photo with AI',
@@ -643,7 +755,8 @@
       saveProfile: 'Save Information',
       ringtoneModalTitle: 'Loud Alert & Phone Ringtone',
       ringtonePresetLabel: 'Choose ringtone style:',
-      pickPhoneRingtone: 'Pick ringtone file from phone (MP3 / M4A / WAV)',
+      pickPhoneRingtone: 'Open File Manager to Pick Ringtone (MP3 / M4A / WAV)',
+      ringtoneNote: 'Note: Browsers cannot read protected system ringtone folders; pick an audio file from Files/Downloads or use a built-in loud ringtone.',
       testRingtone: 'Test Loud Ringtone & Vibration Now',
       aiConfigTitle: 'Connect AI (Gemini)',
       saveAiKey: 'Save on This Device',
@@ -655,7 +768,7 @@
       checkInDone: 'Check-in recorded!',
       checkInSavedCloud: 'Check-in recorded and synced to your account!',
       voiceSpeak: 'Hello from CareGuard. Reminder to take your medication and tap I am OK.',
-      googleNotEnabled: 'Google provider is not enabled yet in Supabase (Authentication -> Providers -> Google). You can use Email sign-in for now.'
+      googleNotEnabled: 'Google provider is not enabled yet in Supabase.'
     }
   };
 
@@ -696,11 +809,13 @@
         const osc1 = ctx.createOscillator();
         const osc2 = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc1.type = mode === 'urgent_alarm' ? 'square' : 'triangle';
+        osc1.type = mode === 'urgent_alarm' ? 'square' : (mode === 'classic_bell' ? 'sine' : 'triangle');
         osc2.type = 'sine';
-        osc1.frequency.setValueAtTime(mode === 'urgent_alarm' ? 880 : 660, t);
-        osc2.frequency.setValueAtTime(mode === 'urgent_alarm' ? 1175 : 880, t);
-        gain.gain.setValueAtTime(0.32, t);
+        const f1 = mode === 'urgent_alarm' ? 880 : (mode === 'classic_bell' ? 784 : 660);
+        const f2 = mode === 'urgent_alarm' ? 1175 : (mode === 'classic_bell' ? 1046 : 880);
+        osc1.frequency.setValueAtTime(f1, t);
+        osc2.frequency.setValueAtTime(f2, t);
+        gain.gain.setValueAtTime(0.35, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.34);
         osc1.connect(gain);
         osc2.connect(gain);
@@ -723,7 +838,121 @@
     window.speechSynthesis.speak(u);
   }
 
-  // Gemini AI Helper (Optional local key; falls back to smart built-in assistant)
+  // Real Battery Status + <= 30% Alert
+  async function syncBatteryToSupabase(pct, charging) {
+    if (!client || !currentUser || !currentSeniorId) return;
+    try {
+      await client.from('device_status').insert({
+        senior_id: currentSeniorId,
+        battery_percent: pct,
+        is_charging: !!charging
+      });
+      if (pct <= 30 && !charging) {
+        await client.from('alerts').insert({
+          senior_id: currentSeniorId,
+          alert_type: 'low_battery',
+          severity: pct <= 15 ? 'critical' : 'warning',
+          status: 'open',
+          message: `Low phone battery: ${pct}%`
+        });
+      }
+    } catch (_) {}
+  }
+
+  function updateBatteryUI(pct, charging) {
+    const badge = $('batteryBadge');
+    const txt = $('batteryText');
+    const banner = $('batteryAlertBanner');
+    txt.textContent = pct + '% ' + (charging ? '⚡' : '');
+    if (pct <= 30 && !charging) {
+      badge.className = 'inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-4 py-1.5 text-base font-extrabold text-rose-900';
+      banner.classList.remove('hidden');
+      banner.textContent = state.lang === 'ar'
+        ? `تنبيه البطارية: وصلت إلى ${pct}% — يرجى شحن الهاتف الآن.`
+        : `Low Battery Alert: ${pct}% remaining — please charge your phone.`;
+      if (!batteryLowAlerted) {
+        batteryLowAlerted = true;
+        playStrongRingtone();
+        setTimeout(() => speakText(banner.textContent), 900);
+        syncBatteryToSupabase(pct, charging);
+      }
+    } else {
+      batteryLowAlerted = false;
+      badge.className = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-1.5 text-base font-extrabold text-slate-800';
+      banner.classList.add('hidden');
+    }
+  }
+
+  function initBatteryMonitor() {
+    if (!('getBattery' in navigator)) {
+      $('batteryText').textContent = state.lang === 'ar' ? 'البطارية: غير مدعوم' : 'Battery N/A';
+      return;
+    }
+    navigator.getBattery().then((bat) => {
+      const read = () => updateBatteryUI(Math.round(bat.level * 100), bat.charging);
+      read();
+      bat.addEventListener('levelchange', read);
+      bat.addEventListener('chargingchange', read);
+    }).catch(() => {});
+  }
+
+  // Real-Time Medication Alarm Scheduler (checks every 10s)
+  function checkDueMedications() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const nowTime = hh + ':' + mm;
+    const today = now.toISOString().slice(0, 10);
+
+    for (const m of state.meds) {
+      if (m.taken) continue;
+      const key = m.id + '|' + today + '|' + m.time;
+      if (m.time === nowTime && !alertedMedKeys.has(key)) {
+        alertedMedKeys.add(key);
+        activeDueMedId = m.id;
+        const medName = state.lang === 'ar' ? m.nameAr : m.nameEn;
+        $('medDueName').textContent = medName;
+        $('medDueTime').textContent = m.time;
+        $('medDueModal').classList.remove('hidden');
+        playStrongRingtone();
+        const spoken = state.lang === 'ar'
+          ? `حان الآن موعد دوائك: ${medName}.`
+          : `It is time for your medication: ${medName}.`;
+        setTimeout(() => speakText(spoken), 950);
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try { new Notification(tr('medDueTitle'), { body: medName + ' (' + m.time + ')' }); } catch (_) {}
+        }
+        break;
+      }
+    }
+  }
+
+  $('medDueTakeBtn').addEventListener('click', () => {
+    if (activeDueMedId) {
+      const m = state.meds.find((x) => x.id === activeDueMedId);
+      if (m) m.taken = true;
+      saveState();
+      renderMeds();
+    }
+    $('medDueModal').classList.add('hidden');
+  });
+
+  $('medDueSnoozeBtn').addEventListener('click', () => {
+    if (activeDueMedId) {
+      const m = state.meds.find((x) => x.id === activeDueMedId);
+      if (m) {
+        const d = new Date(Date.now() + 10 * 60000);
+        m.time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        saveState();
+        renderMeds();
+      }
+    }
+    $('medDueModal').classList.add('hidden');
+  });
+
+  setInterval(checkDueMedications, 10000);
+
+  // Gemini AI Helper
   async function callGeminiText(prompt, imageBase64, mimeType) {
     const key = localStorage.getItem(AI_KEY_STORAGE) || '';
     if (!key) return null;
@@ -751,15 +980,13 @@
     let msg = state.lang === 'ar'
       ? `مرحباً ${name}، حان وقت شرب كأس ماء الآن. شربت اليوم ${state.waterCount} من 8 أكواب.`
       : `Hello ${name}, time to drink a glass of water now. You have had ${state.waterCount} of 8 glasses today.`;
-
     try {
       const aiPrompt = state.lang === 'ar'
-        ? `اكتب تذكيراً صوتياً لطيفاً وقصيراً جداً (جملتان فقط) لمسن اسمه "${name}" لشرب كأس ماء الآن. شرب اليوم ${state.waterCount} أكواب وبقي له ${remaining}.`
-        : `Write a warm, very short 2-sentence voice reminder for an older adult named "${name}" to drink a glass of water now. They drank ${state.waterCount} of 8 glasses today.`;
+        ? `اكتب تذكيراً صوتياً لطيفاً وقصيراً جداً (جملتان فقط) لمسن اسمه "${name}" لشرب كأس ماء الآن. شرب اليوم ${state.waterCount} وبقي ${remaining}.`
+        : `Write a warm 2-sentence voice reminder for an older adult named "${name}" to drink a glass of water now (${state.waterCount}/8 today).`;
       const aiReply = await callGeminiText(aiPrompt);
       if (aiReply && aiReply.trim()) msg = aiReply.trim();
     } catch (_) {}
-
     const fb = $('waterAiFeedback');
     fb.textContent = msg;
     fb.classList.remove('hidden');
@@ -772,8 +999,7 @@
 
   function renderWater() {
     $('waterCountBadge').textContent = state.waterCount + ' / 8';
-    const pct = Math.min(100, Math.round((state.waterCount / 8) * 100));
-    $('waterProgressBar').style.width = pct + '%';
+    $('waterProgressBar').style.width = Math.min(100, Math.round((state.waterCount / 8) * 100)) + '%';
     const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
     const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
     const hrs = Math.floor(remMin / 60);
@@ -790,7 +1016,6 @@
     state.meds.forEach((m) => {
       const row = document.createElement('div');
       row.className = 'rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 space-y-3';
-
       const top = document.createElement('div');
       top.className = 'flex flex-wrap items-center justify-between gap-2';
       const info = document.createElement('div');
@@ -846,7 +1071,6 @@
         imgWrap.append(thumb, dl);
         row.appendChild(imgWrap);
       }
-
       box.appendChild(row);
     });
   }
@@ -956,11 +1180,23 @@
     $('aiHeading').textContent = tr('aiHeading');
     $('aiSubheading').textContent = tr('aiSub');
     $('openAiConfigBtn').textContent = tr('aiConfigBtn');
+    $('aiVoiceBtnLabel').textContent = tr('aiVoiceBtn');
     $('aiQuestionInput').placeholder = tr('aiInputPh');
     $('askAiBtn').textContent = tr('askBtn');
+    $('chatHeading').textContent = tr('chatHeading');
+    $('chatSubheading').textContent = tr('chatSub');
+    $('refreshChatBtn').textContent = tr('refreshChat');
+    $('chatRecordBtnLabel').textContent = isRecording ? tr('stopRecord') : tr('recordVoice');
+    $('chatSendVoiceBtn').textContent = tr('sendVoice');
+    $('chatDiscardVoiceBtn').textContent = tr('discardVoice');
+    $('chatTextInput').placeholder = tr('chatTextPh');
+    $('chatSendTextBtn').textContent = tr('sendText');
     $('apptsHeading').textContent = tr('apptsHeading');
     $('openApptModalBtn').textContent = tr('addAppt');
     $('emergencyBtnLabel').textContent = tr('emergencyBtn');
+    $('medDueTitle').textContent = tr('medDueTitle');
+    $('medDueTakeBtn').textContent = tr('medDueTake');
+    $('medDueSnoozeBtn').textContent = tr('medDueSnooze');
     $('uploadModalTitle').textContent = tr('uploadModalTitle');
     $('uploadPhotoPrompt').textContent = tr('uploadPhotoPrompt');
     $('aiAnalyzePhotoBtn').textContent = tr('aiAnalyzePhoto');
@@ -973,6 +1209,7 @@
     $('ringtoneModalTitle').textContent = tr('ringtoneModalTitle');
     $('ringtonePresetLabel').textContent = tr('ringtonePresetLabel');
     $('pickPhoneRingtoneLabel').textContent = tr('pickPhoneRingtone');
+    $('ringtoneBrowserNote').textContent = tr('ringtoneNote');
     $('testRingtoneBtn').textContent = tr('testRingtone');
     $('aiConfigTitle').textContent = tr('aiConfigTitle');
     $('saveAiKeyBtn').textContent = tr('saveAiKey');
@@ -998,22 +1235,18 @@
     applyLang();
   });
 
-  // Voice Reminder
   $('voiceBtn').addEventListener('click', () => {
     playStrongRingtone();
     setTimeout(() => speakText(tr('voiceSpeak')), 900);
   });
 
-  // Water Tracker & Automatic 2-Hour Timer
   $('drankWaterBtn').addEventListener('click', () => {
     state.waterCount = Math.min(8, state.waterCount + 1);
     state.lastWaterReminderAt = Date.now();
     saveState();
     renderWater();
     const fb = $('waterAiFeedback');
-    fb.textContent = state.lang === 'ar'
-      ? `أحسنت! سجّلت الكأس رقم ${state.waterCount} من 8.`
-      : `Great job! Recorded glass ${state.waterCount} of 8.`;
+    fb.textContent = state.lang === 'ar' ? `أحسنت! سجّلت الكأس رقم ${state.waterCount} من 8.` : `Great! Recorded glass ${state.waterCount} of 8.`;
     fb.classList.remove('hidden');
   });
 
@@ -1021,15 +1254,19 @@
 
   setInterval(() => {
     const nowHour = new Date().getHours();
-    const twoHoursMs = 2 * 60 * 60 * 1000;
-    if (nowHour >= 7 && nowHour <= 22 && Date.now() - (state.lastWaterReminderAt || 0) >= twoHoursMs) {
+    if (nowHour >= 7 && nowHour <= 22 && Date.now() - (state.lastWaterReminderAt || 0) >= 2 * 60 * 60 * 1000) {
       triggerWaterReminder(false);
     }
     renderWater();
   }, 60000);
 
-  // Upload Prescription / Medication Box Image Modal
-  $('openUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.remove('hidden'));
+  // Upload Med Modal
+  $('openUploadMedBtn').addEventListener('click', () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+    $('uploadMedModal').classList.remove('hidden');
+  });
   $('closeUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.add('hidden'));
   $('rxConfirmCheck').addEventListener('change', (e) => { $('saveNewMedBtn').disabled = !e.target.checked; });
 
@@ -1053,24 +1290,24 @@
     const key = localStorage.getItem(AI_KEY_STORAGE) || '';
     if (!key) {
       st.textContent = state.lang === 'ar'
-        ? 'لتفعيل قراءة الصورة بالذكاء الاصطناعي، أضف مفتاح Gemini من زر «إعداد AI»، أو اكتب اسم الدواء يدوياً بالأسفل.'
-        : 'To read photos with AI, add your Gemini API key in AI Setup, or type the medication name below.';
+        ? 'أضف مفتاح Gemini من زر «إعداد AI» أو اكتب اسم الدواء يدوياً.'
+        : 'Add your Gemini key in AI Setup or type the medication name below.';
       return;
     }
-    st.textContent = state.lang === 'ar' ? 'جارٍ قراءة الصورة بالذكاء الاصطناعي...' : 'Analyzing photo with AI...';
+    st.textContent = state.lang === 'ar' ? 'جارٍ قراءة الصورة...' : 'Reading photo...';
     try {
       const b64 = pendingImageDataUrl.split(',')[1] || '';
       const mime = (pendingImageDataUrl.match(/^data:([^;]+);/) || [])[1] || 'image/jpeg';
       const prompt = state.lang === 'ar'
-        ? 'اقرأ اسم الدواء والجرعة من هذه الصورة وأجب بسطر واحد مختصر فقط لكتابته في خانة اسم الدواء.'
-        : 'Read the medication name and dose from this photo and reply with one short line only.';
+        ? 'اقرأ اسم الدواء والجرعة من هذه الصورة وأجب بسطر واحد مختصر فقط.'
+        : 'Read the medication name and dose from this photo in one short line.';
       const ans = await callGeminiText(prompt, b64, mime);
       if (ans) {
         $('newMedNameInput').value = ans.trim();
-        st.textContent = state.lang === 'ar' ? 'تم استخراج الدواء! تأكد منه أمام وصفة الطبيب ثم احفظ.' : 'Extracted! Confirm against your prescription and save.';
+        st.textContent = state.lang === 'ar' ? 'تم الاستخراج! تأكد أمام وصفة الطبيب ثم احفظ.' : 'Extracted! Confirm against prescription and save.';
       }
     } catch (err) {
-      st.textContent = (state.lang === 'ar' ? 'تعذر التحليل: ' : 'Analysis failed: ') + (err.message || 'Error');
+      st.textContent = (state.lang === 'ar' ? 'تعذر التحليل: ' : 'Failed: ') + (err.message || 'Error');
     }
   });
 
@@ -1078,14 +1315,7 @@
     const name = $('newMedNameInput').value.trim();
     const time = $('newMedTimeInput').value || '08:00';
     if (!name) return;
-    state.meds.push({
-      id: 'm' + Date.now(),
-      nameAr: name,
-      nameEn: name,
-      time,
-      taken: false,
-      imageData: pendingImageDataUrl || ''
-    });
+    state.meds.push({ id: 'm' + Date.now(), nameAr: name, nameEn: name, time, taken: false, imageData: pendingImageDataUrl || '' });
     saveState();
     renderMeds();
     pendingImageDataUrl = '';
@@ -1096,7 +1326,7 @@
     $('uploadMedModal').classList.add('hidden');
   });
 
-  // Update Senior Profile Modal
+  // Profile Modal
   $('openProfileModalBtn').addEventListener('click', () => {
     $('profNameInput').value = state.profile.name || '';
     $('profBloodInput').value = state.profile.bloodType || '';
@@ -1116,17 +1346,15 @@
     saveState();
     applyLang();
     if (client && currentUser && state.profile.name) {
-      try {
-        await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' });
-      } catch (_) {}
+      try { await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' }); } catch (_) {}
     }
     const fb = $('profileSaveFeedback');
-    fb.textContent = state.lang === 'ar' ? 'تم حفظ البيانات بنجاح!' : 'Information saved!';
+    fb.textContent = state.lang === 'ar' ? 'تم حفظ البيانات بنجاح!' : 'Saved!';
     fb.classList.remove('hidden');
-    setTimeout(() => $('profileModal').classList.add('hidden'), 700);
+    setTimeout(() => $('profileModal').classList.add('hidden'), 650);
   });
 
-  // Ringtone Settings Modal
+  // Ringtone Modal
   $('openRingtoneModalBtn').addEventListener('click', () => {
     $('ringtonePresetSelect').value = state.ringtonePreset || 'loud_phone';
     $('customRingtoneStatus').textContent = state.customRingtoneName
@@ -1155,7 +1383,7 @@
   });
   $('testRingtoneBtn').addEventListener('click', playStrongRingtone);
 
-  // AI Assistant & Config
+  // AI Assistant (Text + Voice Conversation)
   $('openAiConfigBtn').addEventListener('click', () => {
     $('geminiKeyInput').value = localStorage.getItem(AI_KEY_STORAGE) || '';
     $('aiKeyFeedback').classList.add('hidden');
@@ -1165,37 +1393,226 @@
   $('saveAiKeyBtn').addEventListener('click', () => {
     localStorage.setItem(AI_KEY_STORAGE, $('geminiKeyInput').value.trim());
     const fb = $('aiKeyFeedback');
-    fb.textContent = state.lang === 'ar' ? 'تم الحفظ على هذا الجهاز!' : 'Saved on this device!';
+    fb.textContent = state.lang === 'ar' ? 'تم الحفظ!' : 'Saved!';
     fb.classList.remove('hidden');
     setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
   });
 
-  $('askAiBtn').addEventListener('click', async () => {
-    const q = $('aiQuestionInput').value.trim();
+  async function askAiQuestion(q) {
     if (!q) return;
     const box = $('aiAnswerBox');
     box.classList.remove('hidden');
     box.textContent = state.lang === 'ar' ? 'جارٍ التفكير...' : 'Thinking...';
-
     const medsSummary = state.meds.map((m) => `${state.lang === 'ar' ? m.nameAr : m.nameEn} (${m.time})`).join(', ');
     let reply = '';
     try {
       const prompt = state.lang === 'ar'
-        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. أجب ببساطة ووضوح في 3 أسطر كحد أقصى. أدوية اليوم: ${medsSummary}. أكواب الماء اليوم: ${state.waterCount}/8. السؤال: ${q}`
-        : `You are a gentle senior-care assistant in CareGuard. Answer simply in max 3 lines. Today's meds: ${medsSummary}. Water today: ${state.waterCount}/8. Question: ${q}`;
+        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. أجب ببساطة في 3 أسطر كحد أقصى. أدوية اليوم: ${medsSummary}. الماء اليوم: ${state.waterCount}/8. السؤال: ${q}`
+        : `You are a gentle senior-care assistant. Answer simply in max 3 lines. Today's meds: ${medsSummary}. Water: ${state.waterCount}/8. Question: ${q}`;
       reply = (await callGeminiText(prompt)) || '';
     } catch (_) {}
-
     if (!reply) {
       reply = state.lang === 'ar'
-        ? `أدويتك اليوم: ${medsSummary}. وشربت حتى الآن ${state.waterCount} من 8 أكواب ماء. تذكّر الضغط على زر «أنا بخير» لطمأنة عائلتك.`
-        : `Your meds today: ${medsSummary}. Water today: ${state.waterCount} of 8 glasses. Remember to tap I'm OK.`;
+        ? `أدويتك اليوم: ${medsSummary}. وشربت ${state.waterCount} من 8 أكواب ماء.`
+        : `Your meds today: ${medsSummary}. Water today: ${state.waterCount}/8 glasses.`;
     }
     box.textContent = reply;
     speakText(reply);
+  }
+
+  $('askAiBtn').addEventListener('click', () => askAiQuestion($('aiQuestionInput').value.trim()));
+
+  $('aiVoiceTalkBtn').addEventListener('click', () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const box = $('aiAnswerBox');
+    if (!SR) {
+      box.classList.remove('hidden');
+      box.textContent = state.lang === 'ar'
+        ? 'المحادثة الصوتية غير مدعومة في هذا المتصفح، استخدم Chrome أو اكتب سؤالك.'
+        : 'Voice recognition is not supported in this browser; please use Chrome or type your question.';
+      return;
+    }
+    const rec = new SR();
+    rec.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    $('aiVoiceBtnLabel').textContent = state.lang === 'ar' ? 'تكلّم الآن... جاري الاستماع' : 'Listening... Speak now';
+    rec.onresult = (ev) => {
+      const transcript = ev.results?.[0]?.[0]?.transcript || '';
+      $('aiQuestionInput').value = transcript;
+      $('aiVoiceBtnLabel').textContent = tr('aiVoiceBtn');
+      askAiQuestion(transcript);
+    };
+    rec.onerror = () => {
+      $('aiVoiceBtnLabel').textContent = tr('aiVoiceBtn');
+      box.classList.remove('hidden');
+      box.textContent = state.lang === 'ar' ? 'تعذر سماع الصوت، تأكد من السماح للميكروفون وحاول مجدداً.' : 'Could not hear voice; check microphone permission.';
+    };
+    rec.onend = () => { $('aiVoiceBtnLabel').textContent = tr('aiVoiceBtn'); };
+    rec.start();
   });
 
-  // Appointments Modal
+  // Seniors Community Chat Room (Voice + Text via Supabase)
+  function showChatMsg(msg) {
+    const el = $('chatStatusMsg');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  function renderChatMessages(rows) {
+    const box = $('chatMessagesList');
+    box.replaceChildren();
+    if (!rows || !rows.length) {
+      const empty = document.createElement('p');
+      empty.className = 'text-center text-base font-bold text-slate-500';
+      empty.textContent = state.lang === 'ar' ? 'لا توجد مشاركات بعد — كن أول من يشارك تجربته!' : 'No messages yet — be the first to share!';
+      box.appendChild(empty);
+      return;
+    }
+    rows.forEach((r) => {
+      const card = document.createElement('div');
+      card.className = 'rounded-2xl border border-slate-200 bg-white p-3.5 space-y-2';
+      const hdr = document.createElement('div');
+      hdr.className = 'flex items-center justify-between gap-2';
+      const author = document.createElement('span');
+      author.className = 'text-base font-black text-amber-900';
+      author.textContent = r.author_name || (state.lang === 'ar' ? 'مشارك' : 'Member');
+      const dt = document.createElement('span');
+      dt.className = 'text-xs font-bold text-slate-500';
+      dt.textContent = r.created_at ? new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      hdr.append(author, dt);
+      card.appendChild(hdr);
+
+      if (r.message_text) {
+        const body = document.createElement('p');
+        body.className = 'text-lg font-semibold text-slate-900';
+        body.textContent = r.message_text;
+        card.appendChild(body);
+      }
+      if (r.audio_data) {
+        const aud = document.createElement('audio');
+        aud.controls = true;
+        aud.src = r.audio_data;
+        aud.className = 'w-full';
+        card.appendChild(aud);
+      }
+      if (currentUser && r.user_id === currentUser.id) {
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'rounded-xl px-3 py-1 text-xs font-extrabold text-rose-700 hover:bg-rose-50';
+        del.textContent = tr('deleteMed');
+        del.addEventListener('click', async () => {
+          await client.from('community_messages').delete().eq('id', r.id);
+          loadCommunityMessages();
+        });
+        card.appendChild(del);
+      }
+      box.appendChild(card);
+    });
+  }
+
+  async function loadCommunityMessages() {
+    if (!client) return;
+    try {
+      const { data, error } = await client
+        .from('community_messages')
+        .select('id, user_id, author_name, message_text, audio_data, created_at')
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      renderChatMessages(data || []);
+    } catch (_) {
+      renderChatMessages([]);
+      showChatMsg(state.lang === 'ar'
+        ? 'لتفعيل غرفة الدردشة، شغّل كود SQL الخاص بجدول community_messages في Supabase.'
+        : 'To enable the chat room, run the community_messages SQL snippet in Supabase.');
+    }
+  }
+
+  $('refreshChatBtn').addEventListener('click', loadCommunityMessages);
+
+  async function sendCommunityPost(text, audioData) {
+    if (!client || !currentUser) {
+      showChatMsg(state.lang === 'ar' ? 'سجّل الدخول بحساب Google أولاً للمشاركة في غرفة الدردشة.' : 'Please sign in first to post in the chat room.');
+      return;
+    }
+    const author_name = state.profile.name
+      || currentUser.user_metadata?.full_name
+      || currentUser.user_metadata?.display_name
+      || (currentUser.email ? currentUser.email.split('@')[0] : 'Senior');
+    const { error } = await client.from('community_messages').insert({
+      user_id: currentUser.id,
+      author_name,
+      message_text: text || null,
+      audio_data: audioData || null
+    });
+    if (error) {
+      showChatMsg((state.lang === 'ar' ? 'تعذر الإرسال: ' : 'Send failed: ') + error.message);
+      return;
+    }
+    $('chatStatusMsg').classList.add('hidden');
+    loadCommunityMessages();
+  }
+
+  $('chatSendTextBtn').addEventListener('click', async () => {
+    const txt = $('chatTextInput').value.trim();
+    if (!txt) return;
+    $('chatTextInput').value = '';
+    await sendCommunityPost(txt, null);
+  });
+
+  $('chatRecordBtn').addEventListener('click', async () => {
+    if (isRecording && mediaRecorder) {
+      mediaRecorder.stop();
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+      showChatMsg(state.lang === 'ar' ? 'التسجيل الصوتي غير مدعوم في هذا المتصفح.' : 'Voice recording not supported here.');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      isRecording = true;
+      $('chatRecordBtnLabel').textContent = tr('stopRecord');
+      $('chatRecordBtn').classList.replace('bg-amber-600', 'bg-rose-600');
+      mediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) recordedChunks.push(ev.data); };
+      mediaRecorder.onstop = () => {
+        isRecording = false;
+        $('chatRecordBtnLabel').textContent = tr('recordVoice');
+        $('chatRecordBtn').classList.replace('bg-rose-600', 'bg-amber-600');
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        const reader = new FileReader();
+        reader.onload = () => {
+          pendingVoiceDataUrl = String(reader.result || '');
+          $('chatVoicePreview').src = pendingVoiceDataUrl;
+          $('chatVoicePreviewBox').classList.remove('hidden');
+        };
+        reader.readAsDataURL(blob);
+      };
+      mediaRecorder.start();
+      setTimeout(() => { if (isRecording && mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 30000);
+    } catch (_) {
+      showChatMsg(state.lang === 'ar' ? 'يرجى السماح بالوصول للميكروفون.' : 'Please allow microphone access.');
+    }
+  });
+
+  $('chatSendVoiceBtn').addEventListener('click', async () => {
+    if (!pendingVoiceDataUrl) return;
+    const data = pendingVoiceDataUrl;
+    pendingVoiceDataUrl = '';
+    $('chatVoicePreviewBox').classList.add('hidden');
+    await sendCommunityPost(null, data);
+  });
+
+  $('chatDiscardVoiceBtn').addEventListener('click', () => {
+    pendingVoiceDataUrl = '';
+    $('chatVoicePreviewBox').classList.add('hidden');
+  });
+
+  // Appointments & Emergency Modals
   $('openApptModalBtn').addEventListener('click', () => $('apptModal').classList.remove('hidden'));
   $('closeApptModalBtn').addEventListener('click', () => $('apptModal').classList.add('hidden'));
   $('apptSaveBtn').addEventListener('click', () => {
@@ -1210,14 +1627,13 @@
     $('apptModal').classList.add('hidden');
   });
 
-  // Emergency Modal
   $('openEmergencyBtn').addEventListener('click', () => {
     renderEmergency();
     $('emergencyModal').classList.remove('hidden');
   });
   $('closeEmergencyBtn').addEventListener('click', () => $('emergencyModal').classList.add('hidden'));
 
-  // Supabase Client & Auth
+  // Supabase Auth & Realtime
   let client = null;
   if (window.supabase && window.supabase.createClient) {
     client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -1231,10 +1647,13 @@
       const displayName = state.profile.name || user.user_metadata?.full_name || user.user_metadata?.display_name || (user.email ? user.email.split('@')[0] : 'Senior');
       await client.from('profiles').upsert({ id: user.id, display_name: displayName }, { onConflict: 'id' });
       const { data: existing } = await client.from('senior_profiles').select('id').eq('user_id', user.id).limit(1);
-      if (!existing || !existing.length) {
+      if (existing && existing.length) {
+        currentSeniorId = existing[0].id;
+      } else {
         const { data: hid } = await client.rpc('create_careguard_household', { p_name: displayName + ' Care' });
         if (hid) {
-          await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName });
+          const { data: created } = await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName }).select('id').single();
+          if (created) currentSeniorId = created.id;
         }
       }
     } catch (_) {}
@@ -1246,6 +1665,7 @@
     $('signedInBar').classList.toggle('hidden', !user);
     if (user) $('signedInEmail').textContent = user.email || '';
     applyLang();
+    if (user) loadCommunityMessages();
   }
 
   if (client) {
@@ -1260,6 +1680,9 @@
       updateAuthUI(u);
       if (u) ensureSeniorProfile(u);
     });
+    client.channel('cg-community-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => loadCommunityMessages())
+      .subscribe();
   }
 
   $('googleAuthBtn').addEventListener('click', async () => {
@@ -1286,9 +1709,7 @@
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) throw error;
       if (data.user) updateAuthUI(data.user);
-    } catch (e) {
-      showAuthMsg(e.message || 'Sign in failed', 'error');
-    }
+    } catch (e) { showAuthMsg(e.message || 'Sign in failed', 'error'); }
   });
 
   $('emailSignUpBtn').addEventListener('click', async () => {
@@ -1301,10 +1722,8 @@
       const { data, error } = await client.auth.signUp({ email, password, options: { data: { display_name } } });
       if (error) throw error;
       if (data.session && data.user) updateAuthUI(data.user);
-      else showAuthMsg(state.lang === 'ar' ? 'تم إنشاء الحساب! افتح بريدك للتأكيد.' : 'Account created! Check your email to confirm.', 'success');
-    } catch (e) {
-      showAuthMsg(e.message || 'Sign up failed', 'error');
-    }
+      else showAuthMsg(state.lang === 'ar' ? 'تم إنشاء الحساب! افتح بريدك للتأكيد.' : 'Account created! Check your email.', 'success');
+    } catch (e) { showAuthMsg(e.message || 'Sign up failed', 'error'); }
   });
 
   $('signOutBtn').addEventListener('click', async () => {
@@ -1320,19 +1739,17 @@
     const fb = $('checkInFeedback');
     fb.classList.remove('hidden');
     fb.textContent = tr('checkInDone');
-
-    if (client && currentUser) {
+    if (client && currentUser && currentSeniorId) {
       try {
-        const { data: sp } = await client.from('senior_profiles').select('id').eq('user_id', currentUser.id).limit(1);
-        if (sp && sp.length) {
-          const { error } = await client.from('safety_checkins').insert({ senior_id: sp[0].id, source: 'senior_button' });
-          if (!error) fb.textContent = tr('checkInSavedCloud');
-        }
+        const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, source: 'senior_button' });
+        if (!error) fb.textContent = tr('checkInSavedCloud');
       } catch (_) {}
     }
   });
 
   loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
+  initBatteryMonitor();
+  loadCommunityMessages();
   applyLang();
 })();
 </script>
