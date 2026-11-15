@@ -734,6 +734,10 @@
   const STORAGE_KEY = 'careguard_senior_state_v2';
   const AI_KEY_STORAGE = 'careguard_local_gemini_key';
 
+  function safeTelHref(raw) {
+    const clean = String(raw || '').trim();
+    return /^\+?[0-9\s\-]{6,}$/.test(clean) ? ('tel:' + clean.replace(/\s+/g, '')) : '';
+  }
   function getLocalDateStr(d = new Date()) {
     const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
@@ -763,16 +767,19 @@
     ringtonePreset: 'loud_phone',
     customRingtoneName: '',
     medsDate: getLocalDateStr(),
+    alertedMedKeys: [],
     meds: [],
     appts: []
   };
 
+  let client = null;
+  const ROLE_STORAGE_KEY = 'careguard_user_role_v1';
+  let userRole = localStorage.getItem(ROLE_STORAGE_KEY) || '';
   let currentUser = null;
   let state = loadState('guest');
   let currentSeniorId = null;
   let pendingImageDataUrl = '';
   let customAudioDataUrl = '';
-  let alertedMedKeys = new Set();
   let activeDueMedId = null;
   let activeReplyTo = null;
   let batteryLowAlerted = false;
@@ -796,7 +803,8 @@
         const today = getLocalDateStr();
         if (merged.lang === 'ar') merged.lang = 'fr';
         if (merged.waterDate !== today) { merged.waterDate = today; merged.waterCount = 0; }
-        if (merged.medsDate !== today) { merged.medsDate = today; if (Array.isArray(merged.meds)) merged.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; }); }
+        if (!Array.isArray(merged.alertedMedKeys)) merged.alertedMedKeys = [];
+        if (merged.medsDate !== today) { merged.medsDate = today; merged.alertedMedKeys = []; if (Array.isArray(merged.meds)) merged.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; }); }
         return merged;
       }
     } catch (_) {}
@@ -807,60 +815,7 @@
   // Bottom Navigation & View Switching
   function switchTab(tab) {
     if (!['senior', 'family', 'nurse', 'center'].includes(userRole)) {
-      if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
-  function sendSwNotification(title, body, tag) {
-    try {
-      if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'SHOW_NOTIFICATION', title, body, tag });
-      }
-    } catch (_) {}
-  }
-
-  function renderLegalContent() {
-    const ar = state.lang === 'fr';
-    const body = $('legalModalBody');
-    if (!body) return;
-    body.replaceChildren();
-    const sections = ar ? [
-      ['1. Politique de confidentialité (RGPD / LPRPDE)', 'CareGuard collecte uniquement les informations que vous saisissez (profil médical d\'urgence, médicaments, rendez-vous et confirmations). Vos données ne sont jamais vendues ni partagées sans votre approbation explicite par code d\'invitation.'],
-      ['2. Messages du Salon', 'Les messages publics du Salon CareGuard sont automatiquement expirés après 24 heures.'],
-      ['3. Avis médical important', 'CareGuard est un outil d\'organisation et de rappel personnel. Il ne fournit aucun diagnostic médical et ne remplace pas votre médecin ni les services d\'urgence (112 / 911).'],
-      ['4. Vos droits', 'Vous pouvez exporter ou supprimer toutes vos données à tout moment via les boutons ci-dessous.']
-    ] : [
-      ['1. Privacy Policy (GDPR / PIPEDA)', 'CareGuard stores only the information you enter (Emergency ID, medications, appointments, and check-ins). Your data is never sold or shared without your explicit invitation code approval.'],
-      ['2. Lounge Retention', 'Public messages in CareGuard Lounge automatically expire after 24 hours.'],
-      ['3. Medical Disclaimer', 'CareGuard is a personal reminder and coordination tool. It does not provide medical advice or replace your doctor or emergency services (112 / 911).'],
-      ['4. Your Rights', 'You can export or permanently delete your data at any time using the buttons below.']
-    ];
-    sections.forEach(([t, d]) => {
-      const box = document.createElement('div');
-      box.className = 'rounded-2xl border border-slate-200 bg-slate-50 p-3';
-      const h = document.createElement('p'); h.className = 'font-black text-slate-900'; h.textContent = t;
-      const pTxt = document.createElement('p'); pTxt.className = 'mt-1 text-xs text-slate-700'; pTxt.textContent = d;
-      box.append(h, pTxt); body.appendChild(box);
-    });
-  }
-  if ($('openLegalModalBtn')) $('openLegalModalBtn').addEventListener('click', () => { renderLegalContent(); $('legalModal').classList.remove('hidden'); });
-  if ($('closeLegalModalBtn')) $('closeLegalModalBtn').addEventListener('click', () => $('legalModal').classList.add('hidden'));
-  if ($('exportMyDataBtn')) $('exportMyDataBtn').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), profile: state.profile, meds: state.meds, appts: state.appts, waterCount: state.waterCount }, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'careguard-data.json'; a.click();
-  });
-  if ($('deleteMyDataBtn')) $('deleteMyDataBtn').addEventListener('click', () => {
-    const label = state.lang === 'fr' ? 'toutes vos données CareGuard' : 'all your CareGuard data';
-    askConfirmDelete(label, async () => {
-      if (client && currentUser && currentSeniorId) {
-        try { await client.from('senior_profiles').delete().eq('id', currentSeniorId).eq('user_id', currentUser.id); } catch (_) {}
-      }
-      try { localStorage.removeItem(getStorageKey()); localStorage.removeItem(ROLE_STORAGE_KEY); } catch (_) {}
-      $('legalModal').classList.add('hidden');
-      handleSignOut();
-    });
-  });
-
-  renderRoleViews();
+      renderRoleViews();
       return;
     }
     activeTab = tab;
@@ -1230,6 +1185,7 @@
     const today = getLocalDateStr(now);
     if (state.medsDate !== today) {
       state.medsDate = today;
+      state.alertedMedKeys = [];
       state.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; });
       saveState(); applyLang();
     }
@@ -1240,11 +1196,13 @@
       if (m.snoozeUntil && Date.now() >= m.snoozeUntil) return true;
       if (m.snoozeUntil && Date.now() < m.snoozeUntil) return false;
       const key = m.id + '|' + today + '|' + m.time;
-      return m.time === nowTime && !alertedMedKeys.has(key);
+      return m.time === nowTime && !(state.alertedMedKeys || []).includes(key);
     });
     if (!dueList.length) return;
     const m = dueList[0];
-    alertedMedKeys.add(m.id + '|' + today + '|' + m.time);
+    const _k = m.id + '|' + today + '|' + m.time;
+    if (!Array.isArray(state.alertedMedKeys)) state.alertedMedKeys = [];
+    if (!state.alertedMedKeys.includes(_k)) state.alertedMedKeys.push(_k);
     delete m.snoozeUntil;
     activeDueMedId = m.id;
     const namesText = dueList.map((x) => (state.lang === 'fr' ? x.nameAr : x.nameEn)).join(' + ');
@@ -1390,22 +1348,22 @@
     const body = $('notifListBody');
     if (!body) return;
     body.replaceChildren();
-    const ar = state.lang === 'fr';
-    $('notifModalTitle').textContent = ar ? 'Alertes et notifications' : 'Alerts & Notifications';
+    const isFr = state.lang === 'fr';
+    $('notifModalTitle').textContent = isFr ? 'Alertes et notifications' : 'Alerts & Notifications';
 
     const items = [];
     if (lastBatteryPct <= 30 && !lastBatteryCharging) {
       items.push({
         cls: 'border-rose-300 bg-rose-50 text-rose-900',
-        title: ar ? `🔋 Batterie faible (${lastBatteryPct}%)` : `🔋 Low Phone Battery (${lastBatteryPct}%)`,
-        sub: ar ? 'Veuillez brancher le chargeur.' : 'Please plug in your charger now.'
+        title: isFr ? `🔋 Batterie faible (${lastBatteryPct}%)` : `🔋 Low Phone Battery (${lastBatteryPct}%)`,
+        sub: isFr ? 'Veuillez brancher le chargeur.' : 'Please plug in your charger now.'
       });
     }
     state.meds.filter((m) => !m.taken).forEach((m) => {
       items.push({
         cls: 'border-emerald-200 bg-emerald-50 text-slate-900',
-        title: (ar ? '💊 Médicament dû : ' : '💊 Medication due: ') + (ar ? m.nameAr : m.nameEn),
-        sub: (ar ? 'Heure : ' : 'Time: ') + m.time,
+        title: (isFr ? '💊 Médicament dû : ' : '💊 Medication due: ') + (isFr ? m.nameAr : m.nameEn),
+        sub: (isFr ? 'Heure : ' : 'Time: ') + m.time,
         medId: m.id
       });
     });
@@ -1413,13 +1371,13 @@
       const a = state.appts[0];
       items.push({
         cls: 'border-purple-200 bg-purple-50 text-slate-900',
-        title: (ar ? '📅 Prochain RDV : ' : '📅 Upcoming Appointment: ') + (ar ? a.doctorAr : a.doctorEn),
+        title: (isFr ? '📅 Prochain RDV : ' : '📅 Upcoming Appointment: ') + (isFr ? a.doctorAr : a.doctorEn),
         sub: a.date + ' • ' + a.time
       });
     }
     items.push({
       cls: 'border-sky-200 bg-sky-50 text-slate-900',
-      title: ar ? `💧 Eau : ${state.waterCount} / 8 verres` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
+      title: isFr ? `💧 Eau : ${state.waterCount} / 8 verres` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
       sub: $('waterNextText').textContent || ''
     });
 
@@ -1436,7 +1394,7 @@
         btn.type = 'button';
         btn.className = 'shrink-0 rounded-xl bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white';
         btn.style.minHeight = '36px';
-        btn.textContent = ar ? 'Fait ✓' : 'Done ✓';
+        btn.textContent = isFr ? 'Fait ✓' : 'Done ✓';
         btn.addEventListener('click', () => {
           const med = state.meds.find((x) => x.id === it.medId);
           if (med) med.taken = true;
@@ -1477,9 +1435,10 @@
       const sv = document.createElement('span'); sv.className = 'font-bold text-slate-900'; sv.textContent = v;
       line.append(sk, sv); body.appendChild(line);
     });
-    const tel = (p.emergencyPhone || p.backupPhone || (state.lang === 'fr' ? '112' : '911')).replace(/\s+/g, '');
-    $('emCallLink').href = 'tel:' + tel;
-    $('emCallLabel').textContent = (state.lang === 'fr' ? 'Appel rapide : ' : 'Quick Call: ') + tel;
+    const rawTel = (p.emergencyPhone || p.backupPhone || (state.lang === 'fr' ? '112' : '911')).trim();
+    const hrefTel = safeTelHref(rawTel) || (state.lang === 'fr' ? 'tel:112' : 'tel:911');
+    $('emCallLink').href = hrefTel;
+    $('emCallLabel').textContent = (state.lang === 'fr' ? 'Appel rapide : ' : 'Quick Call: ') + hrefTel.replace('tel:', '');
   }
 
   // Compress large camera photos before sending to AI
@@ -1516,12 +1475,12 @@
         const res = await fetch(`https://generativelanguage.googleapis.com/${apiVer}/models/${cleanName}:generateContent?key=` + encodeURIComponent(key),
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }), signal: ctrl.signal });
         if (res.ok) { const d = await res.json(); return { ok: true, text: d?.candidates?.[0]?.content?.parts?.[0]?.text || '' }; }
-        if (res.status !== 404 && res.status !== 400) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
+        if (res.status === 401 || res.status === 403) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
         return { ok: false };
       } finally { clearTimeout(timer); }
     };
 
-    for (const model of ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash']) {
+    for (const model of ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-flash']) {
       const r = await tryModel(model, 'v1beta');
       if (r.ok) return r.text;
     }
@@ -1583,14 +1542,14 @@
 
   // Icebreakers, Quick Chips, Birthdays & Chat
   const ICEBREAKERS = [
-    { ar: '☕ Café & Souvenirs : Quel est votre plus beau voyage ou souvenir ?', en: '☕ Coffee & Memories: Favorite trip or memory?' },
-    { ar: '🌱 Loisirs : Quel passe-temps ou recette appréciez-vous ?', en: '🌱 Hobbies: What hobby or recipe do you enjoy?' },
-    { ar: '🚶 Bien-être : Quelle habitude vous donne de l\'énergie ?', en: '🚶 Wellness: What habit keeps you energized?' }
+    { isFr: '☕ Café & Souvenirs : Quel est votre plus beau voyage ou souvenir ?', en: '☕ Coffee & Memories: Favorite trip or memory?' },
+    { isFr: '🌱 Loisirs : Quel passe-temps ou recette appréciez-vous ?', en: '🌱 Hobbies: What hobby or recipe do you enjoy?' },
+    { isFr: '🚶 Bien-être : Quelle habitude vous donne de l\'énergie ?', en: '🚶 Wellness: What habit keeps you energized?' }
   ];
   let iceIdx = new Date().getDate() % ICEBREAKERS.length;
   function renderIcebreaker() {
     const it = ICEBREAKERS[iceIdx % ICEBREAKERS.length];
-    $('icebreakerQuestion').textContent = state.lang === 'fr' ? it.ar : it.en;
+    $('icebreakerQuestion').textContent = state.lang === 'fr' ? it.isFr : it.en;
   }
   $('nextIcebreakerBtn').addEventListener('click', () => { iceIdx = (iceIdx + 1) % ICEBREAKERS.length; renderIcebreaker(); });
 
@@ -1746,170 +1705,170 @@
   }
 
   function applyLang() {
-    const ar = state.lang === 'fr';
-    document.documentElement.lang = ar ? 'fr' : 'en';
+    const isFr = state.lang === 'fr';
+    document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
-    $('appTitle').textContent = ar ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = ar ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind';
-    $('langToggleText').textContent = ar ? 'EN' : 'FR';
-    $('heroWelcomeLabel').textContent = ar ? 'Bienvenue' : 'Welcome back';
+    $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
+    $('appSubtitle').textContent = isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind';
+    $('langToggleText').textContent = isFr ? 'EN' : 'FR';
+    $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
-    $('seniorGreeting').textContent = name || (ar ? 'Bienvenue' : 'Guest');
-    if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = ar ? 'Code d\'invitation :' : 'Invite Code:';
+    $('seniorGreeting').textContent = name || (isFr ? 'Bienvenue' : 'Guest');
+    if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = isFr ? 'Code d\'invitation :' : 'Invite Code:';
     $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'C').toUpperCase();
-    $('imOkLabel').textContent = ar ? 'Je vais bien' : "I'm OK";
+    $('imOkLabel').textContent = isFr ? 'Je vais bien' : "I'm OK";
     if (state.lastServerCheckInIso) {
       const dtStr = new Date(state.lastServerCheckInIso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-      $('lastCheckInText').textContent = (ar ? 'Dernière confirmation : ' : 'Last confirmed: ') + dtStr;
+      $('lastCheckInText').textContent = (isFr ? 'Dernière confirmation : ' : 'Last confirmed: ') + dtStr;
     } else {
-      $('lastCheckInText').textContent = ar ? 'Tout va bien' : 'Everything is alright';
+      $('lastCheckInText').textContent = isFr ? 'Tout va bien' : 'Everything is alright';
     }
-    $('tileMedsTitle').textContent = ar ? 'Médicaments' : 'Medications';
-    $('tileMedsHint').textContent = ar ? 'Voir la liste' : 'View list';
-    $('tileEmergencyTitle').textContent = ar ? 'Urgence' : 'Emergency';
-    $('tileEmergencySub').textContent = ar ? 'Appel rapide' : 'Quick call';
-    $('emergencyBtnLabel').textContent = ar ? 'Fiche d\'urgence' : 'Medical ID';
-    $('tileApptsTitle').textContent = ar ? 'Rendez-vous' : 'Appointments';
-    $('tileApptsHint').textContent = ar ? 'Prochain RDV' : 'Upcoming';
-    $('waterHeading').textContent = ar ? 'Boire de l\'eau' : 'Drink Water';
-    $('waterCountBadge').textContent = state.waterCount + (ar ? ' / 8 verres' : ' / 8 glasses');
-    $('tileWaterHint').textContent = ar ? '+ 1 verre' : '+ Log glass';
-    $('aiHeading').textContent = ar ? 'Assistant IA' : 'AI Assistant';
-    $('aiSubheading').textContent = ar ? 'Posez une question' : 'Ask anything';
-    $('tileAiHint').textContent = ar ? 'Voix et texte' : 'Voice & text';
-    $('updateInfoBtnLabel').textContent = ar ? 'Fiche de santé' : 'Health Profile';
-    $('tileProfileSub').textContent = ar ? 'Voir et modifier' : 'View & update';
-    $('tileProfileHint').textContent = ar ? 'Infos médicales' : 'Medical info';
-    $('chatLauncherTitle').textContent = ar ? 'Salon CareGuard' : 'CareGuard Lounge';
-    $('chatLauncherSub').textContent = ar ? "Discutez par voix ou écrit dans le salon" : 'Voice & text chat with seniors';
-    $('navHomeLabel').textContent = ar ? 'Accueil' : 'Home';
-    $('navMedsLabel').textContent = ar ? 'Médicaments' : 'Meds';
-    $('navApptsLabel').textContent = ar ? 'Rendez-vous' : 'Appts';
-    $('navChatLabel').textContent = ar ? 'Salon' : 'Chat';
-    $('navSettingsLabel').textContent = ar ? 'Paramètres' : 'Settings';
-    $('medsHeading').textContent = ar ? 'Médicaments du jour' : "Today's Medications";
-    $('openUploadMedBtn').textContent = ar ? '+ Ajouter / Photo' : '+ Add / Rx Photo';
-    $('apptsHeading').textContent = ar ? 'Rendez-vous médicaux' : 'Medical Appointments';
-    $('openApptModalBtn').textContent = ar ? '+ Ajouter' : '+ Add';
-    $('aiPanelTitle').textContent = ar ? 'Assistant IA' : 'AI Assistant';
+    $('tileMedsTitle').textContent = isFr ? 'Médicaments' : 'Medications';
+    $('tileMedsHint').textContent = isFr ? 'Voir la liste' : 'View list';
+    $('tileEmergencyTitle').textContent = isFr ? 'Urgence' : 'Emergency';
+    $('tileEmergencySub').textContent = isFr ? 'Appel rapide' : 'Quick call';
+    $('emergencyBtnLabel').textContent = isFr ? 'Fiche d\'urgence' : 'Medical ID';
+    $('tileApptsTitle').textContent = isFr ? 'Rendez-vous' : 'Appointments';
+    $('tileApptsHint').textContent = isFr ? 'Prochain RDV' : 'Upcoming';
+    $('waterHeading').textContent = isFr ? 'Boire de l\'eau' : 'Drink Water';
+    $('waterCountBadge').textContent = state.waterCount + (isFr ? ' / 8 verres' : ' / 8 glasses');
+    $('tileWaterHint').textContent = isFr ? '+ 1 verre' : '+ Log glass';
+    $('aiHeading').textContent = isFr ? 'Assistant IA' : 'AI Assistant';
+    $('aiSubheading').textContent = isFr ? 'Posez une question' : 'Ask anything';
+    $('tileAiHint').textContent = isFr ? 'Voix et texte' : 'Voice & text';
+    $('updateInfoBtnLabel').textContent = isFr ? 'Fiche de santé' : 'Health Profile';
+    $('tileProfileSub').textContent = isFr ? 'Voir et modifier' : 'View & update';
+    $('tileProfileHint').textContent = isFr ? 'Infos médicales' : 'Medical info';
+    $('chatLauncherTitle').textContent = isFr ? 'Salon CareGuard' : 'CareGuard Lounge';
+    $('chatLauncherSub').textContent = isFr ? "Discutez par voix ou écrit dans le salon" : 'Voice & text chat with seniors';
+    $('navHomeLabel').textContent = isFr ? 'Accueil' : 'Home';
+    $('navMedsLabel').textContent = isFr ? 'Médicaments' : 'Meds';
+    $('navApptsLabel').textContent = isFr ? 'Rendez-vous' : 'Appts';
+    $('navChatLabel').textContent = isFr ? 'Salon' : 'Chat';
+    $('navSettingsLabel').textContent = isFr ? 'Paramètres' : 'Settings';
+    $('medsHeading').textContent = isFr ? 'Médicaments du jour' : "Today's Medications";
+    $('openUploadMedBtn').textContent = isFr ? '+ Ajouter / Photo' : '+ Add / Rx Photo';
+    $('apptsHeading').textContent = isFr ? 'Rendez-vous médicaux' : 'Medical Appointments';
+    $('openApptModalBtn').textContent = isFr ? '+ Ajouter' : '+ Add';
+    $('aiPanelTitle').textContent = isFr ? 'Assistant IA' : 'AI Assistant';
     const hasAiKey = !!(localStorage.getItem(AI_KEY_STORAGE) || '').trim();
-    $('openAiConfigBtn').textContent = hasAiKey ? (ar ? 'IA connectée ✓' : 'AI Connected ✓') : (ar ? 'Config. IA' : 'AI Setup');
-    $('aiVoiceBtnLabel').textContent = ar ? '🎤 Parler à l\'assistant' : '🎤 Talk to AI Assistant';
-    $('aiQuestionInput').placeholder = ar ? 'Ex : Quand est mon prochain médicament ?' : 'e.g. When is my next medication?';
-    $('askAiBtn').textContent = ar ? 'Demander' : 'Ask';
-    $('aiDisclaimerNote').textContent = ar ? "Note : l'assistant sert uniquement aux rappels et ne remplace pas un avis médical." : 'Note: AI Assistant is for reminders only and is not medical advice.';
-    $('settingsSectionTitle').textContent = ar ? 'Paramètres Audio, Eau & Compte' : 'Sound, Water & Account';
-    $('testWaterAlertBtn').textContent = ar ? '💧 Écouter le rappel d\'eau' : '💧 Hear Water Reminder';
-    $('voiceBtn').textContent = ar ? '🔊 Écouter le rappel vocal' : '🔊 Voice Reminder';
-    $('openRingtoneModalBtn').textContent = ar ? '🔔 Sonnerie' : '🔔 Alert Ringtone';
-    if ($('openLegalModalBtn')) $('openLegalModalBtn').textContent = ar ? '⚖️ Confidentialité & Conditions' : '⚖️ Privacy & Legal';
-    if ($('rxExtractedTitle')) $('rxExtractedTitle').textContent = ar ? 'Médicaments détectés :' : 'Detected medications:';
-    if ($('legalModalTitle')) $('legalModalTitle').textContent = ar ? 'Confidentialité & Conditions' : 'Privacy & Legal Terms';
-    if ($('exportMyDataBtn')) $('exportMyDataBtn').textContent = ar ? '📥 Exporter mes données' : '📥 Export My Data';
-    if ($('deleteMyDataBtn')) $('deleteMyDataBtn').textContent = ar ? '🗑️ Supprimer mes données' : '🗑️ Delete My Data';
-    $('signOutBtn').textContent = ar ? 'Déconnexion' : 'Sign Out';
-    if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = ar ? '🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
-    $('backFromChatBtn').textContent = ar ? '← Retour' : '← Back';
-    $('chatHeading').textContent = ar ? 'Salon CareGuard' : 'CareGuard Lounge';
-    $('chatSubheading').textContent = ar ? 'Conservés 24h puis supprimés' : 'Kept 24h then deleted';
-    $('chatIdentityTitle').textContent = ar ? 'Nom affiché dans le salon :' : 'Display name in chat:';
-    $('chatUseNicknameLabel').textContent = ar ? 'Rejoindre avec un pseudonyme' : 'Join with a nickname';
-    $('chatEnterRoomLabel').textContent = ar ? 'Entrer dans le salon' : 'Enter Chat Room';
-    $('chatChangeNameBtn').textContent = ar ? 'Changer de nom' : 'Change Name';
-    $('chatSendBirthdayBtn').textContent = ar ? '🎉 Souhait' : '🎉 Wish';
-    $('chatUnblockAllBtn').textContent = ar ? 'Tout réafficher' : 'Unhide all';
-    $('icebreakerBadge').textContent = ar ? 'Question du jour : ' : 'Topic: ';
-    $('nextIcebreakerBtn').textContent = ar ? 'Autre' : 'Next';
-    $('chatTextInput').placeholder = ar ? 'Écrivez un message...' : 'Type a message...';
-    $('chatSendTextBtn').textContent = ar ? 'Envoyer' : 'Send';
-    $('authHeading').textContent = ar ? 'Connexion rapide' : 'Quick Sign In';
-    $('authSubheading').textContent = ar ? 'Connectez-vous en un clic avec votre compte Google.' : 'Sign in with one tap using Google.';
-    $('googleBtnLabel').textContent = ar ? 'Continuer avec Google' : 'Continue with Google';
-    $('emailFallbackSummary').textContent = ar ? 'Ou se connecter par e-mail' : 'Or sign in with Email';
-    $('medDueTitle').textContent = ar ? "C'est l'heure du médicament !" : 'Medication Time!';
-    $('medDueTakeBtn').textContent = ar ? "J'ai pris mon médicament ✓" : 'I Took It Now ✓';
-    $('medDueSnoozeBtn').textContent = ar ? 'Reporter de 10 min' : 'Snooze 10 Minutes';
-    $('uploadModalTitle').textContent = ar ? 'Ajouter un médicament / ordonnance' : 'Add Medication or Rx Photo';
-    $('uploadPhotoPrompt').textContent = ar ? 'Appuyez pour importer une ordonnance ou boîte de médicament' : 'Tap to upload prescription or pillbox photo';
-    $('aiAnalyzePhotoBtn').textContent = ar ? 'Lire la photo avec l\'IA' : 'Read Photo with AI';
-    $('downloadPreviewLink').textContent = ar ? 'Télécharger' : 'Download';
-    if ($('removeMedPhotoBtn')) $('removeMedPhotoBtn').textContent = ar ? '🗑️ Supprimer la photo' : '🗑️ Remove Photo';
-    $('newMedNameInput').placeholder = ar ? 'Nom du médicament et dose' : 'Medication name & dose';
-    $('rxConfirmLabel').textContent = ar ? 'Je confirme que ce médicament correspond à l\'ordonnance de mon médecin.' : "I confirm this matches my doctor's prescription.";
-    $('saveNewMedBtn').textContent = ar ? 'Enregistrer' : 'Save Medication';
-    $('profileModalTitle').textContent = ar ? 'Mettre à jour les infos' : 'Update Senior Info';
-    $('profilePrivacyNote').textContent = ar ? 'Ces données sont privées pour la fiche d\'urgence et n\'apparaissent jamais dans le salon.' : 'Saved privately for Emergency ID only — never shown in chat.';
-    $('profNameInput').placeholder = ar ? 'Nom complet' : 'Full Name';
-    $('profDobLabel').textContent = ar ? 'Date de naissance :' : 'Date of Birth:';
-    $('profShareBirthdayLabel').textContent = ar ? 'Partager mon jour de naissance dans le salon (jour et mois uniquement)' : 'Share my birthday month & day in lounge';
-    $('profPhoneInput').placeholder = ar ? 'Téléphone du senior' : 'Senior Phone Number';
-    $('profEmergencyPhoneInput').placeholder = ar ? "Téléphone d'un proche" : 'Close Family Phone';
-    $('profFamilyRelInput').placeholder = ar ? 'Lien de parenté (Fils/Fille)' : 'Relationship (Son/Daughter)';
-    $('profBackupPhoneInput').placeholder = ar ? 'Téléphone famille secondaire (optionnel)' : 'Backup Family Phone (optional)';
-    $('profDoctorNameInput').placeholder = ar ? 'Médecin traitant' : 'Primary Doctor Name';
-    $('profDoctorPhoneInput').placeholder = ar ? 'Tél. médecin' : 'Doctor Phone';
-    $('profAddressInput').placeholder = ar ? 'Adresse du domicile (optionnel)' : 'Home Address (optional)';
-    $('profBloodInput').placeholder = ar ? 'Groupe sanguin (O+)' : 'Blood Type (O+)';
-    $('profAllergiesInput').placeholder = ar ? 'Allergies' : 'Allergies';
-    $('profConditionsInput').placeholder = ar ? 'Maladies chroniques' : 'Medical Conditions';
-    $('profMedicalNotesInput').placeholder = ar ? 'Notes médicales' : 'Special Medical Notes';
-    $('saveProfileBtn').textContent = ar ? 'Enregistrer' : 'Save Information';
-    $('ringtoneModalTitle').textContent = ar ? 'Configurer la sonnerie' : 'Alert Ringtone Settings';
-    $('pickPhoneRingtoneLabel').textContent = ar ? 'Choisir une sonnerie sur le téléphone (MP3 / M4A / WAV)' : 'Pick Ringtone File from Phone (MP3 / M4A / WAV)';
-    $('testRingtoneBtn').textContent = ar ? 'Tester la sonnerie et vibration' : 'Test Loud Ringtone & Vibration';
-    $('stopRingtoneBtn').textContent = ar ? '⏹ Arrêter le son' : '⏹ Stop Sound';
+    $('openAiConfigBtn').textContent = hasAiKey ? (isFr ? 'IA connectée ✓' : 'AI Connected ✓') : (isFr ? 'Config. IA' : 'AI Setup');
+    $('aiVoiceBtnLabel').textContent = isFr ? '🎤 Parler à l\'assistant' : '🎤 Talk to AI Assistant';
+    $('aiQuestionInput').placeholder = isFr ? 'Ex : Quand est mon prochain médicament ?' : 'e.g. When is my next medication?';
+    $('askAiBtn').textContent = isFr ? 'Demander' : 'Ask';
+    $('aiDisclaimerNote').textContent = isFr ? "Note : l'assistant sert uniquement aux rappels et ne remplace pas un avis médical." : 'Note: AI Assistant is for reminders only and is not medical advice.';
+    $('settingsSectionTitle').textContent = isFr ? 'Paramètres Audio, Eau & Compte' : 'Sound, Water & Account';
+    $('testWaterAlertBtn').textContent = isFr ? '💧 Écouter le rappel d\'eau' : '💧 Hear Water Reminder';
+    $('voiceBtn').textContent = isFr ? '🔊 Écouter le rappel vocal' : '🔊 Voice Reminder';
+    $('openRingtoneModalBtn').textContent = isFr ? '🔔 Sonnerie' : '🔔 Alert Ringtone';
+    if ($('openLegalModalBtn')) $('openLegalModalBtn').textContent = isFr ? '⚖️ Confidentialité & Conditions' : '⚖️ Privacy & Legal';
+    if ($('rxExtractedTitle')) $('rxExtractedTitle').textContent = isFr ? 'Médicaments détectés :' : 'Detected medications:';
+    if ($('legalModalTitle')) $('legalModalTitle').textContent = isFr ? 'Confidentialité & Conditions' : 'Privacy & Legal Terms';
+    if ($('exportMyDataBtn')) $('exportMyDataBtn').textContent = isFr ? '📥 Exporter mes données' : '📥 Export My Data';
+    if ($('deleteMyDataBtn')) $('deleteMyDataBtn').textContent = isFr ? '🗑️ Supprimer mes données' : '🗑️ Delete My Data';
+    $('signOutBtn').textContent = isFr ? 'Déconnexion' : 'Sign Out';
+    if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = isFr ? '🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
+    $('backFromChatBtn').textContent = isFr ? '← Retour' : '← Back';
+    $('chatHeading').textContent = isFr ? 'Salon CareGuard' : 'CareGuard Lounge';
+    $('chatSubheading').textContent = isFr ? 'Conservés 24h puis supprimés' : 'Kept 24h then deleted';
+    $('chatIdentityTitle').textContent = isFr ? 'Nom affiché dans le salon :' : 'Display name in chat:';
+    $('chatUseNicknameLabel').textContent = isFr ? 'Rejoindre avec un pseudonyme' : 'Join with a nickname';
+    $('chatEnterRoomLabel').textContent = isFr ? 'Entrer dans le salon' : 'Enter Chat Room';
+    $('chatChangeNameBtn').textContent = isFr ? 'Changer de nom' : 'Change Name';
+    $('chatSendBirthdayBtn').textContent = isFr ? '🎉 Souhait' : '🎉 Wish';
+    $('chatUnblockAllBtn').textContent = isFr ? 'Tout réafficher' : 'Unhide all';
+    $('icebreakerBadge').textContent = isFr ? 'Question du jour : ' : 'Topic: ';
+    $('nextIcebreakerBtn').textContent = isFr ? 'Autre' : 'Next';
+    $('chatTextInput').placeholder = isFr ? 'Écrivez un message...' : 'Type a message...';
+    $('chatSendTextBtn').textContent = isFr ? 'Envoyer' : 'Send';
+    $('authHeading').textContent = isFr ? 'Connexion rapide' : 'Quick Sign In';
+    $('authSubheading').textContent = isFr ? 'Connectez-vous en un clic avec votre compte Google.' : 'Sign in with one tap using Google.';
+    $('googleBtnLabel').textContent = isFr ? 'Continuer avec Google' : 'Continue with Google';
+    $('emailFallbackSummary').textContent = isFr ? 'Ou se connecter par e-mail' : 'Or sign in with Email';
+    $('medDueTitle').textContent = isFr ? "C'est l'heure du médicament !" : 'Medication Time!';
+    $('medDueTakeBtn').textContent = isFr ? "J'ai pris mon médicament ✓" : 'I Took It Now ✓';
+    $('medDueSnoozeBtn').textContent = isFr ? 'Reporter de 10 min' : 'Snooze 10 Minutes';
+    $('uploadModalTitle').textContent = isFr ? 'Ajouter un médicament / ordonnance' : 'Add Medication or Rx Photo';
+    $('uploadPhotoPrompt').textContent = isFr ? 'Appuyez pour importer une ordonnance ou boîte de médicament' : 'Tap to upload prescription or pillbox photo';
+    $('aiAnalyzePhotoBtn').textContent = isFr ? 'Lire la photo avec l\'IA' : 'Read Photo with AI';
+    $('downloadPreviewLink').textContent = isFr ? 'Télécharger' : 'Download';
+    if ($('removeMedPhotoBtn')) $('removeMedPhotoBtn').textContent = isFr ? '🗑️ Supprimer la photo' : '🗑️ Remove Photo';
+    $('newMedNameInput').placeholder = isFr ? 'Nom du médicament et dose' : 'Medication name & dose';
+    $('rxConfirmLabel').textContent = isFr ? 'Je confirme que ce médicament correspond à l\'ordonnance de mon médecin.' : "I confirm this matches my doctor's prescription.";
+    $('saveNewMedBtn').textContent = isFr ? 'Enregistrer' : 'Save Medication';
+    $('profileModalTitle').textContent = isFr ? 'Mettre à jour les infos' : 'Update Senior Info';
+    $('profilePrivacyNote').textContent = isFr ? 'Ces données sont privées pour la fiche d\'urgence et n\'apparaissent jamais dans le salon.' : 'Saved privately for Emergency ID only — never shown in chat.';
+    $('profNameInput').placeholder = isFr ? 'Nom complet' : 'Full Name';
+    $('profDobLabel').textContent = isFr ? 'Date de naissance :' : 'Date of Birth:';
+    $('profShareBirthdayLabel').textContent = isFr ? 'Partager mon jour de naissance dans le salon (jour et mois uniquement)' : 'Share my birthday month & day in lounge';
+    $('profPhoneInput').placeholder = isFr ? 'Téléphone du senior' : 'Senior Phone Number';
+    $('profEmergencyPhoneInput').placeholder = isFr ? "Téléphone d'un proche" : 'Close Family Phone';
+    $('profFamilyRelInput').placeholder = isFr ? 'Lien de parenté (Fils/Fille)' : 'Relationship (Son/Daughter)';
+    $('profBackupPhoneInput').placeholder = isFr ? 'Téléphone famille secondaire (optionnel)' : 'Backup Family Phone (optional)';
+    $('profDoctorNameInput').placeholder = isFr ? 'Médecin traitant' : 'Primary Doctor Name';
+    $('profDoctorPhoneInput').placeholder = isFr ? 'Tél. médecin' : 'Doctor Phone';
+    $('profAddressInput').placeholder = isFr ? 'Adresse du domicile (optionnel)' : 'Home Address (optional)';
+    $('profBloodInput').placeholder = isFr ? 'Groupe sanguin (O+)' : 'Blood Type (O+)';
+    $('profAllergiesInput').placeholder = isFr ? 'Allergies' : 'Allergies';
+    $('profConditionsInput').placeholder = isFr ? 'Maladies chroniques' : 'Medical Conditions';
+    $('profMedicalNotesInput').placeholder = isFr ? 'Notes médicales' : 'Special Medical Notes';
+    $('saveProfileBtn').textContent = isFr ? 'Enregistrer' : 'Save Information';
+    $('ringtoneModalTitle').textContent = isFr ? 'Configurer la sonnerie' : 'Alert Ringtone Settings';
+    $('pickPhoneRingtoneLabel').textContent = isFr ? 'Choisir une sonnerie sur le téléphone (MP3 / M4A / WAV)' : 'Pick Ringtone File from Phone (MP3 / M4A / WAV)';
+    $('testRingtoneBtn').textContent = isFr ? 'Tester la sonnerie et vibration' : 'Test Loud Ringtone & Vibration';
+    $('stopRingtoneBtn').textContent = isFr ? '⏹ Arrêter le son' : '⏹ Stop Sound';
     const rOpts = $('ringtonePresetSelect').options;
     if (rOpts && rOpts.length >= 4) {
-      rOpts[0].text = ar ? 'Sonnerie forte répétitive' : 'Loud Repeating Phone Ring';
-      rOpts[1].text = ar ? 'Sonnerie classique' : 'Classic Bell Ringtone';
-      rOpts[2].text = ar ? 'Alarme médicale claire' : 'High-Clarity Medical Alarm';
-      rOpts[3].text = ar ? 'Sonnerie depuis mon téléphone' : 'Custom File from My Phone';
+      rOpts[0].text = isFr ? 'Sonnerie forte répétitive' : 'Loud Repeating Phone Ring';
+      rOpts[1].text = isFr ? 'Sonnerie classique' : 'Classic Bell Ringtone';
+      rOpts[2].text = isFr ? 'Alarme médicale claire' : 'High-Clarity Medical Alarm';
+      rOpts[3].text = isFr ? 'Sonnerie depuis mon téléphone' : 'Custom File from My Phone';
     }
-    $('aiConfigTitle').textContent = ar ? 'Connecter l\'IA (Gemini)' : 'Connect AI (Gemini)';
-    $('aiConfigHint').textContent = ar ? 'Entrez votre clé API Gemini (sauvegardée localement).' : 'Enter Gemini API key (saved on this device only).';
-    $('saveAiKeyBtn').textContent = ar ? 'Enregistrer sur cet appareil' : 'Save on This Device';
-    $('apptModalTitle').textContent = ar ? 'Ajouter un rendez-vous' : 'Add Medical Appointment';
-    $('apptDoctorInput').placeholder = ar ? 'Nom du médecin ou spécialité' : 'Doctor name or specialty';
-    $('apptSaveBtn').textContent = ar ? 'Enregistrer' : 'Save Appointment';
-    $('emModalTitle').textContent = ar ? "Fiche d'urgence médicale" : 'Emergency Medical ID';
+    $('aiConfigTitle').textContent = isFr ? 'Connecter l\'IA (Gemini)' : 'Connect AI (Gemini)';
+    $('aiConfigHint').textContent = isFr ? 'Entrez votre clé API Gemini (sauvegardée localement).' : 'Enter Gemini API key (saved on this device only).';
+    $('saveAiKeyBtn').textContent = isFr ? 'Enregistrer sur cet appareil' : 'Save on This Device';
+    $('apptModalTitle').textContent = isFr ? 'Ajouter un rendez-vous' : 'Add Medical Appointment';
+    $('apptDoctorInput').placeholder = isFr ? 'Nom du médecin ou spécialité' : 'Doctor name or specialty';
+    $('apptSaveBtn').textContent = isFr ? 'Enregistrer' : 'Save Appointment';
+    $('emModalTitle').textContent = isFr ? "Fiche d'urgence médicale" : 'Emergency Medical ID';
 
-    if ($('roleGateTitle')) $('roleGateTitle').textContent = ar ? 'Qui utilise CareGuard ?' : 'Who is using CareGuard?';
-    if ($('roleGateSub')) $('roleGateSub').textContent = ar ? 'Choisissez votre rôle une fois pour afficher votre espace.' : 'Choose your role once to open the right view.';
-    if ($('roleSeniorTitle')) $('roleSeniorTitle').textContent = ar ? '👴 Je suis Senior' : '👴 I am a Senior';
-    if ($('roleSeniorSub')) $('roleSeniorSub').textContent = ar ? 'Suivi, médicaments, eau et salon' : 'Check-in, meds, water & lounge';
-    if ($('roleFamilyTitle')) $('roleFamilyTitle').textContent = ar ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family';
-    if ($('roleFamilySub')) $('roleFamilySub').textContent = ar ? 'Suivre un proche par code' : 'Follow loved one by code';
-    if ($('roleNurseTitle')) $('roleNurseTitle').textContent = ar ? '🩺 Infirmier(ère)' : '🩺 Nurse';
-    if ($('roleNurseSub')) $('roleNurseSub').textContent = ar ? 'Suivi et messages vocaux' : 'Follow-up & voice messages';
-    if ($('roleCenterTitle')) $('roleCenterTitle').textContent = ar ? '🏥 Soins à domicile' : '🏥 Home Care';
-    if ($('roleCenterSub')) $('roleCenterSub').textContent = ar ? 'Suivre les seniors à domicile' : 'Monitor seniors at home';
-    if ($('switchRoleBtn')) $('switchRoleBtn').textContent = ar ? '🔄 Changer de rôle' : '🔄 Switch Role';
-    if ($('careRefreshBtn')) $('careRefreshBtn').textContent = ar ? '🔄 Actualiser' : '🔄 Refresh';
-    if ($('careSwitchRoleBtn')) $('careSwitchRoleBtn').textContent = ar ? 'Changer rôle' : 'Switch Role';
-    if ($('careSignOutBtn')) $('careSignOutBtn').textContent = ar ? 'Quitter' : 'Sign Out';
-    if ($('careLinkTitle')) $('careLinkTitle').textContent = ar ? 'Lier un senior par son code (CG-...)' : 'Link a senior by code (CG-...)';
-    if ($('careSendLinkBtn')) $('careSendLinkBtn').textContent = ar ? 'Lier' : 'Link';
-    if ($('seniorPendingLinksTitle')) $('seniorPendingLinksTitle').textContent = ar ? 'Nouvelles demandes de liaison :' : 'New link requests:';
-    if ($('directCareTitle')) $('directCareTitle').textContent = ar ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages';
-    if ($('directCareBadge')) $('directCareBadge').textContent = ar ? 'Direct' : 'Direct';
-    if ($('directCareSub')) $('directCareSub').textContent = ar ? "Demandez de l'aide ou de charger le téléphone" : 'Ask for help or phone charging';
-    if ($('dcModalSub')) $('dcModalSub').textContent = ar ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
-    if ($('dcTextInput')) $('dcTextInput').placeholder = ar ? 'Écrivez un message...' : 'Type a message...';
-    if ($('dcSendTextBtn')) $('dcSendTextBtn').textContent = ar ? 'Envoyer' : 'Send';
-    if ($('dcSendVoiceBtn')) $('dcSendVoiceBtn').textContent = ar ? 'Envoyer' : 'Send';
-    if ($('dcDiscardVoiceBtn')) $('dcDiscardVoiceBtn').textContent = ar ? 'Annuler' : 'Cancel';
-    if ($('chatSendVoiceBtn')) $('chatSendVoiceBtn').textContent = ar ? 'Envoyer' : 'Send';
-    if ($('chatDiscardVoiceBtn')) $('chatDiscardVoiceBtn').textContent = ar ? 'Annuler' : 'Cancel';
-    if ($('emailName')) $('emailName').placeholder = ar ? 'Nom complet (si inscription)' : 'Full name (for sign up)';
-    if ($('passwordInput')) $('passwordInput').placeholder = ar ? 'Mot de passe' : 'Password';
-    if ($('emailSignInBtn')) $('emailSignInBtn').textContent = ar ? 'Connexion' : 'Sign In';
-    if ($('emailSignUpBtn')) $('emailSignUpBtn').textContent = ar ? 'Créer' : 'Sign Up';
+    if ($('roleGateTitle')) $('roleGateTitle').textContent = isFr ? 'Qui utilise CareGuard ?' : 'Who is using CareGuard?';
+    if ($('roleGateSub')) $('roleGateSub').textContent = isFr ? 'Choisissez votre rôle une fois pour afficher votre espace.' : 'Choose your role once to open the right view.';
+    if ($('roleSeniorTitle')) $('roleSeniorTitle').textContent = isFr ? '👴 Je suis Senior' : '👴 I am a Senior';
+    if ($('roleSeniorSub')) $('roleSeniorSub').textContent = isFr ? 'Suivi, médicaments, eau et salon' : 'Check-in, meds, water & lounge';
+    if ($('roleFamilyTitle')) $('roleFamilyTitle').textContent = isFr ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family';
+    if ($('roleFamilySub')) $('roleFamilySub').textContent = isFr ? 'Suivre un proche par code' : 'Follow loved one by code';
+    if ($('roleNurseTitle')) $('roleNurseTitle').textContent = isFr ? '🩺 Infirmier(ère)' : '🩺 Nurse';
+    if ($('roleNurseSub')) $('roleNurseSub').textContent = isFr ? 'Suivi et messages vocaux' : 'Follow-up & voice messages';
+    if ($('roleCenterTitle')) $('roleCenterTitle').textContent = isFr ? '🏥 Soins à domicile' : '🏥 Home Care';
+    if ($('roleCenterSub')) $('roleCenterSub').textContent = isFr ? 'Suivre les seniors à domicile' : 'Monitor seniors at home';
+    if ($('switchRoleBtn')) $('switchRoleBtn').textContent = isFr ? '🔄 Changer de rôle' : '🔄 Switch Role';
+    if ($('careRefreshBtn')) $('careRefreshBtn').textContent = isFr ? '🔄 Actualiser' : '🔄 Refresh';
+    if ($('careSwitchRoleBtn')) $('careSwitchRoleBtn').textContent = isFr ? 'Changer rôle' : 'Switch Role';
+    if ($('careSignOutBtn')) $('careSignOutBtn').textContent = isFr ? 'Quitter' : 'Sign Out';
+    if ($('careLinkTitle')) $('careLinkTitle').textContent = isFr ? 'Lier un senior par son code (CG-...)' : 'Link a senior by code (CG-...)';
+    if ($('careSendLinkBtn')) $('careSendLinkBtn').textContent = isFr ? 'Lier' : 'Link';
+    if ($('seniorPendingLinksTitle')) $('seniorPendingLinksTitle').textContent = isFr ? 'Nouvelles demandes de liaison :' : 'New link requests:';
+    if ($('directCareTitle')) $('directCareTitle').textContent = isFr ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages';
+    if ($('directCareBadge')) $('directCareBadge').textContent = isFr ? 'Direct' : 'Direct';
+    if ($('directCareSub')) $('directCareSub').textContent = isFr ? "Demandez de l'aide ou de charger le téléphone" : 'Ask for help or phone charging';
+    if ($('dcModalSub')) $('dcModalSub').textContent = isFr ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
+    if ($('dcTextInput')) $('dcTextInput').placeholder = isFr ? 'Écrivez un message...' : 'Type a message...';
+    if ($('dcSendTextBtn')) $('dcSendTextBtn').textContent = isFr ? 'Envoyer' : 'Send';
+    if ($('dcSendVoiceBtn')) $('dcSendVoiceBtn').textContent = isFr ? 'Envoyer' : 'Send';
+    if ($('dcDiscardVoiceBtn')) $('dcDiscardVoiceBtn').textContent = isFr ? 'Annuler' : 'Cancel';
+    if ($('chatSendVoiceBtn')) $('chatSendVoiceBtn').textContent = isFr ? 'Envoyer' : 'Send';
+    if ($('chatDiscardVoiceBtn')) $('chatDiscardVoiceBtn').textContent = isFr ? 'Annuler' : 'Cancel';
+    if ($('emailName')) $('emailName').placeholder = isFr ? 'Nom complet (si inscription)' : 'Full name (for sign up)';
+    if ($('passwordInput')) $('passwordInput').placeholder = isFr ? 'Mot de passe' : 'Password';
+    if ($('emailSignInBtn')) $('emailSignInBtn').textContent = isFr ? 'Connexion' : 'Sign In';
+    if ($('emailSignUpBtn')) $('emailSignUpBtn').textContent = isFr ? 'Créer' : 'Sign Up';
 
 
 
     const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
     const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
-    $('waterNextText').textContent = (ar ? "Prochain rappel d'eau dans : " : 'Next water reminder in: ') + remMin + (ar ? ' min' : ' min');
+    $('waterNextText').textContent = (isFr ? "Prochain rappel d'eau dans : " : 'Next water reminder in: ') + remMin + (isFr ? ' min' : ' min');
 
     updateNetworkUI();
     renderMeds();
@@ -2158,7 +2117,6 @@
   $('closeEmergencyBtn').addEventListener('click', () => $('emergencyModal').classList.add('hidden'));
 
   // Supabase Auth & Sync
-  let client = null;
   if (window.supabase && window.supabase.createClient) {
     client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   }
@@ -2244,7 +2202,7 @@
   function updateAuthUI(user) {
     const prevUid = currentUser && currentUser.id, nextUid = user && user.id;
     currentUser = user || null;
-    if (prevUid !== nextUid) { currentSeniorId = null; alertedMedKeys = new Set(); state = loadState(nextUid || 'guest'); }
+    if (prevUid !== nextUid) { currentSeniorId = null; state = loadState(nextUid || 'guest'); }
     if ($('authCard')) $('authCard').classList.toggle('hidden', !!user || activeTab === 'chat' || !['senior', 'family', 'nurse', 'center'].includes(userRole));
     if ($('signOutBtn')) $('signOutBtn').classList.toggle('hidden', !user);
     applyLang();
@@ -2338,8 +2296,6 @@
   });
 
 
-  const ROLE_STORAGE_KEY = 'careguard_user_role_v1';
-  let userRole = localStorage.getItem(ROLE_STORAGE_KEY) || '';
   let myRegistrationCode = '';
   let dcTargetSeniorId = null;
   let dcMediaRecorder = null, dcChunks = [], dcPendingVoice = '', dcIsRecording = false;
@@ -2377,16 +2333,16 @@
       $('carePortalView').classList.remove('hidden');
       $('authCard').classList.toggle('hidden', !!currentUser);
       $('careSignOutBtn').classList.toggle('hidden', !currentUser);
-      const ar = state.lang === 'fr';
+      const isFr = state.lang === 'fr';
       const titles = {
-        family: ar ? '👨‍👩‍👧 Espace Famille' : '👨‍👩‍👧 Family Dashboard',
-        nurse: ar ? '🩺 Espace Infirmier(ère)' : '🩺 Nurse Follow-Up',
-        center: ar ? '🏥 Centre de Soins à Domicile' : '🏥 Home Care Center'
+        family: isFr ? '👨‍👩‍👧 Espace Famille' : '👨‍👩‍👧 Family Dashboard',
+        nurse: isFr ? '🩺 Espace Infirmier(ère)' : '🩺 Nurse Follow-Up',
+        center: isFr ? '🏥 Centre de Soins à Domicile' : '🏥 Home Care Center'
       };
       const subs = {
-        family: ar ? 'Suivre votre proche et envoyer des messages directs' : 'Monitor your loved one & send direct messages',
-        nurse: ar ? 'Suivre le patient et échanger par vocal/écrit' : 'Follow patient meds & send voice/text messages',
-        center: ar ? "Suivre les seniors à domicile en un coup d'œil" : 'Monitor seniors at home in one clear list'
+        family: isFr ? 'Suivre votre proche et envoyer des messages directs' : 'Monitor your loved one & send direct messages',
+        nurse: isFr ? 'Suivre le patient et échanger par vocal/écrit' : 'Follow patient meds & send voice/text messages',
+        center: isFr ? "Suivre les seniors à domicile en un coup d'œil" : 'Monitor seniors at home in one clear list'
       };
       $('carePortalTitle').textContent = titles[userRole] || '';
       $('carePortalSub').textContent = subs[userRole] || '';
@@ -2419,17 +2375,17 @@
       if (!data || !data.length) { card.classList.add('hidden'); return; }
       card.classList.remove('hidden');
       list.replaceChildren();
-      const ar = state.lang === 'fr';
+      const isFr = state.lang === 'fr';
       data.forEach((lk) => {
         const row = document.createElement('div');
         row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white p-3 border border-amber-200';
-        const roleTxt = lk.role_type === 'nurse' ? (ar ? 'Infirmier' : 'Nurse') : (lk.role_type === 'center' ? (ar ? 'Soins à domicile' : 'Home Care') : (ar ? 'Famille' : 'Family'));
+        const roleTxt = lk.role_type === 'nurse' ? (isFr ? 'Infirmier' : 'Nurse') : (lk.role_type === 'center' ? (isFr ? 'Soins à domicile' : 'Home Care') : (isFr ? 'Famille' : 'Family'));
         const txt = document.createElement('p'); txt.className = 'text-sm font-black text-slate-900';
         txt.textContent = `${lk.requester_name} (${roleTxt})`;
         const btns = document.createElement('div'); btns.className = 'flex gap-2';
         const okBtn = document.createElement('button'); okBtn.type = 'button'; okBtn.style.minHeight = '36px';
         okBtn.className = 'rounded-xl bg-emerald-700 px-3 py-1 text-xs font-extrabold text-white';
-        okBtn.textContent = ar ? 'Accepter ✓' : 'Approve ✓';
+        okBtn.textContent = isFr ? 'Accepter ✓' : 'Approve ✓';
         okBtn.addEventListener('click', async () => {
           const { error } = await client.from('senior_care_links').update({ status: 'approved' }).eq('id', lk.id);
           if (error) { const errP = document.createElement('p'); errP.className = 'text-xs font-bold text-rose-700'; errP.textContent = friendlyError(error); list.prepend(errP); return; }
@@ -2437,7 +2393,7 @@
         });
         const noBtn = document.createElement('button'); noBtn.type = 'button'; noBtn.style.minHeight = '36px';
         noBtn.className = 'rounded-xl border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-extrabold text-rose-800';
-        noBtn.textContent = ar ? 'Refuser' : 'Reject';
+        noBtn.textContent = isFr ? 'Refuser' : 'Reject';
         noBtn.addEventListener('click', async () => {
           await client.from('senior_care_links').update({ status: 'rejected' }).eq('id', lk.id);
           loadPendingCareLinksForSenior();
@@ -2450,8 +2406,8 @@
   // Send Link Request by CG-... Code (Family, Nurse, Home Care)
   $('careSendLinkBtn').addEventListener('click', async () => {
     const st = $('careLinkStatus'); st.classList.remove('hidden');
-    const ar = state.lang === 'fr';
-    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = ar ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.'; return; }
+    const isFr = state.lang === 'fr';
+    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = isFr ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.'; return; }
     const code = $('careCodeInput').value.trim().toUpperCase();
     if (!code) return;
     try {
@@ -2462,7 +2418,7 @@
       });
       if (error) throw error;
       st.className = 'text-xs font-extrabold text-emerald-800';
-      st.textContent = ar ? "✓ Demande envoyée — en attente de l'accord du senior." : '✓ Request sent — waiting for senior approval.';
+      st.textContent = isFr ? "✓ Demande envoyée — en attente de l'accord du senior." : '✓ Request sent — waiting for senior approval.';
       $('careCodeInput').value = '';
       loadCarePortalData();
     } catch (e) {
@@ -2474,7 +2430,7 @@
   async function loadCarePortalData() {
     const list = $('careLinkedList');
     if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
-    const ar = state.lang === 'fr';
+    const isFr = state.lang === 'fr';
     try {
       const { data: links, error } = await client
         .from('senior_care_links')
@@ -2485,7 +2441,7 @@
       if (!links || !links.length) {
         const p = document.createElement('p');
         p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
-        p.textContent = ar ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
+        p.textContent = isFr ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
         list.appendChild(p);
         return;
       }
@@ -2497,12 +2453,12 @@
             ? 'rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
             : 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
           pend.textContent = isRej
-            ? (ar ? '❌ Demande refusée.' : '❌ Link request was declined.')
-            : (ar ? "⏳ Demande de liaison en attente d'approbation." : '⏳ Link request pending senior approval.');
+            ? (isFr ? '❌ Demande refusée.' : '❌ Link request was declined.')
+            : (isFr ? "⏳ Demande de liaison en attente d'approbation." : '⏳ Link request pending senior approval.');
           list.appendChild(pend);
           continue;
         }
-        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: ar ? 'Senior lié' : 'Linked Senior' };
+        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: isFr ? 'Senior lié' : 'Linked Senior' };
         // Fetch latest check-in, battery, meds, today's med logs, and appointments for this linked senior
         const todayStr = getLocalDateStr();
         const todayStart = getLocalDayStartIso();
@@ -2514,7 +2470,7 @@
           client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
           client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(5)
         ]);
-        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (ar ? 'Aucun' : 'None');
+        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (isFr ? 'Aucun' : 'None');
         const batVal = bat && bat[0] ? bat[0].battery_percent : null;
         const batPct = batVal !== null ? batVal + '%' : '--%';
         const medList = Array.isArray(meds) ? meds : [];
@@ -2529,7 +2485,7 @@
         const info = document.createElement('div');
         const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
         const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
-        addr.textContent = (sp.home_address || (ar ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
+        addr.textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
         info.append(nm, addr);
         const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
         const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
@@ -2553,7 +2509,7 @@
             ackBtn.type = 'button';
             ackBtn.style.minHeight = '30px';
             ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
-            ackBtn.textContent = ar ? 'Vu ✓' : 'Ack ✓';
+            ackBtn.textContent = isFr ? 'Vu ✓' : 'Ack ✓';
             ackBtn.addEventListener('click', async () => {
               await client.from('alerts').update({ status: 'resolved' }).eq('id', al.id);
               loadCarePortalData();
@@ -2568,11 +2524,11 @@
         const medSec = document.createElement('div');
         medSec.className = 'rounded-2xl border border-slate-200 bg-slate-50/80 p-3 space-y-1.5';
         const medHdr = document.createElement('p'); medHdr.className = 'text-xs font-black text-slate-700';
-        medHdr.textContent = ar ? '💊 Médicaments aujourd’hui' : "💊 Today's Medications";
+        medHdr.textContent = isFr ? '💊 Médicaments aujourd’hui' : "💊 Today's Medications";
         medSec.appendChild(medHdr);
         if (!medList.length) {
           const nmTxt = document.createElement('p'); nmTxt.className = 'text-xs font-bold text-slate-500';
-          nmTxt.textContent = ar ? 'Aucun médicament enregistré' : 'No medications listed';
+          nmTxt.textContent = isFr ? 'Aucun médicament enregistré' : 'No medications listed';
           medSec.appendChild(nmTxt);
         } else {
           medList.forEach((m) => {
@@ -2580,7 +2536,7 @@
             const mr = document.createElement('div'); mr.className = 'flex items-center justify-between gap-2 text-xs font-bold';
             const ml = document.createElement('span'); ml.className = 'text-slate-800 truncate'; ml.textContent = m.name + (m.dosage ? ` (${m.dosage})` : '');
             const mb = document.createElement('span'); mb.className = isT ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-amber-900';
-            mb.textContent = isT ? (ar ? '✓ Pris' : '✓ Taken') : (ar ? '⏳ En attente' : '⏳ Pending');
+            mb.textContent = isT ? (isFr ? '✓ Pris' : '✓ Taken') : (isFr ? '⏳ En attente' : '⏳ Pending');
             mr.append(ml, mb); medSec.appendChild(mr);
           });
         }
@@ -2591,11 +2547,11 @@
         const apptSec = document.createElement('div');
         apptSec.className = 'rounded-2xl border border-purple-200/80 bg-purple-50/50 p-3 space-y-1.5';
         const apptHdr = document.createElement('p'); apptHdr.className = 'text-xs font-black text-purple-950';
-        apptHdr.textContent = ar ? '📅 Rendez-vous médicaux' : '📅 Medical Appointments';
+        apptHdr.textContent = isFr ? '📅 Rendez-vous médicaux' : '📅 Medical Appointments';
         apptSec.appendChild(apptHdr);
         if (!apptList.length) {
           const naTxt = document.createElement('p'); naTxt.className = 'text-xs font-bold text-slate-500';
-          naTxt.textContent = ar ? 'Aucun rendez-vous' : 'No appointments';
+          naTxt.textContent = isFr ? 'Aucun rendez-vous' : 'No appointments';
           apptSec.appendChild(naTxt);
         } else {
           apptList.forEach((a) => {
@@ -2603,7 +2559,7 @@
             const iso = String(a.appointment_at || '').slice(0, 16).replace('T', ' ');
             const al = document.createElement('span'); al.className = 'text-slate-800 truncate'; al.textContent = (a.title || 'RDV') + (iso ? ' • ' + iso : '');
             const ab = document.createElement('span'); ab.className = a.attended ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-purple-900';
-            ab.textContent = a.attended ? (ar ? '✓ Honoré' : '✓ Attended') : (ar ? '⏳ À venir' : '⏳ Upcoming');
+            ab.textContent = a.attended ? (isFr ? '✓ Honoré' : '✓ Attended') : (isFr ? '⏳ À venir' : '⏳ Upcoming');
             arRow.append(al, ab); apptSec.appendChild(arRow);
           });
         }
@@ -2611,18 +2567,19 @@
 
         const acts = document.createElement('div');
         acts.className = 'flex flex-wrap gap-2';
-        if (sp.senior_phone) {
+        const spTelHref = safeTelHref(sp.senior_phone);
+        if (spTelHref) {
           const callA = document.createElement('a');
-          callA.href = 'tel:' + sp.senior_phone.replace(/\s+/g, '');
+          callA.href = spTelHref;
           callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-extrabold text-emerald-900';
-          callA.textContent = ar ? '📞 Appeler' : '📞 Call';
+          callA.textContent = isFr ? '📞 Appeler' : '📞 Call';
           acts.appendChild(callA);
         }
         if (userRole === 'family' || userRole === 'nurse' || userRole === 'center') {
           const msgBtn = document.createElement('button');
           msgBtn.type = 'button';
           msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-4 py-2 text-xs font-extrabold text-white';
-          msgBtn.textContent = ar ? '🎤 Messages vocaux & écrits' : '🎤 Voice & Text Chat';
+          msgBtn.textContent = isFr ? '🎤 Messages vocaux & écrits' : '🎤 Voice & Text Chat';
           msgBtn.addEventListener('click', () => openDirectCareModal(sp.id, sp.display_name));
           acts.appendChild(msgBtn);
         }
@@ -2637,10 +2594,10 @@
   // Direct Voice & Text Messaging (Senior <-> Nurse / Family)
   function renderDcQuickChips() {
     const box = $('dcQuickChips'); if (!box) return; box.replaceChildren();
-    const ar = state.lang === 'fr';
+    const isFr = state.lang === 'fr';
     const chips = userRole === 'senior'
-      ? (ar ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je souhaite modifier mon traitement', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'I want to adjust my medication', 'Feeling a bit unwell'])
-      : (ar ? ['Je passerai vous voir bientôt', 'Pensez à charger le téléphone et boire de l\'eau', 'Avez-vous pris vos médicaments ?'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
+      ? (isFr ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je souhaite modifier mon traitement', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'I want to adjust my medication', 'Feeling a bit unwell'])
+      : (isFr ? ['Je passerai vous voir bientôt', 'Pensez à charger le téléphone et boire de l\'eau', 'Avez-vous pris vos médicaments ?'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
     chips.forEach((txt) => {
       const b = document.createElement('button'); b.type = 'button'; b.style.minHeight = '32px';
       b.className = 'rounded-full border border-teal-300 bg-teal-50 px-3 py-1 text-xs font-extrabold text-teal-950';
@@ -2652,9 +2609,9 @@
 
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
-    const ar = state.lang === 'fr';
-    $('dcModalTitle').textContent = seniorName ? ((ar ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (ar ? 'Messages Infirmier, Famille & Soins' : 'Nurse, Family & Care Messages');
-    $('dcModalSub').textContent = ar ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
+    const isFr = state.lang === 'fr';
+    $('dcModalTitle').textContent = seniorName ? ((isFr ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (isFr ? 'Messages Infirmier, Famille & Soins' : 'Nurse, Family & Care Messages');
+    $('dcModalSub').textContent = isFr ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
     renderDcQuickChips();
     $('directCareModal').classList.remove('hidden');
     loadDirectCareMessages();
@@ -2664,8 +2621,8 @@
         if (links && links.length) {
           const order = { nurse: 0, family: 1, center: 2 };
           links.sort((a, b) => (order[a.role_type] ?? 9) - (order[b.role_type] ?? 9));
-          const lbl = (r) => r.role_type === 'nurse' ? (ar ? '🩺 Infirmier(ère)' : '🩺 Nurse') : (r.role_type === 'center' ? (ar ? '🏥 Soins' : '🏥 Home Care') : (ar ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family'));
-          $('dcModalSub').textContent = (ar ? 'À : ' : 'To: ') + links.map((r) => `${lbl(r)}: ${r.requester_name}`).join(' • ');
+          const lbl = (r) => r.role_type === 'nurse' ? (isFr ? '🩺 Infirmier(ère)' : '🩺 Nurse') : (r.role_type === 'center' ? (isFr ? '🏥 Soins' : '🏥 Home Care') : (isFr ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family'));
+          $('dcModalSub').textContent = (isFr ? 'À : ' : 'To: ') + links.map((r) => `${lbl(r)}: ${r.requester_name}`).join(' • ');
         }
       } catch (_) {}
     }
@@ -2673,7 +2630,7 @@
 
   async function loadDirectCareMessages() {
     const box = $('dcMessagesList'); if (!box || !client || !currentUser || !dcTargetSeniorId) return;
-    const ar = state.lang === 'fr';
+    const isFr = state.lang === 'fr';
     try {
       const { data, error } = await client
         .from('care_direct_messages')
@@ -2685,7 +2642,7 @@
       box.replaceChildren();
       if (!data || !data.length) {
         const p = document.createElement('p'); p.className = 'py-6 text-center text-sm font-bold text-slate-500';
-        p.textContent = ar ? 'Aucun message — envoyez un vocal ou une demande rapide.' : 'No messages yet — send a voice message or quick request.';
+        p.textContent = isFr ? 'Aucun message — envoyez un vocal ou une demande rapide.' : 'No messages yet — send a voice message or quick request.';
         box.appendChild(p); return;
       }
       data.forEach((m) => {
@@ -2707,9 +2664,9 @@
   }
 
   async function sendDirectCareMessage(text, audioData) {
-    const ar = state.lang === 'fr';
+    const isFr = state.lang === 'fr';
     if (!client || !currentUser || !dcTargetSeniorId) {
-      $('dcStatusMsg').textContent = ar ? "Connectez-vous d'abord." : 'Sign in first.';
+      $('dcStatusMsg').textContent = isFr ? "Connectez-vous d'abord." : 'Sign in first.';
       $('dcStatusMsg').classList.remove('hidden'); return false;
     }
     const { error } = await client.from('care_direct_messages').insert({
@@ -2751,6 +2708,59 @@
   });
   $('dcSendVoiceBtn').addEventListener('click', async () => { if (!dcPendingVoice) return; if (await sendDirectCareMessage(null, dcPendingVoice)) { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); } });
   $('dcDiscardVoiceBtn').addEventListener('click', () => { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); });
+
+      if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  function sendSwNotification(title, body, tag) {
+    try {
+      if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'SHOW_NOTIFICATION', title, body, tag });
+      }
+    } catch (_) {}
+  }
+
+  function renderLegalContent() {
+    const isFr = state.lang === 'fr';
+    const body = $('legalModalBody');
+    if (!body) return;
+    body.replaceChildren();
+    const sections = isFr ? [
+      ['1. Politique de confidentialité (RGPD / LPRPDE)', 'CareGuard collecte uniquement les informations que vous saisissez (profil médical d\'urgence, médicaments, rendez-vous et confirmations). Vos données ne sont jamais vendues ni partagées sans votre approbation explicite par code d\'invitation.'],
+      ['2. Messages du Salon', 'Les messages publics du Salon CareGuard sont automatiquement expirés après 24 heures.'],
+      ['3. Avis médical important', 'CareGuard est un outil d\'organisation et de rappel personnel. Il ne fournit aucun diagnostic médical et ne remplace pas votre médecin ni les services d\'urgence (112 / 911).'],
+      ['4. Vos droits', 'Vous pouvez exporter ou supprimer toutes vos données à tout moment via les boutons ci-dessous.']
+    ] : [
+      ['1. Privacy Policy (GDPR / PIPEDA)', 'CareGuard stores only the information you enter (Emergency ID, medications, appointments, and check-ins). Your data is never sold or shared without your explicit invitation code approval.'],
+      ['2. Lounge Retention', 'Public messages in CareGuard Lounge automatically expire after 24 hours.'],
+      ['3. Medical Disclaimer', 'CareGuard is a personal reminder and coordination tool. It does not provide medical advice or replace your doctor or emergency services (112 / 911).'],
+      ['4. Your Rights', 'You can export or permanently delete your data at any time using the buttons below.']
+    ];
+    sections.forEach(([t, d]) => {
+      const box = document.createElement('div');
+      box.className = 'rounded-2xl border border-slate-200 bg-slate-50 p-3';
+      const h = document.createElement('p'); h.className = 'font-black text-slate-900'; h.textContent = t;
+      const pTxt = document.createElement('p'); pTxt.className = 'mt-1 text-xs text-slate-700'; pTxt.textContent = d;
+      box.append(h, pTxt); body.appendChild(box);
+    });
+  }
+  if ($('openLegalModalBtn')) $('openLegalModalBtn').addEventListener('click', () => { renderLegalContent(); $('legalModal').classList.remove('hidden'); });
+  if ($('closeLegalModalBtn')) $('closeLegalModalBtn').addEventListener('click', () => $('legalModal').classList.add('hidden'));
+  if ($('exportMyDataBtn')) $('exportMyDataBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), profile: state.profile, meds: state.meds, appts: state.appts, waterCount: state.waterCount }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'careguard-data.json'; a.click();
+  });
+  if ($('deleteMyDataBtn')) $('deleteMyDataBtn').addEventListener('click', () => {
+    const label = state.lang === 'fr' ? 'toutes vos données CareGuard' : 'all your CareGuard data';
+    askConfirmDelete(label, async () => {
+      if (client && currentUser && currentSeniorId) {
+        try { await client.from('senior_profiles').delete().eq('id', currentSeniorId).eq('user_id', currentUser.id); } catch (_) {}
+      }
+      try { localStorage.removeItem(getStorageKey()); localStorage.removeItem(ROLE_STORAGE_KEY); } catch (_) {}
+      $('legalModal').classList.add('hidden');
+      handleSignOut();
+    });
+  });
 
   renderRoleViews();
   loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
