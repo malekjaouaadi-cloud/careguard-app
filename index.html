@@ -1216,22 +1216,38 @@
     $('emCallLabel').textContent = (state.lang === 'ar' ? 'اتصال سريع: ' : 'Quick Call: ') + tel;
   }
 
-  // Gemini AI
+  // Gemini AI (with automatic model discovery fallback)
   async function callGeminiText(prompt, imageBase64, mimeType) {
     const key = (localStorage.getItem(AI_KEY_STORAGE) || '').trim();
     if (!key) return null;
     const parts = [{ text: prompt }];
     if (imageBase64) parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: imageBase64 } });
-    for (const model of ['gemini-2.5-flash', 'gemini-2.0-flash']) {
+    const tryModel = async (modelName) => {
+      const cleanName = String(modelName).replace(/^models\//, '');
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 8000);
-      let res;
       try {
-        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + encodeURIComponent(key),
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanName}:generateContent?key=` + encodeURIComponent(key),
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }), signal: ctrl.signal });
+        if (res.ok) { const d = await res.json(); return { ok: true, text: d?.candidates?.[0]?.content?.parts?.[0]?.text || '' }; }
+        if (res.status !== 404) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
+        return { ok: false };
       } finally { clearTimeout(timer); }
-      if (res.ok) { const d = await res.json(); return d?.candidates?.[0]?.content?.parts?.[0]?.text || ''; }
-      if (res.status !== 404) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
+    };
+
+    for (const model of ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash']) {
+      const r = await tryModel(model);
+      if (r.ok) return r.text;
+    }
+    // Auto-discover available generateContent model for this API key
+    const listRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(key));
+    if (listRes.ok) {
+      const listJson = await listRes.json();
+      const cand = (listJson.models || []).find((m) => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent') && /flash|gemini/i.test(m.name));
+      if (cand) {
+        const r2 = await tryModel(cand.name);
+        if (r2.ok) return r2.text;
+      }
     }
     throw new Error('Model unavailable');
   }
