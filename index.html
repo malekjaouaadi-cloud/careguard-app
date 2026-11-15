@@ -4,21 +4,23 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CareGuard — Sérénité</title>
+<meta name="theme-color" content="#047857" />
+<link rel="manifest" href="./manifest.json" />
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   body {
-    font-family: 'Cairo', 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: linear-gradient(180deg, #e7f7f0 0%, #f7fbf9 28%, #f4f7f9 100%);
     color: #0f172a;
     font-size: 19px;
     line-height: 1.5;
   }
   html[dir="ltr"] body {
-    font-family: 'Inter', 'Cairo', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   button, summary { min-height: 46px; }
   input, select, textarea { min-height: 50px; font-size: 18px; }
@@ -786,7 +788,17 @@
   // Bottom Navigation & View Switching
   function switchTab(tab) {
     if (!['senior', 'family', 'nurse', 'center'].includes(userRole)) {
-      renderRoleViews();
+      if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  function sendSwNotification(title, body, tag) {
+    try {
+      if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'SHOW_NOTIFICATION', title, body, tag });
+      }
+    } catch (_) {}
+  }
+  renderRoleViews();
       return;
     }
     activeTab = tab;
@@ -1043,7 +1055,9 @@
   }
   function playSynthRing(mode) {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!window.__cgAudioCtx) window.__cgAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = window.__cgAudioCtx;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
       const now = ctx.currentTime;
       const bursts = mode === 'urgent_alarm' ? 4 : 3;
       for (let i = 0; i < bursts; i++) {
@@ -1176,6 +1190,7 @@
     $('medDueModal').classList.remove('hidden');
     playStrongRingtone();
     setTimeout(() => speakText(state.lang === 'fr' ? `Il est temps de prendre votre médicament : ${namesText}.` : `Time for your medication: ${namesText}.`), 950);
+    sendSwNotification(state.lang === 'fr' ? "C'est l'heure du médicament !" : 'Medication Time!', namesText + ' (' + m.time + ')', 'med-' + m.id);
   }
   $('medDueTakeBtn').addEventListener('click', () => {
     stopRingtone();
@@ -1893,6 +1908,7 @@
     } catch (err) { st.textContent = err.message || 'Error'; }
   });
   $('saveNewMedBtn').addEventListener('click', async () => {
+    if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (_) {} }
     const name = $('newMedNameInput').value.trim(), time = $('newMedTimeInput').value || '08:00';
     if (!name) return;
     const localId = 'm' + Date.now();
@@ -2113,6 +2129,12 @@
       if (u) ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); });
     });
     client.channel('cg-community-live').on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => { if (activeTab === 'chat') loadCommunityMessages(); }).subscribe();
+    client.channel('cg-care-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'care_direct_messages' }, () => { if (!$('directCareModal').classList.contains('hidden')) loadDirectCareMessages(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'senior_care_links' }, () => { if (userRole === 'senior') loadPendingCareLinksForSenior(); else if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'safety_checkins' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'medication_logs' }, () => { if (['family', 'nurse', 'center'].includes(userRole)) loadCarePortalData(); })
+      .subscribe();
   }
 
   $('googleAuthBtn').addEventListener('click', async () => {
