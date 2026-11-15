@@ -359,6 +359,7 @@
         <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 Écouter le rappel vocal</button>
         <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 Sonnerie</button>
         <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 Changer de rôle</button>
+        <button id="openLegalModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-800">⚖️ Confidentialité & Conditions</button>
         <button id="signOutBtn" type="button" class="hidden tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900">Déconnexion</button>
       </div>
     </div>
@@ -568,6 +569,10 @@
         </div>
         <p id="aiPhotoStatus" class="hidden text-xs font-bold text-violet-900"></p>
       </div>
+      <div id="rxExtractedWrap" class="hidden space-y-2 rounded-2xl border border-violet-200 bg-violet-50/70 p-3">
+        <p id="rxExtractedTitle" class="text-xs font-black text-violet-950">Médicaments détectés :</p>
+        <div id="rxExtractedList" class="space-y-1.5"></div>
+      </div>
       <input id="newMedNameInput" autocomplete="off" type="text" placeholder="Nom du médicament et dose" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="newMedTimeInput" type="time" value="08:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <label class="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-950">
@@ -705,6 +710,20 @@
   </div>
 </div>
 
+<div id="legalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 id="legalModalTitle" class="text-xl font-black text-slate-900">Confidentialité & Conditions</h3>
+      <button id="closeLegalModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <div id="legalModalBody" class="space-y-3 text-sm font-semibold text-slate-700 leading-relaxed max-h-72 overflow-y-auto pr-1"></div>
+    <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+      <button id="exportMyDataBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-extrabold text-emerald-900">📥 Exporter mes données</button>
+      <button id="deleteMyDataBtn" type="button" class="tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-sm font-extrabold text-rose-900">🗑️ Supprimer mes données</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -798,6 +817,49 @@
       }
     } catch (_) {}
   }
+
+  function renderLegalContent() {
+    const ar = state.lang === 'fr';
+    const body = $('legalModalBody');
+    if (!body) return;
+    body.replaceChildren();
+    const sections = ar ? [
+      ['1. Politique de confidentialité (RGPD / LPRPDE)', 'CareGuard collecte uniquement les informations que vous saisissez (profil médical d\'urgence, médicaments, rendez-vous et confirmations). Vos données ne sont jamais vendues ni partagées sans votre approbation explicite par code d\'invitation.'],
+      ['2. Messages du Salon', 'Les messages publics du Salon CareGuard sont automatiquement expirés après 24 heures.'],
+      ['3. Avis médical important', 'CareGuard est un outil d\'organisation et de rappel personnel. Il ne fournit aucun diagnostic médical et ne remplace pas votre médecin ni les services d\'urgence (112 / 911).'],
+      ['4. Vos droits', 'Vous pouvez exporter ou supprimer toutes vos données à tout moment via les boutons ci-dessous.']
+    ] : [
+      ['1. Privacy Policy (GDPR / PIPEDA)', 'CareGuard stores only the information you enter (Emergency ID, medications, appointments, and check-ins). Your data is never sold or shared without your explicit invitation code approval.'],
+      ['2. Lounge Retention', 'Public messages in CareGuard Lounge automatically expire after 24 hours.'],
+      ['3. Medical Disclaimer', 'CareGuard is a personal reminder and coordination tool. It does not provide medical advice or replace your doctor or emergency services (112 / 911).'],
+      ['4. Your Rights', 'You can export or permanently delete your data at any time using the buttons below.']
+    ];
+    sections.forEach(([t, d]) => {
+      const box = document.createElement('div');
+      box.className = 'rounded-2xl border border-slate-200 bg-slate-50 p-3';
+      const h = document.createElement('p'); h.className = 'font-black text-slate-900'; h.textContent = t;
+      const pTxt = document.createElement('p'); pTxt.className = 'mt-1 text-xs text-slate-700'; pTxt.textContent = d;
+      box.append(h, pTxt); body.appendChild(box);
+    });
+  }
+  if ($('openLegalModalBtn')) $('openLegalModalBtn').addEventListener('click', () => { renderLegalContent(); $('legalModal').classList.remove('hidden'); });
+  if ($('closeLegalModalBtn')) $('closeLegalModalBtn').addEventListener('click', () => $('legalModal').classList.add('hidden'));
+  if ($('exportMyDataBtn')) $('exportMyDataBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), profile: state.profile, meds: state.meds, appts: state.appts, waterCount: state.waterCount }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'careguard-data.json'; a.click();
+  });
+  if ($('deleteMyDataBtn')) $('deleteMyDataBtn').addEventListener('click', () => {
+    const label = state.lang === 'fr' ? 'toutes vos données CareGuard' : 'all your CareGuard data';
+    askConfirmDelete(label, async () => {
+      if (client && currentUser && currentSeniorId) {
+        try { await client.from('senior_profiles').delete().eq('id', currentSeniorId).eq('user_id', currentUser.id); } catch (_) {}
+      }
+      try { localStorage.removeItem(getStorageKey()); localStorage.removeItem(ROLE_STORAGE_KEY); } catch (_) {}
+      $('legalModal').classList.add('hidden');
+      handleSignOut();
+    });
+  });
+
   renderRoleViews();
       return;
     }
@@ -936,7 +998,8 @@
       blood_type: p.bloodType || null,
       allergies: p.allergies || null,
       conditions: p.conditions || null,
-      medical_notes: p.medicalNotes || null
+      medical_notes: p.medicalNotes || null,
+      timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')
     };
   }
 
@@ -1739,6 +1802,11 @@
     $('testWaterAlertBtn').textContent = ar ? '💧 Écouter le rappel d\'eau' : '💧 Hear Water Reminder';
     $('voiceBtn').textContent = ar ? '🔊 Écouter le rappel vocal' : '🔊 Voice Reminder';
     $('openRingtoneModalBtn').textContent = ar ? '🔔 Sonnerie' : '🔔 Alert Ringtone';
+    if ($('openLegalModalBtn')) $('openLegalModalBtn').textContent = ar ? '⚖️ Confidentialité & Conditions' : '⚖️ Privacy & Legal';
+    if ($('rxExtractedTitle')) $('rxExtractedTitle').textContent = ar ? 'Médicaments détectés :' : 'Detected medications:';
+    if ($('legalModalTitle')) $('legalModalTitle').textContent = ar ? 'Confidentialité & Conditions' : 'Privacy & Legal Terms';
+    if ($('exportMyDataBtn')) $('exportMyDataBtn').textContent = ar ? '📥 Exporter mes données' : '📥 Export My Data';
+    if ($('deleteMyDataBtn')) $('deleteMyDataBtn').textContent = ar ? '🗑️ Supprimer mes données' : '🗑️ Delete My Data';
     $('signOutBtn').textContent = ar ? 'Déconnexion' : 'Sign Out';
     if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = ar ? '🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
     $('backFromChatBtn').textContent = ar ? '← Retour' : '← Back';
@@ -1928,26 +1996,65 @@
     try {
       const compressed = await compressImageDataUrl(pendingImageDataUrl, 1280);
       const b64 = compressed.split(',')[1] || '', mime = (compressed.match(/^data:([^;]+);/) || [])[1] || 'image/jpeg';
-      const ans = await callGeminiText('List all medication names and doses on this prescription clearly on one line separated by commas.', b64, mime);
-      if (ans) { $('newMedNameInput').value = ans.trim(); st.textContent = '✓'; }
+      const ans = await callGeminiText('List each medication and dose on a separate line formatted exactly as: Name Dose | HH:MM (use 08:00 if time is not shown, no bullets or extra text).', b64, mime);
+      if (ans) {
+        const lines = ans.split(/\n+/).map((x) => x.replace(/^[-*•\d.)\s]+/, '').trim()).filter(Boolean);
+        const listEl = $('rxExtractedList'), wrapEl = $('rxExtractedWrap');
+        listEl.replaceChildren();
+        if (lines.length > 1) {
+          wrapEl.classList.remove('hidden');
+          lines.forEach((ln) => {
+            const [nmPart, tmPart] = ln.split('|').map((z) => (z || '').trim());
+            const tm = /^\d{2}:\d{2}$/.test(tmPart) ? tmPart : '08:00';
+            const row = document.createElement('label');
+            row.className = 'flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 border border-violet-200 text-xs font-bold text-slate-800';
+            const left = document.createElement('span'); left.className = 'flex items-center gap-2 min-w-0';
+            const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = true; cb.className = 'rx-item-cb h-4 w-4 accent-violet-700';
+            cb.dataset.name = nmPart || ln; cb.dataset.time = tm;
+            const txt = document.createElement('span'); txt.className = 'truncate'; txt.textContent = (nmPart || ln);
+            left.append(cb, txt);
+            const tInp = document.createElement('input'); tInp.type = 'time'; tInp.value = tm; tInp.className = 'rounded-lg border border-slate-300 px-1.5 py-0.5 text-xs';
+            tInp.style.minHeight = '32px';
+            tInp.addEventListener('change', () => { cb.dataset.time = tInp.value || '08:00'; });
+            row.append(left, tInp);
+            listEl.appendChild(row);
+          });
+          $('newMedNameInput').value = lines[0].split('|')[0].trim();
+        } else {
+          wrapEl.classList.add('hidden');
+          const [nmPart, tmPart] = (lines[0] || ans).split('|').map((z) => (z || '').trim());
+          $('newMedNameInput').value = nmPart || ans.trim();
+          if (/^\d{2}:\d{2}$/.test(tmPart)) $('newMedTimeInput').value = tmPart;
+        }
+        st.textContent = '✓';
+      }
     } catch (err) { st.textContent = err.message || 'Error'; }
   });
   $('saveNewMedBtn').addEventListener('click', async () => {
     if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (_) {} }
-    const name = $('newMedNameInput').value.trim(), time = $('newMedTimeInput').value || '08:00';
-    if (!name) return;
-    const localId = 'm' + Date.now();
-    const medObj = { id: localId, nameAr: name, nameEn: name, time, taken: false, imageData: pendingImageDataUrl || '' };
-    state.meds.push(medObj);
+    const checkedItems = Array.from(document.querySelectorAll('.rx-item-cb:checked')).map((cb) => ({ name: cb.dataset.name, time: cb.dataset.time || '08:00' })).filter((x) => x.name);
+    const itemsToAdd = checkedItems.length ? checkedItems : ($('newMedNameInput').value.trim() ? [{ name: $('newMedNameInput').value.trim(), time: $('newMedTimeInput').value || '08:00' }] : []);
+    if (!itemsToAdd.length) return;
+    const imgSnap = pendingImageDataUrl || '';
+    const createdObjs = [];
+    itemsToAdd.forEach((it, idx) => {
+      const localId = 'm' + (Date.now() + idx);
+      const medObj = { id: localId, nameAr: it.name, nameEn: it.name, time: it.time, taken: false, imageData: idx === 0 ? imgSnap : '' };
+      state.meds.push(medObj);
+      createdObjs.push({ medObj, localId, name: it.name, time: it.time });
+    });
     saveState(); renderMeds(); pendingImageDataUrl = '';
-    $('newMedNameInput').value = ''; $('medImagePreviewWrap').classList.add('hidden'); $('rxConfirmCheck').checked = false; $('saveNewMedBtn').disabled = true; $('uploadMedModal').classList.add('hidden');
-    if (navigator.onLine && client && currentUser && currentSeniorId) {
-      try {
-        const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name, dosage: time }).select('id').single();
-        if (error) throw error;
-        if (data && data.id) { medObj.id = data.id; saveState(); renderMeds(); }
-      } catch (_) { enqueueSync('med_add', { localId, name, time }); }
-    } else if (currentUser) enqueueSync('med_add', { localId, name, time });
+    $('newMedNameInput').value = ''; $('rxExtractedList').replaceChildren(); $('rxExtractedWrap').classList.add('hidden');
+    $('medImagePreviewWrap').classList.add('hidden'); $('rxConfirmCheck').checked = false; $('saveNewMedBtn').disabled = true; $('uploadMedModal').classList.add('hidden');
+    for (const c of createdObjs) {
+      if (navigator.onLine && client && currentUser && currentSeniorId) {
+        try {
+          const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name: c.name, dosage: c.time }).select('id').single();
+          if (error) throw error;
+          if (data && data.id) { c.medObj.id = data.id; saveState(); renderMeds(); }
+        } catch (_) { enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time }); }
+      } else if (currentUser) enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time });
+    }
   });
 
   $('openProfileModalBtn').addEventListener('click', () => {
@@ -2062,6 +2169,7 @@
       await client.from('profiles').upsert({ id: user.id, display_name: displayName }, { onConflict: 'id' });
       const { data: existing } = await client.from('senior_profiles').select('id, registration_number').eq('user_id', user.id).limit(1);
       if (existing && existing.length) {
+        try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz) client.from('senior_profiles').update({ timezone: tz }).eq('id', existing[0].id).then(() => {}); } catch (_) {}
         currentSeniorId = existing[0].id;
         myRegistrationCode = existing[0].registration_number || '';
         if (!myRegistrationCode) {
@@ -2073,7 +2181,7 @@
         const genCode = 'CG-' + Math.random().toString(36).slice(2, 8).toUpperCase();
         const { data: hid } = await client.rpc('create_careguard_household', { p_name: displayName + ' Care' });
         if (hid) {
-          const { data: created } = await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName, registration_number: genCode }).select('id, registration_number').single();
+          const { data: created } = await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName, registration_number: genCode, timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC') }).select('id, registration_number').single();
           if (created) { currentSeniorId = created.id; myRegistrationCode = created.registration_number || genCode; }
         }
       }
