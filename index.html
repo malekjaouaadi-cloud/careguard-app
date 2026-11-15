@@ -92,7 +92,7 @@
         أو الدخول بالبريد الإلكتروني
       </summary>
       <div class="mt-3 space-y-3">
-        <input id="emailName" type="text" placeholder="الاسم الكامل (عند إنشاء حساب)" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+        <input id="emailName" autocomplete="off" type="text" placeholder="الاسم الكامل (عند إنشاء حساب)" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
         <input id="emailInput" type="email" dir="ltr" placeholder="name@example.com" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
         <input id="passwordInput" type="password" placeholder="كلمة المرور" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
         <div class="grid grid-cols-2 gap-3">
@@ -248,7 +248,7 @@
       </button>
 
       <div class="mt-3 flex flex-col gap-3 sm:flex-row">
-        <input id="aiQuestionInput" type="text" placeholder="مثال: متى موعد دوائي القادم؟" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
+        <input id="aiQuestionInput" autocomplete="off" type="text" placeholder="مثال: متى موعد دوائي القادم؟" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
         <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl border-2 border-violet-300 bg-violet-50 px-6 py-3.5 text-lg font-extrabold text-violet-900 hover:bg-violet-100">
           اسأل
         </button>
@@ -305,25 +305,35 @@
         <p id="chatSubheading" class="text-base font-bold text-amber-800">تُحفظ المشاركات الصوتية والكتابية لمدة 24 ساعة ثم تُمحى تلقائياً.</p>
       </div>
 
-      <!-- Identity Selector: Real Name or Nickname -->
-      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 space-y-2.5">
+      <!-- Step 1: Choose Real Name or Nickname, then tap Enter Room -->
+      <div id="chatJoinStep" class="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 space-y-3">
         <p id="chatIdentityTitle" class="text-base font-extrabold text-slate-900">الاسم الظاهر في الدردشة:</p>
         <label class="flex items-center gap-3 text-base font-bold text-slate-800">
           <input id="chatUseNickname" type="checkbox" class="h-6 w-6 accent-amber-600" />
           <span id="chatUseNicknameLabel">الدخول باسم مستعار بدل اسمي الحقيقي</span>
         </label>
-        <input id="chatNicknameInput" type="text" placeholder="اكتب الاسم المستعار هنا (مثال: أبو أحمد)" class="hidden w-full rounded-2xl border-2 border-amber-300 bg-white px-4 py-3 text-lg text-slate-900" />
+        <input id="chatNicknameInput" autocomplete="off" type="text" placeholder="اكتب الاسم المستعار هنا (مثال: أبو أحمد)" class="hidden w-full rounded-2xl border-2 border-amber-300 bg-white px-4 py-3 text-lg text-slate-900" />
         <p id="chatActiveNameNote" class="text-sm font-bold text-emerald-800"></p>
+        <button id="chatEnterRoomBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white shadow-sm hover:bg-emerald-800">
+          <span id="chatEnterRoomLabel">دخول إلى الغرفة</span>
+        </button>
       </div>
 
-      <!-- Active Participants (last 24h) -->
-      <div class="space-y-1.5">
-        <p id="chatMembersLabel" class="text-sm font-extrabold text-slate-600">المشاركون (آخر 24 ساعة):</p>
-        <div id="chatMembersList" class="flex flex-wrap gap-2"></div>
-      </div>
+      <!-- Step 2: Inside the Chat Room -->
+      <div id="chatRoomStep" class="hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-emerald-50 px-4 py-2.5">
+          <span id="chatJoinedAsBadge" class="text-base font-extrabold text-emerald-900"></span>
+          <button id="chatChangeNameBtn" type="button" class="rounded-xl border border-emerald-300 bg-white px-3 py-1.5 text-sm font-extrabold text-emerald-900">تغيير الاسم</button>
+        </div>
 
-      <!-- Messages List -->
-      <div id="chatMessagesList" class="max-h-96 space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-50 p-3.5"></div>
+        <!-- Active Participants (last 24h) -->
+        <div class="space-y-1.5">
+          <p id="chatMembersLabel" class="text-sm font-extrabold text-slate-600">المشاركون (آخر 24 ساعة):</p>
+          <div id="chatMembersList" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Messages List -->
+        <div id="chatMessagesList" class="max-h-96 space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-50 p-3.5"></div>
 
       <!-- Voice & Text Posting -->
       <div class="space-y-3">
@@ -343,12 +353,13 @@
         </div>
 
         <div class="flex flex-col gap-2.5 sm:flex-row">
-          <input id="chatTextInput" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
+          <input id="chatTextInput" autocomplete="off" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
           <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-slate-900 px-6 py-3.5 text-lg font-extrabold text-white">
             إرسال
           </button>
         </div>
         <p id="chatStatusMsg" class="hidden rounded-2xl border-2 border-rose-200 bg-rose-50 px-4 py-3 text-base font-bold text-rose-900"></p>
+      </div>
       </div>
     </div>
   </section>
@@ -396,7 +407,7 @@
         </div>
         <p id="aiPhotoStatus" class="hidden text-sm font-bold text-violet-900"></p>
       </div>
-      <input id="newMedNameInput" type="text" placeholder="اسم الدواء والجرعة (مثال: ميتفورمين 500 ملغ)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="newMedNameInput" autocomplete="off" type="text" placeholder="اسم الدواء والجرعة (مثال: ميتفورمين 500 ملغ)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="newMedTimeInput" type="time" value="08:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <label class="flex items-start gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3.5 text-base font-bold text-amber-950">
         <input id="rxConfirmCheck" type="checkbox" class="mt-1 h-6 w-6 shrink-0 accent-emerald-700" />
@@ -415,7 +426,7 @@
       <button id="closeProfileModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
     <div class="mt-4 space-y-3">
-      <input id="profNameInput" type="text" placeholder="الاسم الكامل" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="profNameInput" autocomplete="off" type="text" placeholder="الاسم الكامل" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profBloodInput" type="text" placeholder="فصيلة الدم (مثال: O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profAllergiesInput" type="text" placeholder="الحساسية (مثال: البنسلين)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profConditionsInput" type="text" placeholder="الأمراض المزمنة (مثال: السكري، الضغط)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
@@ -481,7 +492,7 @@
       <button id="closeApptModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
     <div class="mt-4 space-y-3">
-      <input id="apptDoctorInput" type="text" placeholder="اسم الطبيب أو التخصص" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="apptDoctorInput" autocomplete="off" type="text" placeholder="اسم الطبيب أو التخصص" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="apptDateInput" type="date" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="apptTimeInput" type="time" value="10:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <button id="apptSaveBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">حفظ الموعد</button>
@@ -989,8 +1000,20 @@
     $('emCallLabel').textContent = tr('emCall') + ' (' + tel + ')';
   }
 
+  function cleanProfileName() {
+    const raw = (state.profile.name || '').trim();
+    if (!raw) return '';
+    const isMedName = state.meds.some((m) => [m.nameAr, m.nameEn].some((n) => n && n.trim().toLowerCase() === raw.toLowerCase()));
+    if (isMedName) {
+      state.profile.name = '';
+      saveState();
+      return '';
+    }
+    return raw;
+  }
+
   function getRealDisplayName() {
-    return state.profile.name
+    return cleanProfileName()
       || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || (currentUser.email ? currentUser.email.split('@')[0] : '')))
       || (state.lang === 'ar' ? 'مشارك' : 'Senior');
   }
@@ -1053,6 +1076,8 @@
     $('chatNicknameInput').placeholder = tr('chatNicknamePh');
     $('chatMembersLabel').textContent = tr('chatMembersLabel');
     $('refreshChatBtn').textContent = tr('refreshChat');
+    $('chatEnterRoomLabel').textContent = state.lang === 'ar' ? 'دخول إلى الغرفة' : 'Enter Chat Room';
+    $('chatChangeNameBtn').textContent = state.lang === 'ar' ? 'تغيير الاسم' : 'Change Name';
     $('chatRecordBtnLabel').textContent = isRecording ? tr('stopRecord') : tr('recordVoice');
     $('chatSendVoiceBtn').textContent = tr('sendVoice');
     $('chatDiscardVoiceBtn').textContent = tr('discardVoice');
@@ -1086,7 +1111,7 @@
     $('apptSaveBtn').textContent = tr('apptSave');
     $('emModalTitle').textContent = tr('emModalTitle');
 
-    const name = state.profile.name || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
+    const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
     $('seniorGreeting').textContent = name ? (tr('helloPrefix') + name) : tr('seniorGreetingDefault');
     $('signedInGreeting').textContent = name ? (tr('helloPrefix') + name) : tr('seniorGreetingDefault');
     syncChatIdentityUI();
@@ -1118,9 +1143,25 @@
   $('openChatPageBtn').addEventListener('click', () => {
     $('seniorView').classList.add('hidden');
     $('chatPageView').classList.remove('hidden');
+    $('chatJoinStep').classList.remove('hidden');
+    $('chatRoomStep').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     syncChatIdentityUI();
+  });
+  $('chatEnterRoomBtn').addEventListener('click', () => {
+    if (state.chatUseNickname && !state.chatNickname.trim()) {
+      $('chatNicknameInput').focus();
+      return;
+    }
+    $('chatJoinStep').classList.add('hidden');
+    $('chatRoomStep').classList.remove('hidden');
+    $('chatJoinedAsBadge').textContent = (state.lang === 'ar' ? 'داخل الغرفة باسم: ' : 'In room as: ') + getChatAuthorName();
     loadCommunityMessages();
+  });
+  $('chatChangeNameBtn').addEventListener('click', () => {
+    $('chatRoomStep').classList.add('hidden');
+    $('chatJoinStep').classList.remove('hidden');
+    syncChatIdentityUI();
   });
   $('backFromChatBtn').addEventListener('click', () => {
     $('chatPageView').classList.add('hidden');
