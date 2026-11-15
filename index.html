@@ -805,6 +805,7 @@
     lastWaterReminderAt: Date.now(),
     ringtonePreset: 'loud_phone',
     customRingtoneName: '',
+    lastSeenCareMsgAt: 0,
     medsDate: getLocalDateStr(),
     alertedMedKeys: [],
     meds: [],
@@ -1088,6 +1089,33 @@
       return true;
     }
     return true;
+  }
+
+
+  async function syncUnsyncedLocalItems() {
+    if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
+    let changed = false;
+    const queuedMedIds = new Set((state.pendingQueue || []).filter((q) => q.type === 'med_add').map((q) => q.payload && q.payload.localId));
+    for (const m of (state.meds || [])) {
+      if (String(m.id).startsWith('m') && !queuedMedIds.has(m.id)) {
+        try {
+          const name = m.nameEn || m.nameAr || 'Med';
+          const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name, dosage: m.time || '08:00' }).select('id').single();
+          if (!error && data && data.id) { m.id = data.id; changed = true; }
+        } catch (_) {}
+      }
+    }
+    const queuedApptIds = new Set((state.pendingQueue || []).filter((q) => q.type === 'appt_add').map((q) => q.payload && q.payload.localId));
+    for (const a of (state.appts || [])) {
+      if (String(a.id).startsWith('a') && !queuedApptIds.has(a.id)) {
+        try {
+          const doc = a.doctorEn || a.doctorAr || 'RDV';
+          const { data, error } = await client.from('appointments').insert({ senior_id: currentSeniorId, title: doc, appointment_at: (a.date || getLocalDateStr()) + 'T' + (a.time || '10:00') + ':00', attended: !!a.attended }).select('id').single();
+          if (!error && data && data.id) { a.id = data.id; changed = true; }
+        } catch (_) {}
+      }
+    }
+    if (changed) { saveState(); renderMeds(); renderAppts(); }
   }
 
   async function flushPendingQueue() {
@@ -1552,7 +1580,7 @@
     const dispAllergies = mapLegacyMed(p.allergies, 'allergies');
     const dispConditions = mapLegacyMed(p.conditions, 'conditions');
     const items = state.lang === 'fr'
-      ? [['Nom :', displayName], ['Date de naissance :', p.dob || '-'], ['Tél. senior :', p.phone || '-'], ['Proche :', familyLabel], ['Tél. secours :', p.backupPhone || '-'], ['Médecin traitant :', doctorLabel], ['Adresse :', p.address || '-'], ['Groupe sanguin :', p.bloodType || '-'], ['Allergies :', p.allergies || '-'], ['Pathologies :', p.conditions || '-'], ['Notes médicales :', p.medicalNotes || '-'], ['Médicaments :', medNames]]
+      ? [['Nom :', displayName], ['Date de naissance :', p.dob || '-'], ['Tél. senior :', p.phone || '-'], ['Proche :', familyLabel], ['Tél. secours :', p.backupPhone || '-'], ['Médecin traitant :', doctorLabel], ['Adresse :', p.address || '-'], ['Groupe sanguin :', p.bloodType || '-'], ['Allergies :', dispAllergies], ['Pathologies :', dispConditions], ['Notes médicales :', p.medicalNotes || '-'], ['Médicaments :', medNames]]
       : [['Name:', displayName], ['Date of Birth:', p.dob || '-'], ['Senior Phone:', p.phone || '-'], ['Close Family:', familyLabel], ['Backup Phone:', p.backupPhone || '-'], ['Doctor:', doctorLabel], ['Address:', p.address || '-'], ['Blood Type:', p.bloodType || '-'], ['Allergies:', dispAllergies], ['Conditions:', dispConditions], ['Notes:', p.medicalNotes || '-'], ['Medications:', medNames]];
     items.forEach(([k, v]) => {
       const line = document.createElement('div');
@@ -2338,6 +2366,7 @@
         state.appts = cloudAppts.concat(localAppts);
       }
       saveState(); applyLang();
+      checkUnreadCareMessagesForSenior();
     } catch (_) {}
   }
 
@@ -2353,13 +2382,13 @@
 
   if (client) {
     client.auth.getSession().then(({ data }) => {
-      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(async () => { await flushPendingQueue(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); }); }
+      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(async () => { await flushPendingQueue(); await syncUnsyncedLocalItems(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); }); }
     });
     client.auth.onAuthStateChange((_e, session) => {
       const u = session && session.user ? session.user : null;
       if (_e === 'SIGNED_OUT') { activeTab = 'home'; setRole(''); }
       updateAuthUI(u);
-      if (u) ensureSeniorProfile(u).then(async () => { await flushPendingQueue(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
+      if (u) ensureSeniorProfile(u).then(async () => { await flushPendingQueue(); await syncUnsyncedLocalItems(); await loadCloudSeniorData(); if (userRole === 'senior') syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
     });
     client.channel('cg-community-live').on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => { if (activeTab === 'chat') loadCommunityMessages(); }).subscribe();
     client.channel('cg-care-live')
@@ -2796,8 +2825,8 @@
     const medProf = makeSec(isFr ? '🩺 Profil médical & Contacts' : '🩺 Medical Profile & Contacts', 'border-slate-200 bg-slate-50');
     [
       [isFr ? 'Groupe sanguin' : 'Blood Type', sp.blood_type || '-'],
-      [isFr ? 'Allergies' : 'Allergies', sp.allergies || '-'],
-      [isFr ? 'Pathologies' : 'Conditions', sp.conditions || '-'],
+      [isFr ? 'Allergies' : 'Allergies', sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : (sp.allergies || '-')],
+      [isFr ? 'Pathologies' : 'Conditions', (sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : (sp.conditions || '-')],
       [isFr ? 'Médecin' : 'Doctor', (sp.doctor_name || '-') + (sp.doctor_phone ? ' (' + sp.doctor_phone + ')' : '')],
       [isFr ? 'Tél. urgence' : 'Emergency Phone', sp.emergency_phone || '-'],
       [isFr ? 'Notes' : 'Notes', sp.medical_notes || '-']
@@ -2865,6 +2894,38 @@
     });
   }
 
+
+  async function checkUnreadCareMessagesForSenior() {
+    if (userRole !== 'senior' || !client || !currentUser || !currentSeniorId || !navigator.onLine) return;
+    try {
+      const { data } = await client
+        .from('care_direct_messages')
+        .select('id, sender_user_id, sender_name, message_text, created_at')
+        .eq('senior_id', currentSeniorId)
+        .neq('sender_user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (!data || !data[0]) return;
+      const msg = data[0];
+      const msgTs = msg.created_at ? new Date(msg.created_at).getTime() : 0;
+      if (msgTs > (state.lastSeenCareMsgAt || 0)) {
+        const preview = msg.message_text || (state.lang === 'fr' ? '🎤 Message vocal' : '🎤 Voice message');
+        if ($('directCareSub')) {
+          $('directCareSub').textContent = '💬 ' + (msg.sender_name || '') + ': ' + preview.slice(0, 45);
+          $('directCareSub').className = 'text-xs font-black text-rose-700 animate-pulse';
+        }
+        const bell = $('headerBellCount');
+        if (bell) bell.textContent = String(Math.max(1, Number(bell.textContent) || 0));
+        if (window.__lastChimedMsgId !== msg.id) {
+          window.__lastChimedMsgId = msg.id;
+          playMessengerChime();
+          sendSwNotification('💬 ' + (msg.sender_name || 'CareGuard'), preview, 'dm-' + msg.id);
+        }
+      }
+    } catch (_) {}
+  }
+  setInterval(checkUnreadCareMessagesForSenior, 20000);
+
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
     const isFr = state.lang === 'fr';
@@ -2872,6 +2933,10 @@
     $('dcModalSub').textContent = isFr ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
     renderDcQuickChips();
     $('directCareModal').classList.remove('hidden');
+    if (userRole === 'senior') {
+      state.lastSeenCareMsgAt = Date.now(); saveState();
+      if ($('directCareSub')) $('directCareSub').className = 'text-xs font-bold text-teal-900';
+    }
     loadDirectCareMessages();
     if (!seniorName && client && currentUser && dcTargetSeniorId) {
       try {
