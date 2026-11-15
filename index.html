@@ -126,9 +126,9 @@
     <!-- Card 1: Daily Check-In + Battery -->
     <div class="rounded-3xl border-2 border-emerald-200 bg-white p-6 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-base font-extrabold text-emerald-900">
-          <span class="h-3 w-3 rounded-full bg-emerald-600"></span>
-          <span id="safetyBadgeText">الحالة طبيعية</span>
+        <span id="networkStatusPill" class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-base font-extrabold text-emerald-900">
+          <span id="networkStatusDot" class="h-3 w-3 rounded-full bg-emerald-600"></span>
+          <span id="safetyBadgeText">متصل بالخادم</span>
         </span>
         <span id="batteryBadge" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-1.5 text-base font-extrabold text-slate-800">
           <svg class="h-5 w-5 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
@@ -157,6 +157,7 @@
       </button>
 
       <div id="checkInFeedback" class="hidden mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900"></div>
+      <div id="syncQueueBanner" class="hidden mt-3 rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-extrabold text-amber-950"></div>
     </div>
 
     <!-- Card 2: Automatic 2-Hour Water Reminder -->
@@ -561,6 +562,18 @@
   </div>
 </div>
 
+<!-- Modal 7: Friendly Confirm Delete (Prevents accidental taps) -->
+<div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-4">
+  <div class="w-full max-w-md rounded-3xl border-2 border-rose-300 bg-white p-6 text-center shadow-2xl">
+    <h3 id="confirmDelTitle" class="text-2xl font-black text-slate-900">تأكيد الحذف</h3>
+    <p id="confirmDelText" class="mt-2 text-lg font-bold text-slate-700"></p>
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <button id="confirmDelYesBtn" type="button" class="tap-btn rounded-2xl bg-rose-700 px-4 py-3.5 text-lg font-black text-white hover:bg-rose-800">نعم، احذف</button>
+      <button id="confirmDelNoBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3.5 text-lg font-extrabold text-slate-900">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -584,6 +597,8 @@
     chatUseNickname: false,
     chatNickname: '',
     lastCheckInIso: null,
+    lastServerCheckInIso: null,
+    pendingQueue: [],
     waterCount: 0,
     waterDate: new Date().toISOString().slice(0, 10),
     lastWaterReminderAt: Date.now(),
@@ -736,6 +751,158 @@
     }
   };
   function tr(k) { return T[state.lang][k]; }
+
+  let pendingDeleteAction = null;
+  function askConfirmDelete(label, onConfirm) {
+    pendingDeleteAction = onConfirm;
+    $('confirmDelTitle').textContent = state.lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete';
+    $('confirmDelText').textContent = state.lang === 'ar'
+      ? `هل أنت متأكد من حذف "${label}"؟`
+      : `Are you sure you want to delete "${label}"?`;
+    $('confirmDelYesBtn').textContent = state.lang === 'ar' ? 'نعم، احذف' : 'Yes, Delete';
+    $('confirmDelNoBtn').textContent = state.lang === 'ar' ? 'إلغاء' : 'Cancel';
+    $('confirmDeleteModal').classList.remove('hidden');
+  }
+  $('confirmDelYesBtn').addEventListener('click', async () => {
+    $('confirmDeleteModal').classList.add('hidden');
+    if (typeof pendingDeleteAction === 'function') {
+      const fn = pendingDeleteAction;
+      pendingDeleteAction = null;
+      await fn();
+    }
+  });
+  $('confirmDelNoBtn').addEventListener('click', () => {
+    pendingDeleteAction = null;
+    $('confirmDeleteModal').classList.add('hidden');
+  });
+
+  function friendlyError(err) {
+    const raw = String((err && err.message) || err || '');
+    console.warn('[CareGuard diagnostic]', raw);
+    if (!navigator.onLine || /fetch|network|offline/i.test(raw)) {
+      return state.lang === 'ar' ? 'لا يوجد اتصال بالإنترنت حالياً.' : 'No internet connection right now.';
+    }
+    if (/permission|policy|rls|jwt|auth/i.test(raw)) {
+      return state.lang === 'ar' ? 'يرجى تسجيل الدخول لإتمام الحفظ في حسابك.' : 'Please sign in to save to your account.';
+    }
+    return state.lang === 'ar' ? 'تعذر إتمام العملية حالياً، تم حفظها محلياً.' : 'Could not reach server; saved locally.';
+  }
+
+  function updateNetworkUI() {
+    const online = navigator.onLine;
+    const pill = $('networkStatusPill'), dot = $('networkStatusDot'), txt = $('safetyBadgeText');
+    if (pill && dot && txt) {
+      if (!online) {
+        pill.className = 'inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-1.5 text-base font-extrabold text-amber-950';
+        dot.className = 'h-3 w-3 rounded-full bg-amber-600';
+        txt.textContent = state.lang === 'ar' ? 'غير متصل بالإنترنت' : 'Offline Mode';
+      } else if (currentUser) {
+        pill.className = 'inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-base font-extrabold text-emerald-900';
+        dot.className = 'h-3 w-3 rounded-full bg-emerald-600';
+        txt.textContent = state.lang === 'ar' ? 'متصل بالحساب ✓' : 'Synced with Account ✓';
+      } else {
+        pill.className = 'inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-1.5 text-base font-extrabold text-slate-800';
+        dot.className = 'h-3 w-3 rounded-full bg-slate-500';
+        txt.textContent = state.lang === 'ar' ? 'وضع محلي (سجّل الدخول)' : 'Local Only (Sign In)';
+      }
+    }
+    const qBanner = $('syncQueueBanner');
+    const qLen = Array.isArray(state.pendingQueue) ? state.pendingQueue.length : 0;
+    if (qBanner) {
+      qBanner.classList.toggle('hidden', qLen === 0);
+      if (qLen > 0) {
+        qBanner.textContent = state.lang === 'ar'
+          ? `⏳ هناك (${qLen}) عملية محفوظة محلياً بانتظار المزامنة مع الخادم.`
+          : `⏳ ${qLen} action(s) saved locally, waiting to sync with server.`;
+      }
+    }
+  }
+
+  function enqueueSync(type, payload) {
+    if (!Array.isArray(state.pendingQueue)) state.pendingQueue = [];
+    const clientEventId = type + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    state.pendingQueue.push({ clientEventId, type, payload, createdAt: new Date().toISOString() });
+    saveState();
+    updateNetworkUI();
+    return clientEventId;
+  }
+
+  async function processSyncItem(item) {
+    if (!client || !currentUser || !currentSeniorId) return false;
+    if (item.type === 'checkin') {
+      const { error } = await client.from('safety_checkins').insert({
+        senior_id: currentSeniorId,
+        source: 'senior_button',
+        checked_in_at: item.createdAt
+      });
+      if (error) throw error;
+      state.lastServerCheckInIso = item.createdAt;
+      return true;
+    }
+    if (item.type === 'med_add') {
+      const { error } = await client.from('medications').insert({
+        senior_id: currentSeniorId,
+        name: item.payload.name,
+        dosage: item.payload.time || ''
+      });
+      if (error) throw error;
+      return true;
+    }
+    if (item.type === 'appt_add') {
+      const { error } = await client.from('appointments').insert({
+        senior_id: currentSeniorId,
+        title: item.payload.doctor,
+        appointment_at: item.payload.date + 'T' + (item.payload.time || '10:00') + ':00'
+      });
+      if (error) throw error;
+      return true;
+    }
+    return true;
+  }
+
+  async function flushPendingQueue() {
+    if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
+    if (!Array.isArray(state.pendingQueue) || !state.pendingQueue.length) return;
+    const remaining = [];
+    for (const item of state.pendingQueue) {
+      try {
+        await processSyncItem(item);
+      } catch (e) {
+        console.warn('[Sync retry deferred]', e);
+        remaining.push(item);
+      }
+    }
+    state.pendingQueue = remaining;
+    saveState();
+    updateNetworkUI();
+    if (!remaining.length) {
+      const fb = $('checkInFeedback');
+      if (fb) {
+        fb.className = 'mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900';
+        fb.textContent = state.lang === 'ar' ? '✓ تمت مزامنة العمليات المعلقة مع الخادم بنجاح.' : '✓ Pending offline actions synced with server.';
+      }
+    }
+  }
+
+  async function loadCloudSeniorData() {
+    if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
+    try {
+      const { data: chk } = await client
+        .from('safety_checkins')
+        .select('checked_in_at')
+        .eq('senior_id', currentSeniorId)
+        .order('checked_in_at', { ascending: false })
+        .limit(1);
+      if (chk && chk.length && chk[0].checked_in_at) {
+        state.lastServerCheckInIso = chk[0].checked_in_at;
+        saveState();
+        applyLang();
+      }
+    } catch (_) {}
+  }
+
+  window.addEventListener('online', () => { updateNetworkUI(); flushPendingQueue(); });
+  window.addEventListener('offline', () => { updateNetworkUI(); });
 
   function showAuthMsg(msg, kind) {
     const el = $('authStatus');
@@ -1001,7 +1168,13 @@
       delBtn.type = 'button';
       delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2.5 text-base font-extrabold text-rose-700 hover:bg-rose-50';
       delBtn.textContent = tr('deleteMed');
-      delBtn.addEventListener('click', () => { state.meds = state.meds.filter((x) => x.id !== m.id); saveState(); renderMeds(); });
+      delBtn.addEventListener('click', () => {
+        askConfirmDelete(title.textContent, () => {
+          state.meds = state.meds.filter((x) => x.id !== m.id);
+          saveState();
+          renderMeds();
+        });
+      });
 
       actions.append(takeBtn, delBtn); top.append(info, actions); row.appendChild(top);
       if (m.imageData) {
@@ -1028,7 +1201,13 @@
       const delBtn = document.createElement('button'); delBtn.type = 'button';
       delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2 text-base font-extrabold text-rose-700';
       delBtn.textContent = tr('deleteMed');
-      delBtn.addEventListener('click', () => { state.appts = state.appts.filter((x) => x.id !== a.id); saveState(); renderAppts(); });
+      delBtn.addEventListener('click', () => {
+        askConfirmDelete(doc.textContent, () => {
+          state.appts = state.appts.filter((x) => x.id !== a.id);
+          saveState();
+          renderAppts();
+        });
+      });
       row.append(info, delBtn); box.appendChild(row);
     });
   }
@@ -1210,7 +1389,13 @@
     $('updateInfoBtnLabel').textContent = tr('updateInfoBtn');
     $('ringtoneBtnLabel').textContent = tr('ringtoneBtn');
     $('safetyBadgeText').textContent = tr('safetyOk');
-    $('lastCheckInText').textContent = state.lastCheckInIso ? tr('lastCheckJustNow') : tr('lastCheckDefault');
+    if (state.lastServerCheckInIso) {
+      const dtStr = new Date(state.lastServerCheckInIso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      $('lastCheckInText').textContent = (state.lang === 'ar' ? 'آخر تأكيد وصل للخادم: ' : 'Last server-confirmed check-in: ') + dtStr;
+    } else {
+      $('lastCheckInText').textContent = state.lang === 'ar' ? 'لم يُؤكَّد أي تسجيل على الخادم بعد' : 'No server-confirmed check-in yet';
+    }
+    updateNetworkUI();
     $('seniorPromptText').textContent = tr('seniorPrompt');
     $('imOkLabel').textContent = tr('imOk');
     $('voiceBtnLabel').textContent = tr('voiceBtn');
@@ -1395,13 +1580,21 @@
       if (ans) { $('newMedNameInput').value = ans.trim(); st.textContent = state.lang === 'ar' ? 'تم الاستخراج! تأكد أمام وصفة الطبيب ثم احفظ.' : 'Extracted! Confirm and save.'; }
     } catch (err) { st.textContent = (err.message || 'Error'); }
   });
-  $('saveNewMedBtn').addEventListener('click', () => {
+  $('saveNewMedBtn').addEventListener('click', async () => {
     const name = $('newMedNameInput').value.trim(), time = $('newMedTimeInput').value || '08:00';
     if (!name) return;
     state.meds.push({ id: 'm' + Date.now(), nameAr: name, nameEn: name, time, taken: false, imageData: pendingImageDataUrl || '' });
     saveState(); renderMeds(); pendingImageDataUrl = '';
     $('newMedNameInput').value = ''; $('medImagePreviewWrap').classList.add('hidden');
     $('rxConfirmCheck').checked = false; $('saveNewMedBtn').disabled = true; $('uploadMedModal').classList.add('hidden');
+    if (navigator.onLine && client && currentUser && currentSeniorId) {
+      try {
+        const { error } = await client.from('medications').insert({ senior_id: currentSeniorId, name, dosage: time });
+        if (error) throw error;
+      } catch (_) { enqueueSync('med_add', { name, time }); }
+    } else if (currentUser) {
+      enqueueSync('med_add', { name, time });
+    }
   });
 
   // Profile Modal
@@ -1726,7 +1919,7 @@
       renderChatMessages(data || []);
     } catch (e) {
       renderChatMessages([]);
-      showChatMsg((state.lang === 'ar' ? 'تعذر تحميل الدردشة: ' : 'Could not load chat: ') + (e.message || 'Error'), true);
+      showChatMsg(friendlyError(e), true);
     }
   }
 
@@ -1745,7 +1938,7 @@
       audio_data: audioData || null
     });
     if (error) {
-      showChatMsg((state.lang === 'ar' ? 'تعذر الإرسال: ' : 'Send failed: ') + error.message, true);
+      showChatMsg(friendlyError(error), true);
       return false;
     }
     showChatMsg(state.lang === 'ar' ? 'تم إرسال مشاركتك بنجاح (تحفظ لمدة 24 ساعة).' : 'Sent! (Kept for 24 hours).', false);
@@ -1806,11 +1999,19 @@
   // Appointments & Emergency Modals
   $('openApptModalBtn').addEventListener('click', () => $('apptModal').classList.remove('hidden'));
   $('closeApptModalBtn').addEventListener('click', () => $('apptModal').classList.add('hidden'));
-  $('apptSaveBtn').addEventListener('click', () => {
+  $('apptSaveBtn').addEventListener('click', async () => {
     const doc = $('apptDoctorInput').value.trim(), date = $('apptDateInput').value, time = $('apptTimeInput').value || '10:00';
     if (!doc || !date) return;
     state.appts.unshift({ id: 'a' + Date.now(), doctorAr: doc, doctorEn: doc, date, time });
     saveState(); renderAppts(); $('apptDoctorInput').value = ''; $('apptModal').classList.add('hidden');
+    if (navigator.onLine && client && currentUser && currentSeniorId) {
+      try {
+        const { error } = await client.from('appointments').insert({ senior_id: currentSeniorId, title: doc, appointment_at: date + 'T' + time + ':00' });
+        if (error) throw error;
+      } catch (_) { enqueueSync('appt_add', { doctor: doc, date, time }); }
+    } else if (currentUser) {
+      enqueueSync('appt_add', { doctor: doc, date, time });
+    }
   });
   $('openEmergencyBtn').addEventListener('click', () => { renderEmergency(); $('emergencyModal').classList.remove('hidden'); });
   $('closeEmergencyBtn').addEventListener('click', () => $('emergencyModal').classList.add('hidden'));
@@ -1851,12 +2052,12 @@
 
   if (client) {
     client.auth.getSession().then(({ data }) => {
-      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user); }
+      if (data && data.session && data.session.user) { updateAuthUI(data.session.user); ensureSeniorProfile(data.session.user).then(() => { loadCloudSeniorData(); flushPendingQueue(); }); }
     });
     client.auth.onAuthStateChange((_event, session) => {
       const u = session && session.user ? session.user : null;
       updateAuthUI(u);
-      if (u) ensureSeniorProfile(u);
+      if (u) { ensureSeniorProfile(u).then(() => { loadCloudSeniorData(); flushPendingQueue(); }); }
     });
     client.channel('cg-community-live')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'community_messages' }, () => {
@@ -1897,15 +2098,45 @@
 
   $('imOkBtn').addEventListener('click', async () => {
     playStrongRingtone();
-    state.lastCheckInIso = new Date().toISOString();
+    const nowIso = new Date().toISOString();
+    state.lastCheckInIso = nowIso;
     saveState();
-    $('lastCheckInText').textContent = tr('lastCheckJustNow');
-    const fb = $('checkInFeedback'); fb.classList.remove('hidden'); fb.textContent = tr('checkInDone');
-    if (client && currentUser && currentSeniorId) {
-      try {
-        const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, source: 'senior_button' });
-        if (!error) fb.textContent = tr('checkInSavedCloud');
-      } catch (_) {}
+    const fb = $('checkInFeedback');
+    fb.classList.remove('hidden');
+
+    if (!currentUser) {
+      fb.className = 'mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950';
+      fb.textContent = state.lang === 'ar'
+        ? 'تم الحفظ على هذا الجهاز فقط — سجّل الدخول ليصل التأكيد لحسابك.'
+        : 'Saved on this device only — sign in to sync with your account.';
+      return;
+    }
+    if (!navigator.onLine || !client || !currentSeniorId) {
+      enqueueSync('checkin', {});
+      fb.className = 'mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950';
+      fb.textContent = state.lang === 'ar'
+        ? '⏳ حُفظ محلياً بدون إنترنت — سيتم إرساله للخادم تلقائياً عند عودة الشبكة.'
+        : '⏳ Saved locally offline — will sync automatically when online.';
+      return;
+    }
+
+    fb.className = 'mt-4 rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-extrabold text-sky-900';
+    fb.textContent = state.lang === 'ar' ? 'جارٍ التأكيد مع الخادم...' : 'Confirming with server...';
+    try {
+      const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, source: 'senior_button' });
+      if (error) throw error;
+      state.lastServerCheckInIso = nowIso;
+      saveState();
+      applyLang();
+      fb.className = 'mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900';
+      fb.textContent = state.lang === 'ar' ? '✓ تم تأكيد وصول «أنا بخير» إلى الخادم بنجاح.' : '✓ Confirmed: your check-in reached the server.';
+    } catch (e) {
+      console.warn('[Check-in error]', e);
+      enqueueSync('checkin', {});
+      fb.className = 'mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950';
+      fb.textContent = state.lang === 'ar'
+        ? '⏳ تعذر الوصول للخادم الآن — حُفظ محلياً وسنعيد الإرسال تلقائياً.'
+        : '⏳ Server unreachable — saved locally and queued to retry.';
     }
   });
 
