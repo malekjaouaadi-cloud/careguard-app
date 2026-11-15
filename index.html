@@ -1973,7 +1973,7 @@
     const prevUid = currentUser && currentUser.id, nextUid = user && user.id;
     currentUser = user || null;
     if (prevUid !== nextUid) { currentSeniorId = null; alertedMedKeys = new Set(); state = loadState(nextUid || 'guest'); }
-    if ($('authCard')) $('authCard').classList.toggle('hidden', !!user || activeTab === 'chat');
+    if ($('authCard')) $('authCard').classList.toggle('hidden', !!user || activeTab === 'chat' || !['senior', 'family', 'nurse', 'center'].includes(userRole));
     if ($('signOutBtn')) $('signOutBtn').classList.toggle('hidden', !user);
     applyLang();
     renderRoleViews();
@@ -2010,7 +2010,13 @@
     try { const { data, error } = await client.auth.signUp({ email, password, options: { data: { display_name } } }); if (error) throw error; if (data.session && data.user) updateAuthUI(data.user); else showAuthMsg(state.lang === 'ar' ? 'تم إنشاء الحساب! افتح بريدك للتأكيد.' : 'Check your email.', 'success'); }
     catch (e) { showAuthMsg(e.message || 'Sign up failed', 'error'); }
   });
-  $('signOutBtn').addEventListener('click', async () => { if (client) await client.auth.signOut(); updateAuthUI(null); switchTab('home'); });
+  async function handleSignOut() {
+    try { if (client) await client.auth.signOut(); } catch (_) {}
+    activeTab = 'home';
+    setRole('');
+    updateAuthUI(null);
+  }
+  $('signOutBtn').addEventListener('click', handleSignOut);
 
   function showAuthMsg(msg, kind) {
     const el = $('authStatus'); el.textContent = msg;
@@ -2109,7 +2115,7 @@
   $('chooseCenterRoleBtn').addEventListener('click', () => setRole('center'));
   $('switchRoleBtn').addEventListener('click', () => setRole(''));
   $('careSwitchRoleBtn').addEventListener('click', () => setRole(''));
-  $('careSignOutBtn').addEventListener('click', async () => { if (client) await client.auth.signOut(); updateAuthUI(null); });
+  $('careSignOutBtn').addEventListener('click', handleSignOut);
 
   $('copySeniorCodeBtn').addEventListener('click', async () => {
     if (!myRegistrationCode) return;
