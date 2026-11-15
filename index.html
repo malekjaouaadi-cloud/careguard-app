@@ -143,8 +143,8 @@
             <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-800">
               🔋 <span id="batteryText">--%</span>
             </span>
-            <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-950" style="min-height:28px;">
-              🔑 <span id="seniorCodeBadgeText">CG------</span>
+            <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1.5 rounded-full border-2 border-emerald-500 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-950 shadow-sm" style="min-height:30px;">
+              🔑 <span id="seniorCodePrefix">رقم الدعوة:</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
             </button>
           </div>
         </div>
@@ -1577,6 +1577,7 @@
     $('heroWelcomeLabel').textContent = ar ? 'مرحباً بك' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
     $('seniorGreeting').textContent = name || (ar ? 'أهلاً بك' : 'Guest');
+    if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = ar ? 'رقم الدعوة:' : 'Invite Code:';
     $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'ط').toUpperCase();
     $('imOkLabel').textContent = ar ? 'أنا بخير' : "I'm OK";
     if (state.lastServerCheckInIso) {
@@ -1918,12 +1919,17 @@
           if (created) { currentSeniorId = created.id; myRegistrationCode = created.registration_number || genCode; }
         }
       }
+      if (!myRegistrationCode && user && user.id) {
+        myRegistrationCode = 'CG-' + user.id.replace(/-/g, '').slice(0, 6).toUpperCase();
+      }
       if (myRegistrationCode && $('copySeniorCodeBtn')) {
         $('seniorCodeBadgeText').textContent = myRegistrationCode;
         $('copySeniorCodeBtn').classList.remove('hidden');
       }
       loadPendingCareLinksForSenior();
-    } catch (_) {}
+    } catch (e) {
+      console.warn('[ensureSeniorProfile]', e);
+    }
   }
   async function loadCloudSeniorData() {
     if (!navigator.onLine || !client || !currentUser || !currentSeniorId) return;
