@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="fr" dir="ltr">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CareGuard — طمأنينة</title>
+<title>CareGuard — Sérénité</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,8 +44,8 @@
     </button>
 
     <div class="text-center">
-      <h1 id="appTitle" class="text-2xl font-black leading-none text-emerald-950">طمأنينة</h1>
-      <p id="appSubtitle" class="mt-0.5 text-xs font-bold text-emerald-800">صحتك وراحتك تهمنا</p>
+      <h1 id="appTitle" class="text-2xl font-black leading-none text-emerald-950">CareGuard</h1>
+      <p id="appSubtitle" class="mt-0.5 text-xs font-bold text-emerald-800">Votre santé et sérénité</p>
     </div>
 
     <button id="langToggle" type="button" class="tap-btn flex h-12 items-center gap-1.5 rounded-2xl bg-white px-3 text-xs font-black text-emerald-900 shadow-sm border border-emerald-100">
@@ -65,29 +65,29 @@
   <!-- Role Chooser Gate (Shown on first visit or when switching role) -->
   <section id="roleGateCard" class="hidden rounded-3xl border-2 border-emerald-200 bg-white p-5 shadow-sm space-y-4">
     <div class="text-center">
-      <h2 id="roleGateTitle" class="text-2xl font-black text-slate-900">من يستخدم طمأنينة الآن؟</h2>
-      <p id="roleGateSub" class="mt-1 text-sm font-bold text-slate-600">اختر دورك مرة واحدة فقط لتظهر لك الشاشة المناسبة.</p>
+      <h2 id="roleGateTitle" class="text-2xl font-black text-slate-900">Qui utilise CareGuard ?</h2>
+      <p id="roleGateSub" class="mt-1 text-sm font-bold text-slate-600">Choisissez votre rôle une fois pour afficher votre espace.</p>
     </div>
     <div class="space-y-3">
       <button id="chooseSeniorRoleBtn" type="button" class="tap-btn flex w-full items-center justify-between rounded-2xl border-2 border-emerald-500 bg-emerald-50 px-5 py-4 text-start shadow-sm">
         <div>
-          <p id="roleSeniorTitle" class="text-xl font-black text-emerald-950">👴 أنا المسن</p>
-          <p id="roleSeniorSub" class="text-xs font-bold text-emerald-800">الاطمئنان، الدواء، الماء، ومجلس الدردشة</p>
+          <p id="roleSeniorTitle" class="text-xl font-black text-emerald-950">👴 Je suis Senior</p>
+          <p id="roleSeniorSub" class="text-xs font-bold text-emerald-800">Suivi, médicaments, eau et salon d\'échange</p>
         </div>
         <span class="text-2xl font-black text-emerald-700">‹</span>
       </button>
       <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
         <button id="chooseFamilyRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-200 bg-sky-50 p-3.5 text-start">
-          <p id="roleFamilyTitle" class="text-base font-black text-sky-950">👨‍👩‍👧 العائلة</p>
-          <p id="roleFamilySub" class="text-xs font-bold text-sky-800">متابعة قريبك برقمه</p>
+          <p id="roleFamilyTitle" class="text-base font-black text-sky-950">👨‍👩‍👧 Famille</p>
+          <p id="roleFamilySub" class="text-xs font-bold text-sky-800">Suivre un proche par code</p>
         </button>
         <button id="chooseNurseRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-teal-200 bg-teal-50 p-3.5 text-start">
-          <p id="roleNurseTitle" class="text-base font-black text-teal-950">🩺 الممرض المتابع</p>
-          <p id="roleNurseSub" class="text-xs font-bold text-teal-800">متابعة ورسائل صوتية</p>
+          <p id="roleNurseTitle" class="text-base font-black text-teal-950">🩺 Infirmier(ère)</p>
+          <p id="roleNurseSub" class="text-xs font-bold text-teal-800">Suivi et messages vocaux</p>
         </button>
         <button id="chooseCenterRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-purple-200 bg-purple-50 p-3.5 text-start">
-          <p id="roleCenterTitle" class="text-base font-black text-purple-950">🏥 رعاية منزلية</p>
-          <p id="roleCenterSub" class="text-xs font-bold text-purple-800">متابعة المسنين بمنازلهم</p>
+          <p id="roleCenterTitle" class="text-base font-black text-purple-950">🏥 Soins à domicile</p>
+          <p id="roleCenterSub" class="text-xs font-bold text-purple-800">Suivre les seniors à domicile</p>
         </button>
       </div>
     </div>
@@ -96,8 +96,8 @@
   <!-- Google-First Auth Card (Hidden automatically when signed in) -->
   <section id="authCard" class="rounded-3xl border border-emerald-200 bg-white p-5 shadow-sm">
     <div class="text-center">
-      <h2 id="authHeading" class="text-xl font-black text-slate-900">الدخول السريع</h2>
-      <p id="authSubheading" class="mt-1 text-sm font-semibold text-slate-600">اختر حسابك في Google للدخول بلمسة واحدة.</p>
+      <h2 id="authHeading" class="text-xl font-black text-slate-900">Connexion rapide</h2>
+      <p id="authSubheading" class="mt-1 text-sm font-semibold text-slate-600">Connectez-vous en un clic avec votre compte Google.</p>
     </div>
     <button id="googleAuthBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-slate-300 bg-white px-4 py-3.5 text-lg font-extrabold text-slate-900 shadow-sm hover:bg-slate-50">
       <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -106,22 +106,22 @@
         <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
         <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
       </svg>
-      <span id="googleBtnLabel">المتابعة بحساب Google</span>
+      <span id="googleBtnLabel">Continuer avec Google</span>
     </button>
     <div id="authStatus" class="hidden mt-3 rounded-2xl px-4 py-2.5 text-sm font-bold"></div>
     <details class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-      <summary id="emailFallbackSummary" class="flex cursor-pointer items-center text-sm font-extrabold text-slate-700">أو الدخول بالبريد الإلكتروني</summary>
+      <summary id="emailFallbackSummary" class="flex cursor-pointer items-center text-sm font-extrabold text-slate-700">Ou se connecter par e-mail</summary>
       <div class="mt-3 space-y-2.5">
-        <input id="emailName" autocomplete="off" type="text" placeholder="الاسم الكامل (عند إنشاء حساب)" class="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2.5 text-base" />
+        <input id="emailName" autocomplete="off" type="text" placeholder="Nom complet (si inscription)" class="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2.5 text-base" />
         <input id="emailInput" type="email" dir="ltr" placeholder="name@example.com" class="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2.5 text-base" />
-        <input id="passwordInput" type="password" placeholder="كلمة المرور" class="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2.5 text-base" />
+        <input id="passwordInput" type="password" placeholder="Mot de passe" class="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2.5 text-base" />
         <div class="grid grid-cols-2 gap-2.5">
-          <button id="emailSignInBtn" type="button" class="tap-btn rounded-2xl bg-slate-900 px-3 py-2.5 text-base font-extrabold text-white">دخول</button>
-          <button id="emailSignUpBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-3 py-2.5 text-base font-extrabold text-white">حساب جديد</button>
+          <button id="emailSignInBtn" type="button" class="tap-btn rounded-2xl bg-slate-900 px-3 py-2.5 text-base font-extrabold text-white">Connexion</button>
+          <button id="emailSignUpBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-3 py-2.5 text-base font-extrabold text-white">Créer</button>
         </div>
       </div>
     </details>
-    <button id="authSwitchRoleBtn" type="button" class="tap-btn mt-3 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-extrabold text-slate-800">🔄 تغيير نوع الحساب (المسن / العائلة / الممرض / الرعاية)</button>
+    <button id="authSwitchRoleBtn" type="button" class="tap-btn mt-3 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-extrabold text-slate-800">🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)</button>
   </section>
 
   <!-- TAB 1: HOME DASHBOARD (Matches Mockup 1000061436.png) -->
@@ -131,21 +131,21 @@
     <div class="relative overflow-hidden rounded-3xl border border-emerald-200/80 bg-white/95 p-4 shadow-sm">
       <div class="flex items-center gap-4">
         <div id="heroAvatar" class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-4 border-emerald-100 bg-emerald-700 text-3xl font-black text-white shadow-sm">
-          م
+          C
         </div>
         <div class="min-w-0 flex-1">
-          <p id="heroWelcomeLabel" class="text-sm font-bold text-slate-600">مرحباً بك</p>
-          <h2 id="seniorGreeting" class="truncate text-2xl font-black text-slate-900">مرحباً بك</h2>
+          <p id="heroWelcomeLabel" class="text-sm font-bold text-slate-600">Bienvenue</p>
+          <h2 id="seniorGreeting" class="truncate text-2xl font-black text-slate-900">Bienvenue</h2>
           <div class="mt-1.5 flex flex-wrap items-center gap-2">
             <span id="networkStatusPill" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-900">
               <span id="networkStatusDot" class="h-2.5 w-2.5 rounded-full bg-emerald-600"></span>
-              <span id="safetyBadgeText">حسابك متصل</span>
+              <span id="safetyBadgeText">Compte connecté</span>
             </span>
             <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-800">
               🔋 <span id="batteryText">--%</span>
             </span>
             <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1.5 rounded-full border-2 border-emerald-500 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-950 shadow-sm" style="min-height:30px;">
-              🔑 <span id="seniorCodePrefix">رقم الدعوة:</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
+              🔑 <span id="seniorCodePrefix">Code d\'invitation :</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
             </button>
           </div>
         </div>
@@ -160,8 +160,8 @@
         </svg>
       </div>
       <div class="text-center flex-1">
-        <span id="imOkLabel" class="block text-2xl font-black leading-tight">أنا بخير</span>
-        <span id="lastCheckInText" class="mt-0.5 block text-xs font-bold text-emerald-100">كل شيء على ما يرام</span>
+        <span id="imOkLabel" class="block text-2xl font-black leading-tight">Je vais bien</span>
+        <span id="lastCheckInText" class="mt-0.5 block text-xs font-bold text-emerald-100">Tout va bien</span>
       </div>
       <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-emerald-800 font-black text-xl">‹</span>
     </button>
@@ -176,8 +176,8 @@
       <button id="tileMedsBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-emerald-200 bg-[#eafbf3] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="tileMedsTitle" class="text-xl font-black text-slate-900">الأدوية</h3>
-            <p id="tileMedsSub" class="mt-0.5 text-sm font-extrabold text-emerald-900">0 / 3 جرعات</p>
+            <h3 id="tileMedsTitle" class="text-xl font-black text-slate-900">Médicaments</h3>
+            <p id="tileMedsSub" class="mt-0.5 text-sm font-extrabold text-emerald-900">0 / 3 doses</p>
           </div>
           <svg class="h-11 w-11 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
             <rect x="10" y="14" width="28" height="12" rx="6" transform="rotate(-30 24 20)" fill="#ef4444"/>
@@ -186,7 +186,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white font-black text-sm">‹</span>
-          <span id="tileMedsHint" class="text-xs font-bold text-emerald-800">عرض القائمة</span>
+          <span id="tileMedsHint" class="text-xs font-bold text-emerald-800">Voir la liste</span>
         </div>
       </button>
 
@@ -194,8 +194,8 @@
       <button id="openEmergencyBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-rose-200 bg-[#fff0f1] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="tileEmergencyTitle" class="text-xl font-black text-rose-900">الطوارئ</h3>
-            <p id="tileEmergencySub" class="mt-0.5 text-sm font-bold text-rose-700">للاتصال السريع</p>
+            <h3 id="tileEmergencyTitle" class="text-xl font-black text-rose-900">Urgence</h3>
+            <p id="tileEmergencySub" class="mt-0.5 text-sm font-bold text-rose-700">Appel rapide</p>
           </div>
           <svg class="h-11 w-11 shrink-0 text-rose-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm6.36 2.64a1 1 0 010 1.41l-1.41 1.42a1 1 0 11-1.42-1.42l1.42-1.41a1 1 0 011.41 0zM5.64 4.64a1 1 0 011.41 0l1.42 1.41a1 1 0 11-1.42 1.42L5.64 6.05a1 1 0 010-1.41zM7 14a5 5 0 0110 0v3h1a1 1 0 110 2H6a1 1 0 110-2h1v-3z"/>
@@ -203,7 +203,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-rose-600 text-white font-black text-sm">‹</span>
-          <span id="emergencyBtnLabel" class="text-xs font-bold text-rose-800">بطاقة الطوارئ</span>
+          <span id="emergencyBtnLabel" class="text-xs font-bold text-rose-800">Fiche d\'urgence</span>
         </div>
       </button>
 
@@ -211,8 +211,8 @@
       <button id="tileApptsBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-purple-200 bg-[#f5f0ff] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="tileApptsTitle" class="text-xl font-black text-purple-950">المواعيد</h3>
-            <p id="tileApptsSub" class="mt-0.5 text-sm font-bold text-purple-800">مع الطبيب</p>
+            <h3 id="tileApptsTitle" class="text-xl font-black text-purple-950">Rendez-vous</h3>
+            <p id="tileApptsSub" class="mt-0.5 text-sm font-bold text-purple-800">Médecin</p>
           </div>
           <svg class="h-11 w-11 shrink-0 text-purple-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -220,7 +220,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-600 text-white font-black text-sm">‹</span>
-          <span id="tileApptsHint" class="text-xs font-bold text-purple-800">الموعد القادم</span>
+          <span id="tileApptsHint" class="text-xs font-bold text-purple-800">Prochain RDV</span>
         </div>
       </button>
 
@@ -228,8 +228,8 @@
       <button id="tileWaterBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-sky-200 bg-[#edf7ff] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="waterHeading" class="text-xl font-black text-sky-950">شرب الماء</h3>
-            <p id="waterCountBadge" class="mt-0.5 text-sm font-extrabold text-sky-800">0 / 8 أكواب</p>
+            <h3 id="waterHeading" class="text-xl font-black text-sky-950">Boire de l\'eau</h3>
+            <p id="waterCountBadge" class="mt-0.5 text-sm font-extrabold text-sky-800">0 / 8 verres</p>
           </div>
           <svg class="h-11 w-11 shrink-0 text-sky-500" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.25C12 3.25 6 10.2 6 14.5a6 6 0 1012 0c0-4.3-6-11.25-6-11.25z" />
@@ -237,7 +237,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-sky-600 text-white font-black text-sm">‹</span>
-          <span id="tileWaterHint" class="text-xs font-bold text-sky-800">+ تسجيل كأس</span>
+          <span id="tileWaterHint" class="text-xs font-bold text-sky-800">+ 1 verre</span>
         </div>
       </button>
 
@@ -245,8 +245,8 @@
       <button id="tileAiBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-amber-200 bg-[#fff7eb] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="aiHeading" class="text-xl font-black text-slate-900">المساعد الذكي</h3>
-            <p id="aiSubheading" class="mt-0.5 text-sm font-bold text-amber-900">اسأل عن أي شيء</p>
+            <h3 id="aiHeading" class="text-xl font-black text-slate-900">Assistant IA</h3>
+            <p id="aiSubheading" class="mt-0.5 text-sm font-bold text-amber-900">Posez une question</p>
           </div>
           <svg class="h-11 w-11 shrink-0 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -254,7 +254,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-600 text-white font-black text-sm">‹</span>
-          <span id="tileAiHint" class="text-xs font-bold text-amber-900">صوت وكتابة</span>
+          <span id="tileAiHint" class="text-xs font-bold text-amber-900">Voix et texte</span>
         </div>
       </button>
 
@@ -262,8 +262,8 @@
       <button id="openProfileModalBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-teal-200 bg-[#e9fbf8] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="updateInfoBtnLabel" class="text-lg font-black leading-snug text-teal-950">بطاقة الحالة الصحية</h3>
-            <p id="tileProfileSub" class="mt-0.5 text-sm font-bold text-teal-800">عرض وتحديث</p>
+            <h3 id="updateInfoBtnLabel" class="text-lg font-black leading-snug text-teal-950">Fiche de santé</h3>
+            <p id="tileProfileSub" class="mt-0.5 text-sm font-bold text-teal-800">Voir et modifier</p>
           </div>
           <svg class="h-11 w-11 shrink-0 text-teal-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -271,7 +271,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
           <span class="flex h-7 w-7 items-center justify-center rounded-full bg-teal-600 text-white font-black text-sm">‹</span>
-          <span id="tileProfileHint" class="text-xs font-bold text-teal-800">البيانات الطبية</span>
+          <span id="tileProfileHint" class="text-xs font-bold text-teal-800">Infos médicales</span>
         </div>
       </button>
 
@@ -282,8 +282,8 @@
       <div class="flex items-center gap-3">
         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white font-black text-lg">‹</span>
         <div>
-          <h3 id="chatLauncherTitle" class="text-xl font-black text-slate-900">غرفة الدردشة</h3>
-          <p id="chatLauncherSub" class="text-sm font-bold text-emerald-900">تواصل مع مجلس طمأنينة بالصوت والكتابة</p>
+          <h3 id="chatLauncherTitle" class="text-xl font-black text-slate-900">Salon CareGuard</h3>
+          <p id="chatLauncherSub" class="text-sm font-bold text-emerald-900">Discutez par voix ou écrit dans le salon</p>
         </div>
       </div>
       <svg class="h-12 w-12 shrink-0 text-emerald-700" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -293,7 +293,7 @@
 
     <!-- Direct Messages & Link Requests with Nurse / Family -->
     <div id="seniorPendingLinksCard" class="hidden rounded-3xl border-2 border-amber-300 bg-amber-50 p-4 space-y-2.5 shadow-sm">
-      <p id="seniorPendingLinksTitle" class="text-base font-black text-amber-950">طلبات ربط جديدة بملفك:</p>
+      <p id="seniorPendingLinksTitle" class="text-base font-black text-amber-950">Nouvelles demandes de liaison :</p>
       <div id="seniorPendingLinksList" class="space-y-2"></div>
     </div>
 
@@ -301,8 +301,8 @@
       <div class="flex items-center gap-3">
         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-white font-black text-lg">‹</span>
         <div>
-          <h3 id="directCareTitle" class="text-lg font-black text-slate-900">رسائل الممرض والعائلة</h3>
-          <p id="directCareSub" class="text-xs font-bold text-teal-900">اطلب المساعدة أو شحن الهاتف بالصوت أو بلمسة</p>
+          <h3 id="directCareTitle" class="text-lg font-black text-slate-900">Messages Infirmier & Famille</h3>
+          <p id="directCareSub" class="text-xs font-bold text-teal-900">Demandez de l'aide ou de charger le téléphone</p>
         </div>
       </div>
       <span id="directCareBadge" class="rounded-full bg-teal-700 px-2.5 py-0.5 text-xs font-black text-white">🩺</span>
@@ -314,8 +314,8 @@
   <!-- TAB 2: MEDICATIONS VIEW -->
   <section id="medsTabView" class="hidden space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2 rounded-3xl border border-emerald-200 bg-white p-4 shadow-sm">
-      <h2 id="medsHeading" class="text-2xl font-black text-slate-900">أدوية اليوم</h2>
-      <button id="openUploadMedBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-2.5 text-base font-extrabold text-white">+ إضافة / صورة وصفة</button>
+      <h2 id="medsHeading" class="text-2xl font-black text-slate-900">Médicaments du jour</h2>
+      <button id="openUploadMedBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-2.5 text-base font-extrabold text-white">+ Ajouter / Photo</button>
     </div>
     <div id="medsList" class="space-y-3"></div>
   </section>
@@ -323,8 +323,8 @@
   <!-- TAB 3: APPOINTMENTS VIEW -->
   <section id="apptsTabView" class="hidden space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2 rounded-3xl border border-purple-200 bg-white p-4 shadow-sm">
-      <h2 id="apptsHeading" class="text-2xl font-black text-slate-900">الموعد الطبي القادم</h2>
-      <button id="openApptModalBtn" type="button" class="tap-btn rounded-2xl bg-purple-700 px-4 py-2.5 text-base font-extrabold text-white">+ موعد جديد</button>
+      <h2 id="apptsHeading" class="text-2xl font-black text-slate-900">Rendez-vous médicaux</h2>
+      <button id="openApptModalBtn" type="button" class="tap-btn rounded-2xl bg-purple-700 px-4 py-2.5 text-base font-extrabold text-white">+ Ajouter</button>
     </div>
     <div id="apptsList" class="space-y-3"></div>
   </section>
@@ -334,30 +334,30 @@
     <!-- AI Assistant Card -->
     <div class="rounded-3xl border-2 border-violet-200 bg-white p-5 shadow-sm space-y-3">
       <div class="flex items-center justify-between gap-2">
-        <h2 id="aiPanelTitle" class="text-2xl font-black text-slate-900">المساعد الذكي</h2>
-        <button id="openAiConfigBtn" type="button" class="tap-btn rounded-xl border-2 border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-extrabold text-violet-900">إعداد AI</button>
+        <h2 id="aiPanelTitle" class="text-2xl font-black text-slate-900">Assistant IA</h2>
+        <button id="openAiConfigBtn" type="button" class="tap-btn rounded-xl border-2 border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-extrabold text-violet-900">Config. IA</button>
       </div>
       <button id="aiVoiceTalkBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-700 px-4 py-3.5 text-lg font-black text-white">
-        <span id="aiVoiceBtnLabel">🎤 تحدّث مع المساعد بالصوت</span>
+        <span id="aiVoiceBtnLabel">🎤 Parler à l\'assistant</span>
       </button>
       <div class="flex gap-2">
-        <input id="aiQuestionInput" autocomplete="off" type="text" placeholder="مثال: متى موعد دوائي القادم؟" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base" />
-        <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl border-2 border-violet-300 bg-violet-50 px-5 py-2.5 text-base font-extrabold text-violet-900">اسأل</button>
+        <input id="aiQuestionInput" autocomplete="off" type="text" placeholder="Ex : Quand est mon prochain médicament ?" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base" />
+        <button id="askAiBtn" type="button" class="tap-btn shrink-0 rounded-2xl border-2 border-violet-300 bg-violet-50 px-5 py-2.5 text-base font-extrabold text-violet-900">Demander</button>
       </div>
       <div id="aiAnswerBox" class="hidden rounded-2xl border-2 border-violet-200 bg-violet-50 p-4 text-base font-bold text-slate-900"></div>
-      <p id="aiDisclaimerNote" class="text-xs font-bold text-slate-500">تنبيه: المساعد الذكي للتذكير والتنظيم فقط ولا يغني عن استشارة الطبيب.</p>
+      <p id="aiDisclaimerNote" class="text-xs font-bold text-slate-500">Note : l'Assistant IA sert uniquement aux rappels et ne remplace pas un avis médical.</p>
     </div>
 
     <!-- Water & Sound Settings -->
     <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-      <h3 id="settingsSectionTitle" class="text-xl font-black text-slate-900">إعدادات الصوت والماء والحساب</h3>
+      <h3 id="settingsSectionTitle" class="text-xl font-black text-slate-900">Paramètres Audio, Eau & Compte</h3>
       <p id="waterNextText" class="text-base font-bold text-sky-800"></p>
       <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        <button id="testWaterAlertBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-extrabold text-sky-900">💧 سماع تذكير الماء</button>
-        <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 استماع للتذكير الصوتي</button>
-        <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 نغمة التنبيه</button>
-        <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 تغيير نوع الحساب</button>
-        <button id="signOutBtn" type="button" class="hidden tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900">تسجيل الخروج</button>
+        <button id="testWaterAlertBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-extrabold text-sky-900">💧 Écouter le rappel d\'eau</button>
+        <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 Écouter le rappel vocal</button>
+        <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 Sonnerie</button>
+        <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 Changer de rôle</button>
+        <button id="signOutBtn" type="button" class="hidden tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900">Déconnexion</button>
       </div>
     </div>
   </section>
@@ -366,22 +366,22 @@
   <section id="carePortalView" class="hidden space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2 rounded-3xl border border-teal-200 bg-white p-4 shadow-sm">
       <div>
-        <h2 id="carePortalTitle" class="text-2xl font-black text-slate-900">لوحة المتابعة</h2>
+        <h2 id="carePortalTitle" class="text-2xl font-black text-slate-900">Tableau de suivi</h2>
         <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
       </div>
       <div class="flex items-center gap-2">
-        <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 تحديث</button>
-        <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">تغيير الدور</button>
-        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">خروج</button>
+        <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
+        <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">Changer rôle</button>
+        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">Quitter</button>
       </div>
     </div>
 
     <!-- Link by Senior Registration Code (CG-...) -->
     <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
-      <p id="careLinkTitle" class="text-base font-black text-slate-900">ربط بملف مسن عبر رقمه (CG-...)</p>
+      <p id="careLinkTitle" class="text-base font-black text-slate-900">Lier un senior par son code (CG-...)</p>
       <div class="flex gap-2">
         <input id="careCodeInput" autocomplete="off" type="text" dir="ltr" placeholder="CG-123456" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-bold uppercase" />
-        <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">طلب ربط</button>
+        <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">Lier</button>
       </div>
       <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
     </div>
@@ -393,10 +393,10 @@
   <!-- ISOLATED FULL-SCREEN CHAT ROOM PAGE -->
   <section id="chatPageView" class="hidden fixed inset-0 z-40 flex flex-col bg-slate-100">
     <div class="shrink-0 flex items-center justify-between gap-2 border-b-2 border-amber-200 bg-white px-3 py-2.5 shadow-sm">
-      <button id="backFromChatBtn" type="button" class="tap-btn shrink-0 whitespace-nowrap rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-sm font-extrabold text-slate-900" style="min-height:42px;">← رجوع</button>
+      <button id="backFromChatBtn" type="button" class="tap-btn shrink-0 whitespace-nowrap rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-sm font-extrabold text-slate-900" style="min-height:42px;">← Retour</button>
       <div class="text-center min-w-0">
-        <h2 id="chatHeading" class="truncate text-lg font-black text-slate-900">مجلس طمأنينة</h2>
-        <p id="chatSubheading" class="truncate text-[11px] font-bold text-amber-800">تحفظ 24 ساعة ثم تمحى</p>
+        <h2 id="chatHeading" class="truncate text-lg font-black text-slate-900">Salon CareGuard</h2>
+        <p id="chatSubheading" class="truncate text-[11px] font-bold text-amber-800">Conservés 24h puis supprimés</p>
       </div>
       <div class="flex items-center gap-1.5">
         <span id="chatMembersCountBadge" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-extrabold text-amber-950">👥 0</span>
@@ -406,15 +406,15 @@
 
     <div id="chatJoinStep" class="m-auto w-full max-w-md p-4">
       <div class="rounded-3xl border-2 border-amber-200 bg-white p-5 shadow-md space-y-4">
-        <p id="chatIdentityTitle" class="text-lg font-black text-slate-900">الاسم الظاهر في الدردشة:</p>
+        <p id="chatIdentityTitle" class="text-lg font-black text-slate-900">Nom affiché dans le salon :</p>
         <label class="flex items-center gap-3 text-base font-bold text-slate-800">
           <input id="chatUseNickname" type="checkbox" class="h-6 w-6 accent-amber-600" />
-          <span id="chatUseNicknameLabel">الدخول باسم مستعار بدل اسمي الحقيقي</span>
+          <span id="chatUseNicknameLabel">Rejoindre avec un pseudonyme</span>
         </label>
-        <input id="chatNicknameInput" autocomplete="off" type="text" placeholder="اكتب الاسم المستعار هنا (مثال: أبو أحمد)" class="hidden w-full rounded-2xl border-2 border-amber-300 bg-white px-4 py-3 text-lg" />
+        <input id="chatNicknameInput" autocomplete="off" type="text" placeholder="Entrez un pseudo (ex : Jean)" class="hidden w-full rounded-2xl border-2 border-amber-300 bg-white px-4 py-3 text-lg" />
         <p id="chatActiveNameNote" class="text-sm font-bold text-emerald-800"></p>
         <button id="chatEnterRoomBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white shadow-sm">
-          <span id="chatEnterRoomLabel">دخول إلى الغرفة</span>
+          <span id="chatEnterRoomLabel">Entrer dans le salon</span>
         </button>
       </div>
     </div>
@@ -423,22 +423,22 @@
       <div class="shrink-0 space-y-1.5 border-b border-slate-200 bg-white/90 px-3 py-2">
         <div class="flex items-center justify-between gap-2 text-xs">
           <span id="chatJoinedAsBadge" class="font-extrabold text-emerald-900 truncate"></span>
-          <button id="chatChangeNameBtn" type="button" class="rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-900" style="min-height:32px;">تغيير الاسم</button>
+          <button id="chatChangeNameBtn" type="button" class="rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-900" style="min-height:32px;">Changer de nom</button>
         </div>
         <div id="chatBirthdayBanner" class="hidden flex items-center justify-between gap-2 rounded-xl border border-pink-300 bg-pink-50 px-3 py-1.5">
           <p id="chatBirthdayText" class="text-xs font-black text-pink-950 truncate"></p>
-          <button id="chatSendBirthdayBtn" type="button" class="shrink-0 rounded-lg bg-pink-600 px-2.5 py-1 text-xs font-extrabold text-white" style="min-height:32px;">🎉 تهنئة</button>
+          <button id="chatSendBirthdayBtn" type="button" class="shrink-0 rounded-lg bg-pink-600 px-2.5 py-1 text-xs font-extrabold text-white" style="min-height:32px;">🎉 Souhait</button>
         </div>
         <div id="chatBlockedBar" class="hidden flex items-center justify-between gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
           <span id="chatBlockedCountText"></span>
-          <button id="chatUnblockAllBtn" type="button" class="underline text-rose-700 font-extrabold" style="min-height:28px;">إلغاء الإخفاء</button>
+          <button id="chatUnblockAllBtn" type="button" class="underline text-rose-700 font-extrabold" style="min-height:28px;">Tout réafficher</button>
         </div>
         <div class="flex items-center justify-between gap-2 rounded-xl bg-amber-50 px-3 py-1.5">
           <p class="text-xs font-bold text-slate-900 leading-snug">
-            <span id="icebreakerBadge" class="font-black text-amber-900">سؤال اليوم: </span>
+            <span id="icebreakerBadge" class="font-black text-amber-900">Question du jour : </span>
             <span id="icebreakerQuestion"></span>
           </p>
-          <button id="nextIcebreakerBtn" type="button" class="shrink-0 rounded-lg border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-extrabold text-amber-900" style="min-height:28px;">آخر</button>
+          <button id="nextIcebreakerBtn" type="button" class="shrink-0 rounded-lg border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-extrabold text-amber-900" style="min-height:28px;">Autre</button>
         </div>
       </div>
 
@@ -453,8 +453,8 @@
         <div id="chatVoicePreviewBox" class="hidden space-y-2 rounded-xl border border-amber-300 bg-amber-50 p-2.5">
           <audio id="chatVoicePreview" controls class="w-full h-9"></audio>
           <div class="grid grid-cols-2 gap-2">
-            <button id="chatSendVoiceBtn" type="button" class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">إرسال الصوت</button>
-            <button id="chatDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">إلغاء</button>
+            <button id="chatSendVoiceBtn" type="button" class="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">Envoyer</button>
+            <button id="chatDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">Annuler</button>
           </div>
         </div>
         <div class="flex items-center gap-1.5">
@@ -462,10 +462,10 @@
             <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
-            <span id="chatRecordBtnLabel" class="sr-only">تسجيل</span>
+            <span id="chatRecordBtnLabel" class="sr-only">Enregistrer</span>
           </button>
-          <input id="chatTextInput" autocomplete="off" type="text" placeholder="اكتب رسالة..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base" style="min-height:46px;" />
-          <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white" style="min-height:46px;">إرسال</button>
+          <input id="chatTextInput" autocomplete="off" type="text" placeholder="Écrivez un message..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base" style="min-height:46px;" />
+          <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white" style="min-height:46px;">Envoyer</button>
         </div>
         <p id="chatStatusMsg" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-900"></p>
       </div>
@@ -479,23 +479,23 @@
   <div class="mx-auto grid max-w-xl grid-cols-5">
     <button id="navHomeBtn" type="button" class="flex flex-col items-center justify-center py-2 text-emerald-700 font-black" style="min-height:58px;">
       <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      <span id="navHomeLabel" class="mt-0.5 text-xs">الرئيسية</span>
+      <span id="navHomeLabel" class="mt-0.5 text-xs">Accueil</span>
     </button>
     <button id="navMedsBtn" type="button" class="flex flex-col items-center justify-center py-2 text-slate-600 font-bold" style="min-height:58px;">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a4 4 0 00-5.656 0l-4.244 4.244a4 4 0 01-5.656-5.656l4.244-4.244a4 4 0 015.656 0m5.656 5.656a4 4 0 000-5.656l-4.244-4.244"/></svg>
-      <span id="navMedsLabel" class="mt-0.5 text-xs">الأدوية</span>
+      <span id="navMedsLabel" class="mt-0.5 text-xs">Médicaments</span>
     </button>
     <button id="navApptsBtn" type="button" class="flex flex-col items-center justify-center py-2 text-slate-600 font-bold" style="min-height:58px;">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      <span id="navApptsLabel" class="mt-0.5 text-xs">المواعيد</span>
+      <span id="navApptsLabel" class="mt-0.5 text-xs">Rendez-vous</span>
     </button>
     <button id="navChatBtn" type="button" class="flex flex-col items-center justify-center py-2 text-slate-600 font-bold" style="min-height:58px;">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-      <span id="navChatLabel" class="mt-0.5 text-xs">الدردشة</span>
+      <span id="navChatLabel" class="mt-0.5 text-xs">Salon</span>
     </button>
     <button id="navSettingsBtn" type="button" class="flex flex-col items-center justify-center py-2 text-slate-600 font-bold" style="min-height:58px;">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      <span id="navSettingsLabel" class="mt-0.5 text-xs">الإعدادات</span>
+      <span id="navSettingsLabel" class="mt-0.5 text-xs">Paramètres</span>
     </button>
   </div>
 </nav>
@@ -506,8 +506,8 @@
   <div class="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-white p-4 shadow-2xl">
     <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
       <div>
-        <h3 id="dcModalTitle" class="text-xl font-black text-slate-900">رسائل الممرض والعائلة</h3>
-        <p id="dcModalSub" class="text-xs font-bold text-teal-800">رسائل صوتية وكتابية مباشرة وخاصة</p>
+        <h3 id="dcModalTitle" class="text-xl font-black text-slate-900">Messages Infirmier & Famille</h3>
+        <p id="dcModalSub" class="text-xs font-bold text-teal-800">Messages vocaux et écrits directs et privés</p>
       </div>
       <button id="closeDirectCareBtn" type="button" class="rounded-xl px-3 py-1.5 text-xl font-black text-slate-600" style="min-height:40px;">✕</button>
     </div>
@@ -520,15 +520,15 @@
     <div id="dcVoicePreviewBox" class="hidden mb-2 space-y-2 rounded-xl border border-teal-300 bg-teal-50 p-2.5">
       <audio id="dcVoicePreview" controls class="w-full h-9"></audio>
       <div class="grid grid-cols-2 gap-2">
-        <button id="dcSendVoiceBtn" type="button" class="rounded-xl bg-teal-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">إرسال الصوت</button>
-        <button id="dcDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">إلغاء</button>
+        <button id="dcSendVoiceBtn" type="button" class="rounded-xl bg-teal-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">Envoyer</button>
+        <button id="dcDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">Annuler</button>
       </div>
     </div>
 
     <div class="flex items-center gap-1.5">
       <button id="dcRecordBtn" type="button" class="tap-btn flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-700 text-white" style="min-height:48px;">🎤</button>
-      <input id="dcTextInput" autocomplete="off" type="text" placeholder="اكتب رسالة أو طلباً..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base" style="min-height:46px;" />
-      <button id="dcSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white" style="min-height:46px;">إرسال</button>
+      <input id="dcTextInput" autocomplete="off" type="text" placeholder="Écrivez un message..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base" style="min-height:46px;" />
+      <button id="dcSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white" style="min-height:46px;">Envoyer</button>
     </div>
     <p id="dcStatusMsg" class="hidden mt-1.5 text-xs font-bold text-rose-800"></p>
   </div>
@@ -536,12 +536,12 @@
 
 <div id="medDueModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4">
   <div class="w-full max-w-md rounded-3xl border-4 border-emerald-600 bg-white p-6 text-center shadow-2xl">
-    <h3 id="medDueTitle" class="text-2xl font-black text-slate-900">حان موعد الدواء!</h3>
+    <h3 id="medDueTitle" class="text-2xl font-black text-slate-900">C'est l'heure du médicament !</h3>
     <p id="medDueName" class="mt-2 text-2xl font-extrabold text-emerald-800"></p>
     <p id="medDueTime" class="mt-1 text-lg font-bold text-slate-600"></p>
     <div class="mt-5 space-y-3">
-      <button id="medDueTakeBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">أخذت الدواء الآن ✓</button>
-      <button id="medDueSnoozeBtn" type="button" class="tap-btn w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-5 py-3.5 text-lg font-extrabold text-slate-800">تأجيل 10 دقائق</button>
+      <button id="medDueTakeBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">J'ai pris mon médicament ✓</button>
+      <button id="medDueSnoozeBtn" type="button" class="tap-btn w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-5 py-3.5 text-lg font-extrabold text-slate-800">Reporter de 10 min</button>
     </div>
   </div>
 </div>
@@ -549,29 +549,29 @@
 <div id="uploadMedModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between gap-2">
-      <h3 id="uploadModalTitle" class="text-2xl font-black text-slate-900">إضافة دواء أو صورة وصفة</h3>
+      <h3 id="uploadModalTitle" class="text-2xl font-black text-slate-900">Ajouter un médicament / ordonnance</h3>
       <button id="closeUploadMedBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div class="mt-4 space-y-3">
       <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-400 bg-emerald-50 p-4 text-center">
-        <span id="uploadPhotoPrompt" class="text-base font-extrabold text-emerald-950">اضغط لرفع صورة الوصفة الطبية أو علبة الدواء</span>
+        <span id="uploadPhotoPrompt" class="text-base font-extrabold text-emerald-950">Appuyez pour importer une ordonnance ou boîte de médicament</span>
         <input id="medImageInput" type="file" accept="image/*" capture="environment" class="hidden" />
       </label>
       <div id="medImagePreviewWrap" class="hidden space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
-        <img id="medImagePreview" alt="معاينة الصورة" class="max-h-48 w-full rounded-xl object-contain" />
+        <img id="medImagePreview" alt="Aperçu photo" class="max-h-48 w-full rounded-xl object-contain" />
         <div class="flex flex-wrap gap-2">
-          <button id="aiAnalyzePhotoBtn" type="button" class="tap-btn flex-1 rounded-xl bg-violet-700 px-3 py-2 text-sm font-extrabold text-white">قراءة الصورة بالذكاء الاصطناعي</button>
-          <a id="downloadPreviewLink" download="prescription.jpg" class="tap-btn inline-flex items-center rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800">تنزيل</a>
+          <button id="aiAnalyzePhotoBtn" type="button" class="tap-btn flex-1 rounded-xl bg-violet-700 px-3 py-2 text-sm font-extrabold text-white">Lire la photo avec l\'IA</button>
+          <a id="downloadPreviewLink" download="prescription.jpg" class="tap-btn inline-flex items-center rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800">Télécharger</a>
         </div>
         <p id="aiPhotoStatus" class="hidden text-xs font-bold text-violet-900"></p>
       </div>
-      <input id="newMedNameInput" autocomplete="off" type="text" placeholder="اسم الدواء والجرعة" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="newMedNameInput" autocomplete="off" type="text" placeholder="Nom du médicament et dose" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="newMedTimeInput" type="time" value="08:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <label class="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-950">
         <input id="rxConfirmCheck" type="checkbox" class="mt-1 h-5 w-5 accent-emerald-700" />
-        <span id="rxConfirmLabel">أؤكد مطابقة الدواء والجرعة مع وصفة الطبيب المعتمدة.</span>
+        <span id="rxConfirmLabel">Je confirme que ce médicament correspond à l\'ordonnance de mon médecin.</span>
       </label>
-      <button id="saveNewMedBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white disabled:opacity-50" disabled>حفظ الدواء</button>
+      <button id="saveNewMedBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white disabled:opacity-50" disabled>Enregistrer</button>
     </div>
   </div>
 </div>
@@ -579,37 +579,37 @@
 <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="profileModalTitle" class="text-2xl font-black text-slate-900">تحديث بيانات المسن</h3>
+      <h3 id="profileModalTitle" class="text-2xl font-black text-slate-900">Mettre à jour les infos</h3>
       <button id="closeProfileModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
-    <p id="profilePrivacyNote" class="mt-1 text-sm font-bold text-slate-600">تُحفظ هذه البيانات لبطاقة الطوارئ فقط ولا تظهر في الدردشة.</p>
+    <p id="profilePrivacyNote" class="mt-1 text-sm font-bold text-slate-600">Ces données sont privées pour la fiche d\'urgence et n\'apparaissent jamais dans le salon.</p>
     <div class="mt-3 max-h-[68vh] space-y-2.5 overflow-y-auto pr-1">
-      <input id="profNameInput" autocomplete="off" type="text" placeholder="الاسم الكامل" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profNameInput" autocomplete="off" type="text" placeholder="Nom complet" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <label class="block text-sm font-extrabold text-slate-700">
-        <span id="profDobLabel">تاريخ الميلاد:</span>
+        <span id="profDobLabel">Date de naissance :</span>
         <input id="profDobInput" type="date" class="mt-1 w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       </label>
       <label class="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-sm font-extrabold text-amber-950">
         <input id="profShareBirthday" type="checkbox" class="h-5 w-5 accent-amber-600" />
-        <span id="profShareBirthdayLabel">مشاركة يوم ميلادي للتهنئة في المجلس (اليوم والشهر فقط)</span>
+        <span id="profShareBirthdayLabel">Partager mon jour de naissance dans le salon (jour et mois uniquement)</span>
       </label>
-      <input id="profPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="رقم هاتف المسن" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone du senior" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <input id="profEmergencyPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="هاتف أحد أفراد العائلة" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-        <input id="profFamilyRelInput" autocomplete="off" type="text" placeholder="صفة القرابة (الابن/الابنة)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+        <input id="profEmergencyPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone d'un proche" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+        <input id="profFamilyRelInput" autocomplete="off" type="text" placeholder="Lien de parenté (Fils/Fille)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       </div>
-      <input id="profBackupPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="رقم عائلي احتياطي (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profBackupPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone famille secondaire (optionnel)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <input id="profDoctorNameInput" autocomplete="off" type="text" placeholder="اسم الطبيب المعالج" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-        <input id="profDoctorPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="هاتف الطبيب" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+        <input id="profDoctorNameInput" autocomplete="off" type="text" placeholder="Médecin traitant" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+        <input id="profDoctorPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Tél. médecin" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       </div>
-      <input id="profAddressInput" autocomplete="off" type="text" placeholder="عنوان السكن (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profBloodInput" type="text" placeholder="فصيلة الدم (O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profAllergiesInput" type="text" placeholder="الحساسية" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profConditionsInput" type="text" placeholder="الأمراض المزمنة" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profMedicalNotesInput" autocomplete="off" type="text" placeholder="ملاحظات طبية خاصة" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profAddressInput" autocomplete="off" type="text" placeholder="Adresse du domicile (optionnel)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profBloodInput" type="text" placeholder="Groupe sanguin (O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profAllergiesInput" type="text" placeholder="Allergies" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profConditionsInput" type="text" placeholder="Maladies chroniques" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profMedicalNotesInput" autocomplete="off" type="text" placeholder="Notes médicales" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
     </div>
-    <button id="saveProfileBtn" type="button" class="tap-btn mt-4 w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">حفظ البيانات</button>
+    <button id="saveProfileBtn" type="button" class="tap-btn mt-4 w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">Enregistrer</button>
     <p id="profileSaveFeedback" class="hidden mt-2 text-center text-sm font-extrabold text-emerald-800"></p>
   </div>
 </div>
@@ -617,23 +617,23 @@
 <div id="ringtoneModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="ringtoneModalTitle" class="text-2xl font-black text-slate-900">إعداد نغمة التنبيه</h3>
+      <h3 id="ringtoneModalTitle" class="text-2xl font-black text-slate-900">Configurer la sonnerie</h3>
       <button id="closeRingtoneModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div class="mt-4 space-y-3">
       <select id="ringtonePresetSelect" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg">
-        <option value="loud_phone">رنين هاتف قوي متكرر</option>
-        <option value="classic_bell">جرس هاتف كلاسيكي</option>
-        <option value="urgent_alarm">منبّه طبي عالي الوضوح</option>
-        <option value="custom_file">نغمة من ملفات هاتفي</option>
+        <option value="loud_phone">Sonnerie forte répétitive</option>
+        <option value="classic_bell">Sonnerie classique</option>
+        <option value="urgent_alarm">Alarme médicale claire</option>
+        <option value="custom_file">Sonnerie depuis mon téléphone</option>
       </select>
       <label class="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50 p-4 text-center text-base font-extrabold text-amber-950">
-        <span id="pickPhoneRingtoneLabel">فتح مدير الملفات لاختيار نغمة (MP3 / M4A / WAV)</span>
+        <span id="pickPhoneRingtoneLabel">Choisir une sonnerie sur le téléphone (MP3 / M4A / WAV)</span>
         <input id="customRingtoneInput" type="file" accept=".mp3,.m4a,.wav,.ogg,.aac,audio/mpeg,audio/mp4,audio/ogg,*/*" class="hidden" />
       </label>
       <p id="customRingtoneStatus" class="text-sm font-extrabold text-emerald-800"></p>
-      <button id="testRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl bg-amber-600 px-5 py-3.5 text-lg font-black text-white">تجربة صوت الرنين والاهتزاز</button>
-      <button id="stopRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl border-2 border-slate-300 bg-slate-100 px-5 py-3 text-base font-extrabold text-slate-900">⏹ إيقاف الصوت</button>
+      <button id="testRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl bg-amber-600 px-5 py-3.5 text-lg font-black text-white">Tester la sonnerie et vibration</button>
+      <button id="stopRingtoneBtn" type="button" class="tap-btn w-full rounded-2xl border-2 border-slate-300 bg-slate-100 px-5 py-3 text-base font-extrabold text-slate-900">⏹ Arrêter le son</button>
     </div>
   </div>
 </div>
@@ -641,13 +641,13 @@
 <div id="aiConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
   <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="aiConfigTitle" class="text-2xl font-black text-slate-900">ربط الذكاء الاصطناعي (Gemini)</h3>
+      <h3 id="aiConfigTitle" class="text-2xl font-black text-slate-900">Connecter l\'IA (Gemini)</h3>
       <button id="closeAiConfigBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
-    <p id="aiConfigHint" class="mt-2 text-sm font-semibold text-slate-600">أدخل مفتاح Gemini API (يُحفظ في جهازك فقط).</p>
+    <p id="aiConfigHint" class="mt-2 text-sm font-semibold text-slate-600">Entrez votre clé API Gemini (sauvegardée localement).</p>
     <div class="mt-4 space-y-3">
       <input id="geminiKeyInput" type="password" dir="ltr" placeholder="AIza..." class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
-      <button id="saveAiKeyBtn" type="button" class="tap-btn w-full rounded-2xl bg-violet-700 px-5 py-3.5 text-lg font-black text-white">حفظ في هذا الجهاز</button>
+      <button id="saveAiKeyBtn" type="button" class="tap-btn w-full rounded-2xl bg-violet-700 px-5 py-3.5 text-lg font-black text-white">Enregistrer sur cet appareil</button>
       <p id="aiKeyFeedback" class="hidden text-center text-sm font-extrabold text-violet-900"></p>
     </div>
   </div>
@@ -656,14 +656,14 @@
 <div id="apptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
   <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="apptModalTitle" class="text-2xl font-black text-slate-900">إضافة موعد طبي</h3>
+      <h3 id="apptModalTitle" class="text-2xl font-black text-slate-900">Ajouter un rendez-vous</h3>
       <button id="closeApptModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div class="mt-4 space-y-3">
-      <input id="apptDoctorInput" autocomplete="off" type="text" placeholder="اسم الطبيب أو التخصص" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <input id="apptDoctorInput" autocomplete="off" type="text" placeholder="Nom du médecin ou spécialité" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="apptDateInput" type="date" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="apptTimeInput" type="time" value="10:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
-      <button id="apptSaveBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">حفظ الموعد</button>
+      <button id="apptSaveBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -671,12 +671,12 @@
 <div id="emergencyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl border-4 border-rose-600 bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="emModalTitle" class="text-2xl font-black text-rose-800">بطاقة الطوارئ الطبية</h3>
+      <h3 id="emModalTitle" class="text-2xl font-black text-rose-800">Fiche d\'urgence médicale</h3>
       <button id="closeEmergencyBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div id="emBody" class="mt-4 space-y-2 text-base text-slate-900"></div>
     <a id="emCallLink" href="tel:190" class="tap-btn mt-5 flex w-full items-center justify-center rounded-2xl bg-rose-700 px-5 py-4 text-xl font-black text-white">
-      <span id="emCallLabel">اتصال سريع برقم الطوارئ</span>
+      <span id="emCallLabel">Appel rapide d\'urgence</span>
     </a>
   </div>
 </div>
@@ -684,7 +684,7 @@
 <div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
-      <h3 id="notifModalTitle" class="text-2xl font-black text-slate-900">التنبيهات والإشعارات</h3>
+      <h3 id="notifModalTitle" class="text-2xl font-black text-slate-900">Alertes et notifications</h3>
       <button id="closeNotifModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div id="notifListBody" class="mt-4 max-h-[65vh] space-y-2.5 overflow-y-auto"></div>
@@ -693,11 +693,11 @@
 
 <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-4">
   <div class="w-full max-w-md rounded-3xl border-2 border-rose-300 bg-white p-6 text-center shadow-2xl">
-    <h3 id="confirmDelTitle" class="text-2xl font-black text-slate-900">تأكيد الحذف</h3>
+    <h3 id="confirmDelTitle" class="text-2xl font-black text-slate-900">Confirmer</h3>
     <p id="confirmDelText" class="mt-2 text-lg font-bold text-slate-700"></p>
     <div class="mt-5 grid grid-cols-2 gap-3">
-      <button id="confirmDelYesBtn" type="button" class="tap-btn rounded-2xl bg-rose-700 px-4 py-3.5 text-lg font-black text-white">نعم، احذف</button>
-      <button id="confirmDelNoBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3.5 text-lg font-extrabold text-slate-900">إلغاء</button>
+      <button id="confirmDelYesBtn" type="button" class="tap-btn rounded-2xl bg-rose-700 px-4 py-3.5 text-lg font-black text-white">Oui, supprimer</button>
+      <button id="confirmDelNoBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3.5 text-lg font-extrabold text-slate-900">Annuler</button>
     </div>
   </div>
 </div>
@@ -713,7 +713,7 @@
   const AI_KEY_STORAGE = 'careguard_local_gemini_key';
 
   const defaultState = {
-    lang: 'ar',
+    lang: 'fr',
     profile: {
       name: '', dob: '', phone: '', emergencyPhone: '', familyRelation: '',
       backupPhone: '', doctorName: '', doctorPhone: '', address: '',
@@ -762,6 +762,7 @@
         const merged = Object.assign({}, defaultState, raw);
         merged.profile = Object.assign({}, defaultState.profile, raw.profile || {});
         const today = new Date().toISOString().slice(0, 10);
+        if (merged.lang === 'ar') merged.lang = 'fr';
         if (merged.waterDate !== today) { merged.waterDate = today; merged.waterCount = 0; }
         return merged;
       }
@@ -817,15 +818,20 @@
   $('headerBellBtn').addEventListener('click', () => { renderNotificationsModal(); $('notificationsModal').classList.remove('hidden'); });
   $('closeNotifModalBtn').addEventListener('click', () => $('notificationsModal').classList.add('hidden'));
 
-  // Tap Water Tile: Log 1 glass immediately + gentle feedback
+  // Tap Water Tile: Log 1 glass immediately + gentle feedback + cloud sync
   $('tileWaterBtn').addEventListener('click', () => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (state.waterDate !== todayStr) { state.waterDate = todayStr; state.waterCount = 0; }
     state.waterCount = Math.min(8, state.waterCount + 1);
     state.lastWaterReminderAt = Date.now();
     saveState();
     applyLang();
+    if (navigator.onLine && client && currentUser && currentSeniorId) {
+      client.from('senior_profiles').update({ water_count: state.waterCount, water_date: state.waterDate }).eq('id', currentSeniorId).then(() => {});
+    }
     const fb = $('waterAiFeedback');
-    fb.textContent = state.lang === 'ar'
-      ? `💧 أحسنت! شربت ${state.waterCount} من 8 أكواب اليوم.`
+    fb.textContent = state.lang === 'fr'
+      ? `💧 Bravo ! ${state.waterCount} sur 8 verres aujourd\'hui.`
       : `💧 Great! ${state.waterCount} of 8 glasses recorded today.`;
     fb.classList.remove('hidden');
     setTimeout(() => fb.classList.add('hidden'), 4000);
@@ -835,10 +841,10 @@
   let pendingDeleteAction = null;
   function askConfirmDelete(label, onConfirm) {
     pendingDeleteAction = onConfirm;
-    $('confirmDelTitle').textContent = state.lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete';
-    $('confirmDelText').textContent = state.lang === 'ar' ? `هل أنت متأكد من حذف "${label}"؟` : `Are you sure you want to delete "${label}"?`;
-    $('confirmDelYesBtn').textContent = state.lang === 'ar' ? 'نعم، احذف' : 'Yes, Delete';
-    $('confirmDelNoBtn').textContent = state.lang === 'ar' ? 'إلغاء' : 'Cancel';
+    $('confirmDelTitle').textContent = state.lang === 'fr' ? 'Confirmer' : 'Confirm Delete';
+    $('confirmDelText').textContent = state.lang === 'fr' ? `Voulez-vous vraiment supprimer « ${label} » ?` : `Are you sure you want to delete "${label}"?`;
+    $('confirmDelYesBtn').textContent = state.lang === 'fr' ? 'Oui, supprimer' : 'Yes, Delete';
+    $('confirmDelNoBtn').textContent = state.lang === 'fr' ? 'Annuler' : 'Cancel';
     $('confirmDeleteModal').classList.remove('hidden');
   }
   $('confirmDelYesBtn').addEventListener('click', async () => {
@@ -850,9 +856,9 @@
   function friendlyError(err) {
     const raw = String((err && err.message) || err || '');
     console.warn('[CareGuard diagnostic]', raw);
-    if (!navigator.onLine || /fetch|network|offline/i.test(raw)) return state.lang === 'ar' ? 'لا يوجد اتصال بالإنترنت حالياً.' : 'No internet connection.';
-    if (/permission|policy|rls|jwt|auth/i.test(raw)) return state.lang === 'ar' ? 'يرجى تسجيل الدخول لحفظ التغييرات.' : 'Please sign in to save.';
-    return state.lang === 'ar' ? 'تعذر الوصول للخادم حالياً، تم الحفظ محلياً.' : 'Server unreachable; saved locally.';
+    if (!navigator.onLine || /fetch|network|offline/i.test(raw)) return state.lang === 'fr' ? 'Aucune connexion Internet.' : 'No internet connection.';
+    if (/permission|policy|rls|jwt|auth/i.test(raw)) return state.lang === 'fr' ? 'Connectez-vous pour enregistrer.' : 'Please sign in to save.';
+    return state.lang === 'fr' ? 'Serveur indisponible ; enregistré localement.' : 'Server unreachable; saved locally.';
   }
 
   function updateNetworkUI() {
@@ -862,22 +868,22 @@
       if (!online) {
         pill.className = 'inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold text-amber-950';
         dot.className = 'h-2.5 w-2.5 rounded-full bg-amber-600';
-        txt.textContent = state.lang === 'ar' ? 'غير متصل' : 'Offline';
+        txt.textContent = state.lang === 'fr' ? 'Hors ligne' : 'Offline';
       } else if (currentUser) {
         pill.className = 'inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-900';
         dot.className = 'h-2.5 w-2.5 rounded-full bg-emerald-600';
-        txt.textContent = state.lang === 'ar' ? 'حسابك متصل ✓' : 'Account Connected ✓';
+        txt.textContent = state.lang === 'fr' ? 'Compte connecté ✓' : 'Account Connected ✓';
       } else {
         pill.className = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800';
         dot.className = 'h-2.5 w-2.5 rounded-full bg-slate-500';
-        txt.textContent = state.lang === 'ar' ? 'وضع محلي' : 'Local Only';
+        txt.textContent = state.lang === 'fr' ? 'Mode local' : 'Local Only';
       }
     }
     const qBanner = $('syncQueueBanner');
     const qLen = Array.isArray(state.pendingQueue) ? state.pendingQueue.length : 0;
     if (qBanner) {
       qBanner.classList.toggle('hidden', qLen === 0);
-      if (qLen > 0) qBanner.textContent = state.lang === 'ar' ? `⏳ (${qLen}) عملية بانتظار المزامنة.` : `⏳ ${qLen} action(s) waiting to sync.`;
+      if (qLen > 0) qBanner.textContent = state.lang === 'fr' ? `⏳ ${qLen} action(s) en attente.` : `⏳ ${qLen} action(s) waiting to sync.`;
     }
   }
 
@@ -1032,7 +1038,7 @@
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
+    u.lang = state.lang === 'fr' ? 'fr-FR' : 'en-US';
     u.rate = 0.92; u.volume = 1.0;
     window.speechSynthesis.speak(u);
   }
@@ -1047,7 +1053,7 @@
   function getRealDisplayName() {
     return cleanProfileName()
       || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || (currentUser.email ? currentUser.email.split('@')[0] : '')))
-      || (state.lang === 'ar' ? 'مشارك' : 'Senior');
+      || (state.lang === 'fr' ? 'Membre' : 'Senior');
   }
   function getChatAuthorName() {
     return (state.chatUseNickname && state.chatNickname.trim()) ? state.chatNickname.trim() : getRealDisplayName();
@@ -1056,7 +1062,7 @@
     $('chatUseNickname').checked = !!state.chatUseNickname;
     $('chatNicknameInput').value = state.chatNickname || '';
     $('chatNicknameInput').classList.toggle('hidden', !state.chatUseNickname);
-    $('chatActiveNameNote').textContent = (state.lang === 'ar' ? 'ستظهر مشاركتك باسم: ' : 'Posting as: ') + getChatAuthorName();
+    $('chatActiveNameNote').textContent = (state.lang === 'fr' ? 'Vous publierez sous : ' : 'Posting as: ') + getChatAuthorName();
   }
 
   function getNextMedicationInfo() {
@@ -1088,7 +1094,7 @@
     txt.textContent = pct + '%' + (charging ? ' ⚡' : '');
     if (pct <= 30 && !charging) {
       badge.className = 'inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-xs font-extrabold text-rose-900';
-      const msg = state.lang === 'ar' ? `تنبيه البطارية: الشحن ${pct}% فقط — يرجى شحن الهاتف الآن.` : `Low Battery: ${pct}% remaining — please charge your phone.`;
+      const msg = state.lang === 'fr' ? `Batterie faible : ${pct}% restant — veuillez charger votre téléphone.` : `Low Battery: ${pct}% remaining — please charge your phone.`;
       topBanner.textContent = msg; topBanner.classList.remove('hidden');
       if (!batteryLowAlerted) {
         batteryLowAlerted = true; pendingLowBatterySpeak = msg;
@@ -1125,11 +1131,11 @@
       const key = m.id + '|' + today + '|' + m.time;
       if (m.time === nowTime && !alertedMedKeys.has(key)) {
         alertedMedKeys.add(key); activeDueMedId = m.id;
-        const medName = state.lang === 'ar' ? m.nameAr : m.nameEn;
+        const medName = state.lang === 'fr' ? m.nameAr : m.nameEn;
         $('medDueName').textContent = medName; $('medDueTime').textContent = m.time;
         $('medDueModal').classList.remove('hidden');
         playStrongRingtone();
-        setTimeout(() => speakText(state.lang === 'ar' ? `حان الآن موعد دوائك: ${medName}.` : `Time for your medication: ${medName}.`), 950);
+        setTimeout(() => speakText(state.lang === 'fr' ? `Il est temps de prendre votre médicament : ${medName}.` : `Time for your medication: ${medName}.`), 950);
         break;
       }
     }
@@ -1154,14 +1160,14 @@
     const box = $('medsList'); box.replaceChildren();
     const takenCount = state.meds.filter((m) => m.taken).length;
     const remCount = state.meds.length - takenCount;
-    $('tileMedsSub').textContent = state.lang === 'ar' ? `${takenCount} / ${state.meds.length} جرعات` : `${takenCount} / ${state.meds.length} doses`;
+    $('tileMedsSub').textContent = state.lang === 'fr' ? `${takenCount} / ${state.meds.length} doses` : `${takenCount} / ${state.meds.length} doses`;
     const batAlertCnt = (lastBatteryPct <= 30 && !lastBatteryCharging) ? 1 : 0;
     $('headerBellCount').textContent = String(Math.max(0, remCount + batAlertCnt));
 
     if (!state.meds.length) {
       const empty = document.createElement('p');
       empty.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-base font-bold text-slate-500';
-      empty.textContent = state.lang === 'ar' ? 'لا توجد أدوية مسجلة بعد — اضغط (+ إضافة / صورة وصفة).' : 'No medications listed yet — tap (+ Add / Rx Photo).';
+      empty.textContent = state.lang === 'fr' ? "Aucun médicament enregistré — appuyez sur (+ Ajouter / Photo)." : 'No medications listed yet — tap (+ Add / Rx Photo).';
       box.appendChild(empty);
       return;
     }
@@ -1172,13 +1178,13 @@
       const top = document.createElement('div');
       top.className = 'flex flex-wrap items-center justify-between gap-2';
       const info = document.createElement('div');
-      const title = document.createElement('p'); title.className = 'text-xl font-black text-slate-900'; title.textContent = state.lang === 'ar' ? m.nameAr : m.nameEn;
+      const title = document.createElement('p'); title.className = 'text-xl font-black text-slate-900'; title.textContent = state.lang === 'fr' ? m.nameAr : m.nameEn;
       const time = document.createElement('p'); time.className = 'text-base font-bold text-slate-600'; time.textContent = m.time;
       info.append(title, time);
       const actions = document.createElement('div'); actions.className = 'flex items-center gap-2';
       const takeBtn = document.createElement('button'); takeBtn.type = 'button';
       takeBtn.className = m.taken ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2 text-base font-extrabold text-white' : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2 text-base font-extrabold text-emerald-900';
-      takeBtn.textContent = m.taken ? (state.lang === 'ar' ? 'تم الأخذ ✓' : 'Taken ✓') : (state.lang === 'ar' ? 'أخذت الدواء' : 'Mark Taken');
+      takeBtn.textContent = m.taken ? (state.lang === 'fr' ? 'Pris ✓' : 'Taken ✓') : (state.lang === 'fr' ? 'Marquer pris' : 'Mark Taken');
       takeBtn.addEventListener('click', async () => {
         m.taken = !m.taken; saveState(); renderMeds();
         if (navigator.onLine && client && currentUser && currentSeniorId && !String(m.id).startsWith('m')) {
@@ -1188,7 +1194,7 @@
       });
       const delBtn = document.createElement('button'); delBtn.type = 'button';
       delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2 text-base font-extrabold text-rose-700';
-      delBtn.textContent = state.lang === 'ar' ? 'حذف' : 'Delete';
+      delBtn.textContent = state.lang === 'fr' ? 'Supprimer' : 'Delete';
       delBtn.addEventListener('click', () => askConfirmDelete(title.textContent, async () => {
         const delId = m.id;
         state.meds = state.meds.filter((x) => x.id !== delId); saveState(); renderMeds();
@@ -1202,7 +1208,7 @@
         const iw = document.createElement('div'); iw.className = 'flex items-center gap-3 rounded-xl bg-slate-50 p-2';
         const th = document.createElement('img'); th.src = m.imageData; th.alt = title.textContent; th.className = 'h-14 w-14 rounded-lg object-cover';
         const dl = document.createElement('a'); dl.href = m.imageData; dl.download = (m.nameEn || 'rx') + '.jpg'; dl.className = 'text-sm font-extrabold text-emerald-800 underline';
-        dl.textContent = state.lang === 'ar' ? 'عرض/تنزيل الصورة' : 'Download Photo';
+        dl.textContent = state.lang === 'fr' ? 'Voir/Télécharger la photo' : 'Download Photo';
         iw.append(th, dl); row.appendChild(iw);
       }
       box.appendChild(row);
@@ -1212,14 +1218,14 @@
   function renderAppts() {
     const box = $('apptsList'); box.replaceChildren();
     if (state.appts.length) {
-      $('tileApptsSub').textContent = state.appts[0].date || (state.lang === 'ar' ? 'مع الطبيب' : 'With Doctor');
+      $('tileApptsSub').textContent = state.appts[0].date || (state.lang === 'fr' ? 'Médecin' : 'With Doctor');
     } else {
-      $('tileApptsSub').textContent = state.lang === 'ar' ? 'لا مواعيد' : 'None';
+      $('tileApptsSub').textContent = state.lang === 'fr' ? 'Aucun' : 'None';
     }
     if (!state.appts.length) {
       const empty = document.createElement('p');
       empty.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-base font-bold text-slate-500';
-      empty.textContent = state.lang === 'ar' ? 'لا توجد مواعيد مسجلة بعد — اضغط (+ موعد جديد).' : 'No appointments listed yet — tap (+ Add).';
+      empty.textContent = state.lang === 'fr' ? "Aucun rendez-vous enregistré — appuyez sur (+ Ajouter)." : 'No appointments listed yet — tap (+ Add).';
       box.appendChild(empty);
       return;
     }
@@ -1227,12 +1233,24 @@
       const row = document.createElement('div');
       row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm';
       const info = document.createElement('div');
-      const doc = document.createElement('p'); doc.className = 'text-lg font-black text-slate-900'; doc.textContent = state.lang === 'ar' ? a.doctorAr : a.doctorEn;
+      const doc = document.createElement('p'); doc.className = 'text-lg font-black text-slate-900'; doc.textContent = state.lang === 'fr' ? a.doctorAr : a.doctorEn;
       const dt = document.createElement('p'); dt.className = 'text-base font-bold text-slate-600'; dt.textContent = a.date + ' • ' + a.time;
       info.append(doc, dt);
+      const btns = document.createElement('div'); btns.className = 'flex flex-wrap items-center gap-2';
+      const attBtn = document.createElement('button'); attBtn.type = 'button';
+      attBtn.className = a.attended
+        ? 'tap-btn rounded-2xl bg-emerald-700 px-3.5 py-2 text-base font-extrabold text-white'
+        : 'tap-btn rounded-2xl border-2 border-purple-200 bg-purple-50 px-3.5 py-2 text-base font-extrabold text-purple-900';
+      attBtn.textContent = a.attended ? (state.lang === 'fr' ? 'Honoré ✓' : 'Attended ✓') : (state.lang === 'fr' ? "J'y suis allé" : 'Mark Attended');
+      attBtn.addEventListener('click', async () => {
+        a.attended = !a.attended; saveState(); renderAppts();
+        if (navigator.onLine && client && currentUser && currentSeniorId && !String(a.id).startsWith('a')) {
+          try { await client.from('appointments').update({ attended: !!a.attended }).eq('id', a.id).eq('senior_id', currentSeniorId); } catch (_) {}
+        }
+      });
       const delBtn = document.createElement('button'); delBtn.type = 'button';
       delBtn.className = 'tap-btn rounded-2xl border-2 border-rose-200 bg-white px-3.5 py-2 text-base font-extrabold text-rose-700';
-      delBtn.textContent = state.lang === 'ar' ? 'حذف' : 'Delete';
+      delBtn.textContent = state.lang === 'fr' ? 'Supprimer' : 'Delete';
       delBtn.addEventListener('click', () => askConfirmDelete(doc.textContent, async () => {
         const delId = a.id;
         state.appts = state.appts.filter((x) => x.id !== delId); saveState(); renderAppts();
@@ -1241,7 +1259,8 @@
           catch (_) { enqueueSync('appt_delete', { id: delId }); }
         } else if (currentUser && !String(delId).startsWith('a')) enqueueSync('appt_delete', { id: delId });
       }));
-      row.append(info, delBtn); box.appendChild(row);
+      btns.append(attBtn, delBtn);
+      row.append(info, btns); box.appendChild(row);
     });
   }
 
@@ -1250,22 +1269,22 @@
     const body = $('notifListBody');
     if (!body) return;
     body.replaceChildren();
-    const ar = state.lang === 'ar';
-    $('notifModalTitle').textContent = ar ? 'التنبيهات والإشعارات' : 'Alerts & Notifications';
+    const ar = state.lang === 'fr';
+    $('notifModalTitle').textContent = ar ? 'Alertes et notifications' : 'Alerts & Notifications';
 
     const items = [];
     if (lastBatteryPct <= 30 && !lastBatteryCharging) {
       items.push({
         cls: 'border-rose-300 bg-rose-50 text-rose-900',
-        title: ar ? `🔋 بطارية الهاتف منخفضة (${lastBatteryPct}%)` : `🔋 Low Phone Battery (${lastBatteryPct}%)`,
-        sub: ar ? 'يرجى توصيل الشاحن الآن.' : 'Please plug in your charger now.'
+        title: ar ? `🔋 Batterie faible (${lastBatteryPct}%)` : `🔋 Low Phone Battery (${lastBatteryPct}%)`,
+        sub: ar ? 'Veuillez brancher le chargeur.' : 'Please plug in your charger now.'
       });
     }
     state.meds.filter((m) => !m.taken).forEach((m) => {
       items.push({
         cls: 'border-emerald-200 bg-emerald-50 text-slate-900',
-        title: (ar ? '💊 دواء متبقٍ: ' : '💊 Medication due: ') + (ar ? m.nameAr : m.nameEn),
-        sub: (ar ? 'الموعد: ' : 'Time: ') + m.time,
+        title: (ar ? '💊 Médicament dû : ' : '💊 Medication due: ') + (ar ? m.nameAr : m.nameEn),
+        sub: (ar ? 'Heure : ' : 'Time: ') + m.time,
         medId: m.id
       });
     });
@@ -1273,13 +1292,13 @@
       const a = state.appts[0];
       items.push({
         cls: 'border-purple-200 bg-purple-50 text-slate-900',
-        title: (ar ? '📅 الموعد القادم: ' : '📅 Upcoming Appointment: ') + (ar ? a.doctorAr : a.doctorEn),
+        title: (ar ? '📅 Prochain RDV : ' : '📅 Upcoming Appointment: ') + (ar ? a.doctorAr : a.doctorEn),
         sub: a.date + ' • ' + a.time
       });
     }
     items.push({
       cls: 'border-sky-200 bg-sky-50 text-slate-900',
-      title: ar ? `💧 شرب الماء: ${state.waterCount} / 8 أكواب` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
+      title: ar ? `💧 Eau : ${state.waterCount} / 8 verres` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
       sub: $('waterNextText').textContent || ''
     });
 
@@ -1296,7 +1315,7 @@
         btn.type = 'button';
         btn.className = 'shrink-0 rounded-xl bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white';
         btn.style.minHeight = '36px';
-        btn.textContent = ar ? 'تم ✓' : 'Done ✓';
+        btn.textContent = ar ? 'Fait ✓' : 'Done ✓';
         btn.addEventListener('click', () => {
           const med = state.meds.find((x) => x.id === it.medId);
           if (med) med.taken = true;
@@ -1313,14 +1332,14 @@
   function renderEmergency() {
     const body = $('emBody'); body.replaceChildren();
     const displayName = getRealDisplayName();
-    const medNames = state.meds.map((m) => (state.lang === 'ar' ? m.nameAr : m.nameEn)).join(' • ') || '-';
+    const medNames = state.meds.map((m) => (state.lang === 'fr' ? m.nameAr : m.nameEn)).join(' • ') || '-';
     const p = state.profile;
     const familyLabel = p.emergencyPhone ? (p.emergencyPhone + (p.familyRelation ? ` (${p.familyRelation})` : '')) : '-';
     const doctorLabel = (p.doctorName || '-') + (p.doctorPhone ? ` • ${p.doctorPhone}` : '');
-    const dispAllergies = (state.lang === 'en' && p.allergies === 'البنسلين') ? 'Penicillin' : (p.allergies || '-');
-    const dispConditions = (state.lang === 'en' && p.conditions === 'السكري، ضغط الدم') ? 'Diabetes, Hypertension' : (p.conditions || '-');
-    const items = state.lang === 'ar'
-      ? [['الاسم:', displayName], ['تاريخ الميلاد:', p.dob || '-'], ['هاتف المسن:', p.phone || '-'], ['أحد أفراد العائلة:', familyLabel], ['هاتف احتياطي:', p.backupPhone || '-'], ['الطبيب المعالج:', doctorLabel], ['عنوان السكن:', p.address || '-'], ['فصيلة الدم:', p.bloodType || '-'], ['الحساسية:', p.allergies || '-'], ['الأمراض المزمنة:', p.conditions || '-'], ['ملاحظات خاصة:', p.medicalNotes || '-'], ['الأدوية الحالية:', medNames]]
+    const dispAllergies = (state.lang === 'en' && p.allergies === 'Pénicilline') ? 'Penicillin' : (p.allergies || '-');
+    const dispConditions = (state.lang === 'en' && p.conditions === 'Diabète, Hypertension') ? 'Diabetes, Hypertension' : (p.conditions || '-');
+    const items = state.lang === 'fr'
+      ? [['Nom :', displayName], ['Date de naissance :', p.dob || '-'], ['Tél. senior :', p.phone || '-'], ['Proche :', familyLabel], ['Tél. secours :', p.backupPhone || '-'], ['Médecin traitant :', doctorLabel], ['Adresse :', p.address || '-'], ['Groupe sanguin :', p.bloodType || '-'], ['Allergies :', p.allergies || '-'], ['Pathologies :', p.conditions || '-'], ['Notes médicales :', p.medicalNotes || '-'], ['Médicaments :', medNames]]
       : [['Name:', displayName], ['Date of Birth:', p.dob || '-'], ['Senior Phone:', p.phone || '-'], ['Close Family:', familyLabel], ['Backup Phone:', p.backupPhone || '-'], ['Doctor:', doctorLabel], ['Address:', p.address || '-'], ['Blood Type:', p.bloodType || '-'], ['Allergies:', dispAllergies], ['Conditions:', dispConditions], ['Notes:', p.medicalNotes || '-'], ['Medications:', medNames]];
     items.forEach(([k, v]) => {
       const line = document.createElement('div');
@@ -1329,9 +1348,9 @@
       const sv = document.createElement('span'); sv.className = 'font-bold text-slate-900'; sv.textContent = v;
       line.append(sk, sv); body.appendChild(line);
     });
-    const tel = (p.emergencyPhone || p.backupPhone || (state.lang === 'ar' ? '190' : '911')).replace(/\s+/g, '');
+    const tel = (p.emergencyPhone || p.backupPhone || (state.lang === 'fr' ? '190' : '911')).replace(/\s+/g, '');
     $('emCallLink').href = 'tel:' + tel;
-    $('emCallLabel').textContent = (state.lang === 'ar' ? 'اتصال سريع: ' : 'Quick Call: ') + tel;
+    $('emCallLabel').textContent = (state.lang === 'fr' ? 'Appel rapide : ' : 'Quick Call: ') + tel;
   }
 
   // Gemini AI (with automatic model discovery fallback)
@@ -1373,11 +1392,11 @@
   async function triggerWaterReminder(manualTest) {
     playStrongRingtone();
     const name = getRealDisplayName();
-    let msg = state.lang === 'ar'
-      ? `مرحباً ${name}، حان وقت شرب كأس ماء الآن. شربت اليوم ${state.waterCount} من 8 أكواب.`
+    let msg = state.lang === 'fr'
+      ? `Bonjour ${name}, il est temps de boire un verre d'eau. Vous avez bu ${state.waterCount} sur 8 verres aujourd'hui.`
       : `Hello ${name}, time to drink a glass of water now (${state.waterCount}/8 today).`;
     try {
-      const aiReply = await callGeminiText(state.lang === 'ar' ? `اكتب تذكيراً صوتياً لطيفاً وقصيراً جداً لمسن اسمه "${name}" لشرب الماء (${state.waterCount}/8).` : `Write a short 2-sentence water reminder for "${name}" (${state.waterCount}/8).`);
+      const aiReply = await callGeminiText(state.lang === 'fr' ? `Écris un rappel vocal très court et gentil pour un senior nommé "${name}" afin qu\'il boive de l\'eau (${state.waterCount}/8).` : `Write a short 2-sentence water reminder for "${name}" (${state.waterCount}/8).`);
       if (aiReply && aiReply.trim()) msg = aiReply.trim();
     } catch (_) {}
     const fb = $('waterAiFeedback'); fb.textContent = msg; fb.classList.remove('hidden');
@@ -1388,22 +1407,22 @@
   async function askAiQuestion(q) {
     if (!q) return;
     const box = $('aiAnswerBox'); box.classList.remove('hidden');
-    box.textContent = state.lang === 'ar' ? 'جارٍ التفكير...' : 'Thinking...';
+    box.textContent = state.lang === 'fr' ? 'Réflexion...' : 'Thinking...';
     const nextInfo = getNextMedicationInfo();
     const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const nextTextAr = nextInfo ? `موعد الدواء القادم هو "${nextInfo.med.nameAr}" الساعة ${nextInfo.med.time} (${nextInfo.tomorrow ? 'غداً' : 'اليوم'}، بعد ${Math.floor(nextInfo.diffMins / 60)} ساعة و${nextInfo.diffMins % 60} دقيقة).` : 'لا توجد أدوية مسجلة.';
+    const nextTextAr = nextInfo ? `Prochain médicament : "${nextInfo.med.nameAr}" à ${nextInfo.med.time} (${nextInfo.tomorrow ? 'demain' : "aujourd'hui"}, dans ${Math.floor(nextInfo.diffMins / 60)}h ${nextInfo.diffMins % 60}min).` : 'Aucun médicament enregistré.';
     const nextTextEn = nextInfo ? `Your next medication is "${nextInfo.med.nameEn}" at ${nextInfo.med.time} (${nextInfo.tomorrow ? 'tomorrow' : 'today'}, in ${Math.floor(nextInfo.diffMins / 60)}h ${nextInfo.diffMins % 60}m).` : 'No medications listed.';
     let reply = '', aiErrNote = '';
     try {
-      const prompt = state.lang === 'ar'
-        ? `أنت مساعد صحي لطيف لكبار السن في تطبيق طمأنينة. الساعة ${nowStr}. ${nextTextAr} الماء: ${state.waterCount}/8. أجب بلطف في 3 أسطر كحد أقصى: ${q}`
+      const prompt = state.lang === 'fr'
+        ? `Tu es un assistant bienveillant pour les seniors dans CareGuard. Il est ${nowStr}. ${nextTextAr} Eau : ${state.waterCount}/8. Réponds gentiment en 3 lignes max : ${q}`
         : `You are a gentle senior-care assistant. Time ${nowStr}. ${nextTextEn} Water: ${state.waterCount}/8. Answer kindly in max 3 lines: ${q}`;
       reply = (await callGeminiText(prompt)) || '';
     } catch (e) { aiErrNote = e && e.message ? ` (${e.message})` : ''; }
     if (!reply) {
-      reply = /دواء|موعد|القادم|متى|حبة|علاج|med|next|when|pill/i.test(q)
-        ? (state.lang === 'ar' ? nextTextAr : nextTextEn)
-        : (state.lang === 'ar' ? `${nextTextAr} وشربت ${state.waterCount} من 8 أكواب ماء.` : `${nextTextEn} Water: ${state.waterCount}/8 glasses.`);
+      reply = /médicament|medicament|prochain|quand|pilule|eau|med|next|when|pill/i.test(q)
+        ? (state.lang === 'fr' ? nextTextAr : nextTextEn)
+        : (state.lang === 'fr' ? `${nextTextAr} Eau : ${state.waterCount}/8 verres.` : `${nextTextEn} Water: ${state.waterCount}/8 glasses.`);
     }
     box.textContent = reply + (aiErrNote ? '\n[Gemini: ' + aiErrNote + ']' : '');
     speakText(reply);
@@ -1411,20 +1430,20 @@
 
   // Icebreakers, Quick Chips, Birthdays & Chat
   const ICEBREAKERS = [
-    { ar: '☕ القهوة والذكريات: ما أجمل رحلة أو ذكرى لا تنساها؟', en: '☕ Coffee & Memories: Favorite trip or memory?' },
-    { ar: '🌱 الهوايات والحدائق: ما الهواية أو الطبق الذي تحبه؟', en: '🌱 Hobbies: What hobby or recipe do you enjoy?' },
-    { ar: '🚶 المشي والصحة: ما العادة التي تمنحك نشاطاً اليوم؟', en: '🚶 Wellness: What habit keeps you energized?' }
+    { ar: '☕ Café & Souvenirs : Quel est votre plus beau voyage ou souvenir ?', en: '☕ Coffee & Memories: Favorite trip or memory?' },
+    { ar: '🌱 Loisirs : Quel passe-temps ou recette appréciez-vous ?', en: '🌱 Hobbies: What hobby or recipe do you enjoy?' },
+    { ar: '🚶 Bien-être : Quelle habitude vous donne de l\'énergie ?', en: '🚶 Wellness: What habit keeps you energized?' }
   ];
   let iceIdx = new Date().getDate() % ICEBREAKERS.length;
   function renderIcebreaker() {
     const it = ICEBREAKERS[iceIdx % ICEBREAKERS.length];
-    $('icebreakerQuestion').textContent = state.lang === 'ar' ? it.ar : it.en;
+    $('icebreakerQuestion').textContent = state.lang === 'fr' ? it.ar : it.en;
   }
   $('nextIcebreakerBtn').addEventListener('click', () => { iceIdx = (iceIdx + 1) % ICEBREAKERS.length; renderIcebreaker(); });
 
   function renderQuickChips() {
     const box = $('chatQuickChips'); if (!box) return; box.replaceChildren();
-    const chips = state.lang === 'ar' ? ['صباح الخير ☀️', 'يوم سعيد 😊', 'كلام جميل 👍'] : ['Good morning ☀️', 'Wonderful day 😊', 'Well said 👍'];
+    const chips = state.lang === 'fr' ? ['Bonjour ☀️', 'Belle journée 😊', 'Bien dit 👍'] : ['Good morning ☀️', 'Wonderful day 😊', 'Well said 👍'];
     chips.forEach((txt) => {
       const b = document.createElement('button'); b.type = 'button';
       b.className = 'tap-btn shrink-0 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-extrabold text-amber-950';
@@ -1446,11 +1465,11 @@
     const blocked = Array.isArray(state.blockedUserIds) ? state.blockedUserIds : [];
     const visibleRows = (rows || []).filter((r) => !blocked.includes(r.user_id));
     $('chatBlockedBar').classList.toggle('hidden', blocked.length === 0);
-    if (blocked.length) $('chatBlockedCountText').textContent = state.lang === 'ar' ? `تم إخفاء (${blocked.length})` : `Hidden (${blocked.length})`;
+    if (blocked.length) $('chatBlockedCountText').textContent = state.lang === 'fr' ? `Masqué(s) (${blocked.length})` : `Hidden (${blocked.length})`;
 
     if (!visibleRows.length) {
       const empty = document.createElement('p'); empty.className = 'py-8 text-center text-base font-bold text-slate-500';
-      empty.textContent = state.lang === 'ar' ? 'لا توجد مشاركات في آخر 24 ساعة — كن أول من يشارك!' : 'No posts in the last 24h — be the first!';
+      empty.textContent = state.lang === 'fr' ? 'Aucun message ces dernières 24h — soyez le premier à écrire !' : 'No posts in the last 24h — be the first!';
       box.appendChild(empty); return;
     }
 
@@ -1462,7 +1481,7 @@
       card.className = isMine ? 'w-[92%] rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-3 space-y-1.5 shadow-sm' : 'w-[92%] rounded-2xl border border-slate-200 bg-white p-3 space-y-1.5 shadow-sm';
       const hdr = document.createElement('div'); hdr.className = 'flex items-center justify-between gap-2';
       const aw = document.createElement('div'); aw.className = 'flex items-center gap-2';
-      const nameStr = r.author_name || (state.lang === 'ar' ? 'مشارك' : 'Member');
+      const nameStr = r.author_name || (state.lang === 'fr' ? 'Membre' : 'Member');
       const av = document.createElement('span');
       av.className = 'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-black text-white ' + avatarColors[nameStr.charCodeAt(0) % avatarColors.length];
       av.textContent = nameStr.charAt(0).toUpperCase();
@@ -1502,23 +1521,23 @@
       });
       const replyBtn = document.createElement('button'); replyBtn.type = 'button'; replyBtn.style.minHeight = '32px';
       replyBtn.className = 'rounded-xl border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-extrabold text-slate-800';
-      replyBtn.textContent = state.lang === 'ar' ? '↩️ رد' : '↩️ Reply';
+      replyBtn.textContent = state.lang === 'fr' ? '↩️ Répondre' : '↩️ Reply';
       replyBtn.addEventListener('click', () => {
-        const snip = r.audio_data && !r.message_text ? (state.lang === 'ar' ? '🎤 رسالة صوتية' : '🎤 Voice') : (r.message_text || '').slice(0, 40);
+        const snip = r.audio_data && !r.message_text ? (state.lang === 'fr' ? '🎤 Message vocal' : '🎤 Voice') : (r.message_text || '').slice(0, 40);
         activeReplyTo = { id: r.id, author: nameStr, snippet: snip };
-        $('chatReplyBarText').textContent = (state.lang === 'ar' ? 'الرد على ' : 'Replying to ') + nameStr + ': ' + snip;
+        $('chatReplyBarText').textContent = (state.lang === 'fr' ? 'Répondre à ' : 'Replying to ') + nameStr + ': ' + snip;
         $('chatReplyBar').classList.remove('hidden'); $('chatTextInput').focus();
       });
       reactRow.appendChild(replyBtn);
 
       if (isMine) {
         const del = document.createElement('button'); del.type = 'button'; del.style.minHeight = '32px';
-        del.className = 'rounded-xl px-2.5 py-0.5 text-xs font-extrabold text-rose-700'; del.textContent = state.lang === 'ar' ? 'حذف' : 'Delete';
+        del.className = 'rounded-xl px-2.5 py-0.5 text-xs font-extrabold text-rose-700'; del.textContent = state.lang === 'fr' ? 'Supprimer' : 'Delete';
         del.addEventListener('click', async () => { await client.from('community_messages').delete().eq('id', r.id); loadCommunityMessages(); });
         reactRow.appendChild(del);
       } else if (r.user_id) {
         const hideBtn = document.createElement('button'); hideBtn.type = 'button'; hideBtn.style.minHeight = '32px';
-        hideBtn.className = 'rounded-xl px-2 py-0.5 text-xs font-extrabold text-slate-600'; hideBtn.textContent = state.lang === 'ar' ? '🚫 إخفاء' : '🚫 Hide';
+        hideBtn.className = 'rounded-xl px-2 py-0.5 text-xs font-extrabold text-slate-600'; hideBtn.textContent = state.lang === 'fr' ? '🚫 Masquer' : '🚫 Hide';
         hideBtn.addEventListener('click', () => { if (!Array.isArray(state.blockedUserIds)) state.blockedUserIds = []; if (!state.blockedUserIds.includes(r.user_id)) state.blockedUserIds.push(r.user_id); saveState(); renderChatMessages(rows); });
         reactRow.appendChild(hideBtn);
       }
@@ -1528,7 +1547,7 @@
 
   async function loadCommunityMessages() {
     if (!client) return;
-    if (!currentUser) { renderChatMessages([]); showChatMsg(state.lang === 'ar' ? 'سجّل الدخول بحساب Google أولاً للمشاركة.' : 'Sign in with Google first.', true); return; }
+    if (!currentUser) { renderChatMessages([]); showChatMsg(state.lang === 'fr' ? 'Connectez-vous avec Google pour participer.' : 'Sign in with Google first.', true); return; }
     try {
       const cutoffIso = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       await client.from('community_messages').delete().lt('created_at', cutoffIso);
@@ -1555,11 +1574,11 @@
     activeBirthdayNames = names;
     if (!names.length) { banner.classList.add('hidden'); return; }
     banner.classList.remove('hidden');
-    $('chatBirthdayText').textContent = state.lang === 'ar' ? `🎂 عيد ميلاد: ${names.join('، ')}!` : `🎂 Birthday: ${names.join(', ')}!`;
+    $('chatBirthdayText').textContent = state.lang === 'fr' ? `🎂 Anniversaire : ${names.join(', ')} !` : `🎂 Birthday: ${names.join(', ')}!`;
   }
 
   async function sendCommunityPost(text, audioData) {
-    if (!client || !currentUser) { showChatMsg(state.lang === 'ar' ? 'سجّل الدخول بحساب Google أولاً.' : 'Please sign in first.', true); return false; }
+    if (!client || !currentUser) { showChatMsg(state.lang === 'fr' ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.', true); return false; }
     let finalText = text || null;
     if (activeReplyTo) {
       const prefix = `↩️ ${activeReplyTo.author}: ${activeReplyTo.snippet}`;
@@ -1574,131 +1593,163 @@
   }
 
   function applyLang() {
-    const ar = state.lang === 'ar';
-    document.documentElement.lang = ar ? 'ar' : 'en';
-    document.documentElement.dir = ar ? 'rtl' : 'ltr';
-    $('appTitle').textContent = ar ? 'طمأنينة' : 'CareGuard';
-    $('appSubtitle').textContent = ar ? 'صحتك وراحتك تهمنا' : 'Your Health & Peace of Mind';
-    $('langToggleText').textContent = ar ? 'EN' : 'AR';
-    $('heroWelcomeLabel').textContent = ar ? 'مرحباً بك' : 'Welcome back';
+    const ar = state.lang === 'fr';
+    document.documentElement.lang = ar ? 'fr' : 'en';
+    document.documentElement.dir = 'ltr';
+    $('appTitle').textContent = ar ? 'CareGuard' : 'CareGuard';
+    $('appSubtitle').textContent = ar ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind';
+    $('langToggleText').textContent = ar ? 'EN' : 'FR';
+    $('heroWelcomeLabel').textContent = ar ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
-    $('seniorGreeting').textContent = name || (ar ? 'أهلاً بك' : 'Guest');
-    if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = ar ? 'رقم الدعوة:' : 'Invite Code:';
-    $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'ط').toUpperCase();
-    $('imOkLabel').textContent = ar ? 'أنا بخير' : "I'm OK";
+    $('seniorGreeting').textContent = name || (ar ? 'Bienvenue' : 'Guest');
+    if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = ar ? 'Code d\'invitation :' : 'Invite Code:';
+    $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'C').toUpperCase();
+    $('imOkLabel').textContent = ar ? 'Je vais bien' : "I'm OK";
     if (state.lastServerCheckInIso) {
       const dtStr = new Date(state.lastServerCheckInIso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-      $('lastCheckInText').textContent = (ar ? 'آخر تأكيد: ' : 'Last confirmed: ') + dtStr;
+      $('lastCheckInText').textContent = (ar ? 'Dernière confirmation : ' : 'Last confirmed: ') + dtStr;
     } else {
-      $('lastCheckInText').textContent = ar ? 'كل شيء على ما يرام' : 'Everything is alright';
+      $('lastCheckInText').textContent = ar ? 'Tout va bien' : 'Everything is alright';
     }
-    $('tileMedsTitle').textContent = ar ? 'الأدوية' : 'Medications';
-    $('tileMedsHint').textContent = ar ? 'عرض القائمة' : 'View list';
-    $('tileEmergencyTitle').textContent = ar ? 'الطوارئ' : 'Emergency';
-    $('tileEmergencySub').textContent = ar ? 'للاتصال السريع' : 'Quick call';
-    $('emergencyBtnLabel').textContent = ar ? 'بطاقة الطوارئ' : 'Medical ID';
-    $('tileApptsTitle').textContent = ar ? 'المواعيد' : 'Appointments';
-    $('tileApptsHint').textContent = ar ? 'الموعد القادم' : 'Upcoming';
-    $('waterHeading').textContent = ar ? 'شرب الماء' : 'Drink Water';
-    $('waterCountBadge').textContent = state.waterCount + (ar ? ' / 8 أكواب' : ' / 8 glasses');
-    $('tileWaterHint').textContent = ar ? '+ تسجيل كأس' : '+ Log glass';
-    $('aiHeading').textContent = ar ? 'المساعد الذكي' : 'AI Assistant';
-    $('aiSubheading').textContent = ar ? 'اسأل عن أي شيء' : 'Ask anything';
-    $('tileAiHint').textContent = ar ? 'صوت وكتابة' : 'Voice & text';
-    $('updateInfoBtnLabel').textContent = ar ? 'بطاقة الحالة الصحية' : 'Health Profile';
-    $('tileProfileSub').textContent = ar ? 'عرض وتحديث' : 'View & update';
-    $('tileProfileHint').textContent = ar ? 'البيانات الطبية' : 'Medical info';
-    $('chatLauncherTitle').textContent = ar ? 'غرفة الدردشة' : 'CareGuard Lounge';
-    $('chatLauncherSub').textContent = ar ? 'تواصل مع مجلس طمأنينة بالصوت والكتابة' : 'Voice & text chat with seniors';
-    $('navHomeLabel').textContent = ar ? 'الرئيسية' : 'Home';
-    $('navMedsLabel').textContent = ar ? 'الأدوية' : 'Meds';
-    $('navApptsLabel').textContent = ar ? 'المواعيد' : 'Appts';
-    $('navChatLabel').textContent = ar ? 'الدردشة' : 'Chat';
-    $('navSettingsLabel').textContent = ar ? 'الإعدادات' : 'Settings';
-    $('medsHeading').textContent = ar ? 'أدوية اليوم' : "Today's Medications";
-    $('openUploadMedBtn').textContent = ar ? '+ إضافة / صورة وصفة' : '+ Add / Rx Photo';
-    $('apptsHeading').textContent = ar ? 'الموعد الطبي القادم' : 'Medical Appointments';
-    $('openApptModalBtn').textContent = ar ? '+ موعد جديد' : '+ Add';
-    $('aiPanelTitle').textContent = ar ? 'المساعد الذكي' : 'AI Assistant';
+    $('tileMedsTitle').textContent = ar ? 'Médicaments' : 'Medications';
+    $('tileMedsHint').textContent = ar ? 'Voir la liste' : 'View list';
+    $('tileEmergencyTitle').textContent = ar ? 'Urgence' : 'Emergency';
+    $('tileEmergencySub').textContent = ar ? 'Appel rapide' : 'Quick call';
+    $('emergencyBtnLabel').textContent = ar ? 'Fiche d\'urgence' : 'Medical ID';
+    $('tileApptsTitle').textContent = ar ? 'Rendez-vous' : 'Appointments';
+    $('tileApptsHint').textContent = ar ? 'Prochain RDV' : 'Upcoming';
+    $('waterHeading').textContent = ar ? 'Boire de l\'eau' : 'Drink Water';
+    $('waterCountBadge').textContent = state.waterCount + (ar ? ' / 8 verres' : ' / 8 glasses');
+    $('tileWaterHint').textContent = ar ? '+ 1 verre' : '+ Log glass';
+    $('aiHeading').textContent = ar ? 'Assistant IA' : 'AI Assistant';
+    $('aiSubheading').textContent = ar ? 'Posez une question' : 'Ask anything';
+    $('tileAiHint').textContent = ar ? 'Voix et texte' : 'Voice & text';
+    $('updateInfoBtnLabel').textContent = ar ? 'Fiche de santé' : 'Health Profile';
+    $('tileProfileSub').textContent = ar ? 'Voir et modifier' : 'View & update';
+    $('tileProfileHint').textContent = ar ? 'Infos médicales' : 'Medical info';
+    $('chatLauncherTitle').textContent = ar ? 'Salon CareGuard' : 'CareGuard Lounge';
+    $('chatLauncherSub').textContent = ar ? "Discutez par voix ou écrit dans le salon" : 'Voice & text chat with seniors';
+    $('navHomeLabel').textContent = ar ? 'Accueil' : 'Home';
+    $('navMedsLabel').textContent = ar ? 'Médicaments' : 'Meds';
+    $('navApptsLabel').textContent = ar ? 'Rendez-vous' : 'Appts';
+    $('navChatLabel').textContent = ar ? 'Salon' : 'Chat';
+    $('navSettingsLabel').textContent = ar ? 'Paramètres' : 'Settings';
+    $('medsHeading').textContent = ar ? 'Médicaments du jour' : "Today's Medications";
+    $('openUploadMedBtn').textContent = ar ? '+ Ajouter / Photo' : '+ Add / Rx Photo';
+    $('apptsHeading').textContent = ar ? 'Rendez-vous médicaux' : 'Medical Appointments';
+    $('openApptModalBtn').textContent = ar ? '+ Ajouter' : '+ Add';
+    $('aiPanelTitle').textContent = ar ? 'Assistant IA' : 'AI Assistant';
     const hasAiKey = !!(localStorage.getItem(AI_KEY_STORAGE) || '').trim();
-    $('openAiConfigBtn').textContent = hasAiKey ? (ar ? 'AI متصل ✓' : 'AI Connected ✓') : (ar ? 'إعداد AI' : 'AI Setup');
-    $('aiVoiceBtnLabel').textContent = ar ? '🎤 تحدّث مع المساعد بالصوت' : '🎤 Talk to AI Assistant';
-    $('aiQuestionInput').placeholder = ar ? 'مثال: متى موعد دوائي القادم؟' : 'e.g. When is my next medication?';
-    $('askAiBtn').textContent = ar ? 'اسأل' : 'Ask';
-    $('aiDisclaimerNote').textContent = ar ? 'تنبيه: المساعد الذكي للتذكير والتنظيم فقط ولا يغني عن استشارة الطبيب.' : 'Note: AI Assistant is for reminders only and is not medical advice.';
-    $('settingsSectionTitle').textContent = ar ? 'إعدادات الصوت والماء والحساب' : 'Sound, Water & Account';
-    $('testWaterAlertBtn').textContent = ar ? '💧 سماع تذكير الماء' : '💧 Hear Water Reminder';
-    $('voiceBtn').textContent = ar ? '🔊 استماع للتذكير الصوتي' : '🔊 Voice Reminder';
-    $('openRingtoneModalBtn').textContent = ar ? '🔔 نغمة التنبيه' : '🔔 Alert Ringtone';
-    $('signOutBtn').textContent = ar ? 'تسجيل الخروج' : 'Sign Out';
-    if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = ar ? '🔄 تغيير نوع الحساب (المسن / العائلة / الممرض / الرعاية)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
-    $('backFromChatBtn').textContent = ar ? '← رجوع' : '← Back';
-    $('chatHeading').textContent = ar ? 'مجلس طمأنينة' : 'CareGuard Lounge';
-    $('chatSubheading').textContent = ar ? 'تحفظ 24 ساعة ثم تمحى' : 'Kept 24h then deleted';
-    $('chatIdentityTitle').textContent = ar ? 'الاسم الظاهر في الدردشة:' : 'Display name in chat:';
-    $('chatUseNicknameLabel').textContent = ar ? 'الدخول باسم مستعار بدل اسمي الحقيقي' : 'Join with a nickname';
-    $('chatEnterRoomLabel').textContent = ar ? 'دخول إلى الغرفة' : 'Enter Chat Room';
-    $('chatChangeNameBtn').textContent = ar ? 'تغيير الاسم' : 'Change Name';
-    $('chatSendBirthdayBtn').textContent = ar ? '🎉 تهنئة' : '🎉 Wish';
-    $('chatUnblockAllBtn').textContent = ar ? 'إلغاء الإخفاء' : 'Unhide all';
-    $('icebreakerBadge').textContent = ar ? 'سؤال اليوم: ' : 'Topic: ';
-    $('nextIcebreakerBtn').textContent = ar ? 'آخر' : 'Next';
-    $('chatTextInput').placeholder = ar ? 'اكتب رسالة...' : 'Type a message...';
-    $('chatSendTextBtn').textContent = ar ? 'إرسال' : 'Send';
-    $('authHeading').textContent = ar ? 'الدخول السريع' : 'Quick Sign In';
-    $('authSubheading').textContent = ar ? 'اختر حسابك في Google للدخول بلمسة واحدة.' : 'Sign in with one tap using Google.';
-    $('googleBtnLabel').textContent = ar ? 'المتابعة بحساب Google' : 'Continue with Google';
-    $('emailFallbackSummary').textContent = ar ? 'أو الدخول بالبريد الإلكتروني' : 'Or sign in with Email';
-    $('medDueTitle').textContent = ar ? 'حان موعد الدواء!' : 'Medication Time!';
-    $('medDueTakeBtn').textContent = ar ? 'أخذت الدواء الآن ✓' : 'I Took It Now ✓';
-    $('medDueSnoozeBtn').textContent = ar ? 'تأجيل 10 دقائق' : 'Snooze 10 Minutes';
-    $('uploadModalTitle').textContent = ar ? 'إضافة دواء أو صورة وصفة' : 'Add Medication or Rx Photo';
-    $('uploadPhotoPrompt').textContent = ar ? 'اضغط لرفع صورة الوصفة الطبية أو علبة الدواء' : 'Tap to upload prescription or pillbox photo';
-    $('aiAnalyzePhotoBtn').textContent = ar ? 'قراءة الصورة بالذكاء الاصطناعي' : 'Read Photo with AI';
-    $('downloadPreviewLink').textContent = ar ? 'تنزيل' : 'Download';
-    $('newMedNameInput').placeholder = ar ? 'اسم الدواء والجرعة' : 'Medication name & dose';
-    $('rxConfirmLabel').textContent = ar ? 'أؤكد مطابقة الدواء والجرعة مع وصفة الطبيب المعتمدة.' : "I confirm this matches my doctor's prescription.";
-    $('saveNewMedBtn').textContent = ar ? 'حفظ الدواء' : 'Save Medication';
-    $('profileModalTitle').textContent = ar ? 'تحديث بيانات المسن' : 'Update Senior Info';
-    $('profilePrivacyNote').textContent = ar ? 'تُحفظ هذه البيانات لبطاقة الطوارئ فقط ولا تظهر في الدردشة.' : 'Saved privately for Emergency ID only — never shown in chat.';
-    $('profNameInput').placeholder = ar ? 'الاسم الكامل' : 'Full Name';
-    $('profDobLabel').textContent = ar ? 'تاريخ الميلاد:' : 'Date of Birth:';
-    $('profShareBirthdayLabel').textContent = ar ? 'مشاركة يوم ميلادي للتهنئة في المجلس (اليوم والشهر فقط)' : 'Share my birthday month & day in lounge';
-    $('profPhoneInput').placeholder = ar ? 'رقم هاتف المسن' : 'Senior Phone Number';
-    $('profEmergencyPhoneInput').placeholder = ar ? 'هاتف أحد أفراد العائلة' : 'Close Family Phone';
-    $('profFamilyRelInput').placeholder = ar ? 'صفة القرابة (الابن/الابنة)' : 'Relationship (Son/Daughter)';
-    $('profBackupPhoneInput').placeholder = ar ? 'رقم عائلي احتياطي (اختياري)' : 'Backup Family Phone (optional)';
-    $('profDoctorNameInput').placeholder = ar ? 'اسم الطبيب المعالج' : 'Primary Doctor Name';
-    $('profDoctorPhoneInput').placeholder = ar ? 'هاتف الطبيب' : 'Doctor Phone';
-    $('profAddressInput').placeholder = ar ? 'عنوان السكن (اختياري)' : 'Home Address (optional)';
-    $('profBloodInput').placeholder = ar ? 'فصيلة الدم (O+)' : 'Blood Type (O+)';
-    $('profAllergiesInput').placeholder = ar ? 'الحساسية' : 'Allergies';
-    $('profConditionsInput').placeholder = ar ? 'الأمراض المزمنة' : 'Medical Conditions';
-    $('profMedicalNotesInput').placeholder = ar ? 'ملاحظات طبية خاصة' : 'Special Medical Notes';
-    $('saveProfileBtn').textContent = ar ? 'حفظ البيانات' : 'Save Information';
-    $('ringtoneModalTitle').textContent = ar ? 'إعداد نغمة التنبيه' : 'Alert Ringtone Settings';
-    $('pickPhoneRingtoneLabel').textContent = ar ? 'فتح مدير الملفات لاختيار نغمة (MP3 / M4A / WAV)' : 'Pick Ringtone File from Phone (MP3 / M4A / WAV)';
-    $('testRingtoneBtn').textContent = ar ? 'تجربة صوت الرنين والاهتزاز' : 'Test Loud Ringtone & Vibration';
-    $('stopRingtoneBtn').textContent = ar ? '⏹ إيقاف الصوت' : '⏹ Stop Sound';
+    $('openAiConfigBtn').textContent = hasAiKey ? (ar ? 'IA connectée ✓' : 'AI Connected ✓') : (ar ? 'Config. IA' : 'AI Setup');
+    $('aiVoiceBtnLabel').textContent = ar ? '🎤 Parler à l\'assistant' : '🎤 Talk to AI Assistant';
+    $('aiQuestionInput').placeholder = ar ? 'Ex : Quand est mon prochain médicament ?' : 'e.g. When is my next medication?';
+    $('askAiBtn').textContent = ar ? 'Demander' : 'Ask';
+    $('aiDisclaimerNote').textContent = ar ? "Note : l'assistant sert uniquement aux rappels et ne remplace pas un avis médical." : 'Note: AI Assistant is for reminders only and is not medical advice.';
+    $('settingsSectionTitle').textContent = ar ? 'Paramètres Audio, Eau & Compte' : 'Sound, Water & Account';
+    $('testWaterAlertBtn').textContent = ar ? '💧 Écouter le rappel d\'eau' : '💧 Hear Water Reminder';
+    $('voiceBtn').textContent = ar ? '🔊 Écouter le rappel vocal' : '🔊 Voice Reminder';
+    $('openRingtoneModalBtn').textContent = ar ? '🔔 Sonnerie' : '🔔 Alert Ringtone';
+    $('signOutBtn').textContent = ar ? 'Déconnexion' : 'Sign Out';
+    if ($('authSwitchRoleBtn')) $('authSwitchRoleBtn').textContent = ar ? '🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)' : '🔄 Switch Role (Senior / Family / Nurse / Home Care)';
+    $('backFromChatBtn').textContent = ar ? '← Retour' : '← Back';
+    $('chatHeading').textContent = ar ? 'Salon CareGuard' : 'CareGuard Lounge';
+    $('chatSubheading').textContent = ar ? 'Conservés 24h puis supprimés' : 'Kept 24h then deleted';
+    $('chatIdentityTitle').textContent = ar ? 'Nom affiché dans le salon :' : 'Display name in chat:';
+    $('chatUseNicknameLabel').textContent = ar ? 'Rejoindre avec un pseudonyme' : 'Join with a nickname';
+    $('chatEnterRoomLabel').textContent = ar ? 'Entrer dans le salon' : 'Enter Chat Room';
+    $('chatChangeNameBtn').textContent = ar ? 'Changer de nom' : 'Change Name';
+    $('chatSendBirthdayBtn').textContent = ar ? '🎉 Souhait' : '🎉 Wish';
+    $('chatUnblockAllBtn').textContent = ar ? 'Tout réafficher' : 'Unhide all';
+    $('icebreakerBadge').textContent = ar ? 'Question du jour : ' : 'Topic: ';
+    $('nextIcebreakerBtn').textContent = ar ? 'Autre' : 'Next';
+    $('chatTextInput').placeholder = ar ? 'Écrivez un message...' : 'Type a message...';
+    $('chatSendTextBtn').textContent = ar ? 'Envoyer' : 'Send';
+    $('authHeading').textContent = ar ? 'Connexion rapide' : 'Quick Sign In';
+    $('authSubheading').textContent = ar ? 'Connectez-vous en un clic avec votre compte Google.' : 'Sign in with one tap using Google.';
+    $('googleBtnLabel').textContent = ar ? 'Continuer avec Google' : 'Continue with Google';
+    $('emailFallbackSummary').textContent = ar ? 'Ou se connecter par e-mail' : 'Or sign in with Email';
+    $('medDueTitle').textContent = ar ? "C'est l'heure du médicament !" : 'Medication Time!';
+    $('medDueTakeBtn').textContent = ar ? "J'ai pris mon médicament ✓" : 'I Took It Now ✓';
+    $('medDueSnoozeBtn').textContent = ar ? 'Reporter de 10 min' : 'Snooze 10 Minutes';
+    $('uploadModalTitle').textContent = ar ? 'Ajouter un médicament / ordonnance' : 'Add Medication or Rx Photo';
+    $('uploadPhotoPrompt').textContent = ar ? 'Appuyez pour importer une ordonnance ou boîte de médicament' : 'Tap to upload prescription or pillbox photo';
+    $('aiAnalyzePhotoBtn').textContent = ar ? 'Lire la photo avec l\'IA' : 'Read Photo with AI';
+    $('downloadPreviewLink').textContent = ar ? 'Télécharger' : 'Download';
+    $('newMedNameInput').placeholder = ar ? 'Nom du médicament et dose' : 'Medication name & dose';
+    $('rxConfirmLabel').textContent = ar ? 'Je confirme que ce médicament correspond à l\'ordonnance de mon médecin.' : "I confirm this matches my doctor's prescription.";
+    $('saveNewMedBtn').textContent = ar ? 'Enregistrer' : 'Save Medication';
+    $('profileModalTitle').textContent = ar ? 'Mettre à jour les infos' : 'Update Senior Info';
+    $('profilePrivacyNote').textContent = ar ? 'Ces données sont privées pour la fiche d\'urgence et n\'apparaissent jamais dans le salon.' : 'Saved privately for Emergency ID only — never shown in chat.';
+    $('profNameInput').placeholder = ar ? 'Nom complet' : 'Full Name';
+    $('profDobLabel').textContent = ar ? 'Date de naissance :' : 'Date of Birth:';
+    $('profShareBirthdayLabel').textContent = ar ? 'Partager mon jour de naissance dans le salon (jour et mois uniquement)' : 'Share my birthday month & day in lounge';
+    $('profPhoneInput').placeholder = ar ? 'Téléphone du senior' : 'Senior Phone Number';
+    $('profEmergencyPhoneInput').placeholder = ar ? "Téléphone d'un proche" : 'Close Family Phone';
+    $('profFamilyRelInput').placeholder = ar ? 'Lien de parenté (Fils/Fille)' : 'Relationship (Son/Daughter)';
+    $('profBackupPhoneInput').placeholder = ar ? 'Téléphone famille secondaire (optionnel)' : 'Backup Family Phone (optional)';
+    $('profDoctorNameInput').placeholder = ar ? 'Médecin traitant' : 'Primary Doctor Name';
+    $('profDoctorPhoneInput').placeholder = ar ? 'Tél. médecin' : 'Doctor Phone';
+    $('profAddressInput').placeholder = ar ? 'Adresse du domicile (optionnel)' : 'Home Address (optional)';
+    $('profBloodInput').placeholder = ar ? 'Groupe sanguin (O+)' : 'Blood Type (O+)';
+    $('profAllergiesInput').placeholder = ar ? 'Allergies' : 'Allergies';
+    $('profConditionsInput').placeholder = ar ? 'Maladies chroniques' : 'Medical Conditions';
+    $('profMedicalNotesInput').placeholder = ar ? 'Notes médicales' : 'Special Medical Notes';
+    $('saveProfileBtn').textContent = ar ? 'Enregistrer' : 'Save Information';
+    $('ringtoneModalTitle').textContent = ar ? 'Configurer la sonnerie' : 'Alert Ringtone Settings';
+    $('pickPhoneRingtoneLabel').textContent = ar ? 'Choisir une sonnerie sur le téléphone (MP3 / M4A / WAV)' : 'Pick Ringtone File from Phone (MP3 / M4A / WAV)';
+    $('testRingtoneBtn').textContent = ar ? 'Tester la sonnerie et vibration' : 'Test Loud Ringtone & Vibration';
+    $('stopRingtoneBtn').textContent = ar ? '⏹ Arrêter le son' : '⏹ Stop Sound';
     const rOpts = $('ringtonePresetSelect').options;
     if (rOpts && rOpts.length >= 4) {
-      rOpts[0].text = ar ? 'رنين هاتف قوي متكرر' : 'Loud Repeating Phone Ring';
-      rOpts[1].text = ar ? 'جرس هاتف كلاسيكي' : 'Classic Bell Ringtone';
-      rOpts[2].text = ar ? 'منبّه طبي عالي الوضوح' : 'High-Clarity Medical Alarm';
-      rOpts[3].text = ar ? 'نغمة من ملفات هاتفي' : 'Custom File from My Phone';
+      rOpts[0].text = ar ? 'Sonnerie forte répétitive' : 'Loud Repeating Phone Ring';
+      rOpts[1].text = ar ? 'Sonnerie classique' : 'Classic Bell Ringtone';
+      rOpts[2].text = ar ? 'Alarme médicale claire' : 'High-Clarity Medical Alarm';
+      rOpts[3].text = ar ? 'Sonnerie depuis mon téléphone' : 'Custom File from My Phone';
     }
-    $('aiConfigTitle').textContent = ar ? 'ربط الذكاء الاصطناعي (Gemini)' : 'Connect AI (Gemini)';
-    $('aiConfigHint').textContent = ar ? 'أدخل مفتاح Gemini API (يُحفظ في جهازك فقط).' : 'Enter Gemini API key (saved on this device only).';
-    $('saveAiKeyBtn').textContent = ar ? 'حفظ في هذا الجهاز' : 'Save on This Device';
-    $('apptModalTitle').textContent = ar ? 'إضافة موعد طبي' : 'Add Medical Appointment';
-    $('apptDoctorInput').placeholder = ar ? 'اسم الطبيب أو التخصص' : 'Doctor name or specialty';
-    $('apptSaveBtn').textContent = ar ? 'حفظ الموعد' : 'Save Appointment';
-    $('emModalTitle').textContent = ar ? 'بطاقة الطوارئ الطبية' : 'Emergency Medical ID';
+    $('aiConfigTitle').textContent = ar ? 'Connecter l\'IA (Gemini)' : 'Connect AI (Gemini)';
+    $('aiConfigHint').textContent = ar ? 'Entrez votre clé API Gemini (sauvegardée localement).' : 'Enter Gemini API key (saved on this device only).';
+    $('saveAiKeyBtn').textContent = ar ? 'Enregistrer sur cet appareil' : 'Save on This Device';
+    $('apptModalTitle').textContent = ar ? 'Ajouter un rendez-vous' : 'Add Medical Appointment';
+    $('apptDoctorInput').placeholder = ar ? 'Nom du médecin ou spécialité' : 'Doctor name or specialty';
+    $('apptSaveBtn').textContent = ar ? 'Enregistrer' : 'Save Appointment';
+    $('emModalTitle').textContent = ar ? "Fiche d'urgence médicale" : 'Emergency Medical ID';
+
+    if ($('roleGateTitle')) $('roleGateTitle').textContent = ar ? 'Qui utilise CareGuard ?' : 'Who is using CareGuard?';
+    if ($('roleGateSub')) $('roleGateSub').textContent = ar ? 'Choisissez votre rôle une fois pour afficher votre espace.' : 'Choose your role once to open the right view.';
+    if ($('roleSeniorTitle')) $('roleSeniorTitle').textContent = ar ? '👴 Je suis Senior' : '👴 I am a Senior';
+    if ($('roleSeniorSub')) $('roleSeniorSub').textContent = ar ? 'Suivi, médicaments, eau et salon' : 'Check-in, meds, water & lounge';
+    if ($('roleFamilyTitle')) $('roleFamilyTitle').textContent = ar ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family';
+    if ($('roleFamilySub')) $('roleFamilySub').textContent = ar ? 'Suivre un proche par code' : 'Follow loved one by code';
+    if ($('roleNurseTitle')) $('roleNurseTitle').textContent = ar ? '🩺 Infirmier(ère)' : '🩺 Nurse';
+    if ($('roleNurseSub')) $('roleNurseSub').textContent = ar ? 'Suivi et messages vocaux' : 'Follow-up & voice messages';
+    if ($('roleCenterTitle')) $('roleCenterTitle').textContent = ar ? '🏥 Soins à domicile' : '🏥 Home Care';
+    if ($('roleCenterSub')) $('roleCenterSub').textContent = ar ? 'Suivre les seniors à domicile' : 'Monitor seniors at home';
+    if ($('switchRoleBtn')) $('switchRoleBtn').textContent = ar ? '🔄 Changer de rôle' : '🔄 Switch Role';
+    if ($('careRefreshBtn')) $('careRefreshBtn').textContent = ar ? '🔄 Actualiser' : '🔄 Refresh';
+    if ($('careSwitchRoleBtn')) $('careSwitchRoleBtn').textContent = ar ? 'Changer rôle' : 'Switch Role';
+    if ($('careSignOutBtn')) $('careSignOutBtn').textContent = ar ? 'Quitter' : 'Sign Out';
+    if ($('careLinkTitle')) $('careLinkTitle').textContent = ar ? 'Lier un senior par son code (CG-...)' : 'Link a senior by code (CG-...)';
+    if ($('careSendLinkBtn')) $('careSendLinkBtn').textContent = ar ? 'Lier' : 'Link';
+    if ($('seniorPendingLinksTitle')) $('seniorPendingLinksTitle').textContent = ar ? 'Nouvelles demandes de liaison :' : 'New link requests:';
+    if ($('directCareTitle')) $('directCareTitle').textContent = ar ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages';
+    if ($('directCareSub')) $('directCareSub').textContent = ar ? "Demandez de l'aide ou de charger le téléphone" : 'Ask for help or phone charging';
+    if ($('dcModalSub')) $('dcModalSub').textContent = ar ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
+    if ($('dcTextInput')) $('dcTextInput').placeholder = ar ? 'Écrivez un message...' : 'Type a message...';
+    if ($('dcSendTextBtn')) $('dcSendTextBtn').textContent = ar ? 'Envoyer' : 'Send';
+    if ($('dcSendVoiceBtn')) $('dcSendVoiceBtn').textContent = ar ? 'Envoyer' : 'Send';
+    if ($('dcDiscardVoiceBtn')) $('dcDiscardVoiceBtn').textContent = ar ? 'Annuler' : 'Cancel';
+    if ($('chatSendVoiceBtn')) $('chatSendVoiceBtn').textContent = ar ? 'Envoyer' : 'Send';
+    if ($('chatDiscardVoiceBtn')) $('chatDiscardVoiceBtn').textContent = ar ? 'Annuler' : 'Cancel';
+    if ($('emailName')) $('emailName').placeholder = ar ? 'Nom complet (si inscription)' : 'Full name (for sign up)';
+    if ($('passwordInput')) $('passwordInput').placeholder = ar ? 'Mot de passe' : 'Password';
+    if ($('emailSignInBtn')) $('emailSignInBtn').textContent = ar ? 'Connexion' : 'Sign In';
+    if ($('emailSignUpBtn')) $('emailSignUpBtn').textContent = ar ? 'Créer' : 'Sign Up';
+
 
 
     const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
     const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
-    $('waterNextText').textContent = (ar ? 'تذكير الماء القادم بعد: ' : 'Next water reminder in: ') + remMin + (ar ? ' دقيقة' : ' min');
+    $('waterNextText').textContent = (ar ? "Prochain rappel d'eau dans : " : 'Next water reminder in: ') + remMin + (ar ? ' min' : ' min');
 
     updateNetworkUI();
     renderMeds();
@@ -1709,8 +1760,8 @@
     syncChatIdentityUI();
   }
 
-  $('langToggle').addEventListener('click', () => { state.lang = state.lang === 'ar' ? 'en' : 'ar'; saveState(); applyLang(); });
-  $('voiceBtn').addEventListener('click', () => { playStrongRingtone(); setTimeout(() => speakText(state.lang === 'ar' ? 'مرحباً، تذكير من طمأنينة بموعد دوائك.' : 'Hello from CareGuard, reminder for your medication.'), 900); });
+  $('langToggle').addEventListener('click', () => { state.lang = state.lang === 'fr' ? 'en' : 'fr'; saveState(); applyLang(); });
+  $('voiceBtn').addEventListener('click', () => { playStrongRingtone(); setTimeout(() => speakText(state.lang === 'fr' ? "Bonjour de CareGuard, rappel pour votre médicament." : 'Hello from CareGuard, reminder for your medication.'), 900); });
   $('testWaterAlertBtn').addEventListener('click', () => triggerWaterReminder(true));
 
   setInterval(() => {
@@ -1725,7 +1776,7 @@
     if (state.chatUseNickname && !state.chatNickname.trim()) { $('chatNicknameInput').focus(); return; }
     $('chatJoinStep').classList.add('hidden');
     $('chatRoomStep').classList.remove('hidden');
-    $('chatJoinedAsBadge').textContent = (state.lang === 'ar' ? 'باسم: ' : 'As: ') + getChatAuthorName();
+    $('chatJoinedAsBadge').textContent = (state.lang === 'fr' ? 'En tant que : ' : 'As: ') + getChatAuthorName();
     loadCommunityMessages(); loadTodayBirthdays();
   });
   $('chatChangeNameBtn').addEventListener('click', () => { $('chatRoomStep').classList.add('hidden'); $('chatJoinStep').classList.remove('hidden'); syncChatIdentityUI(); });
@@ -1734,13 +1785,13 @@
   $('chatCancelReplyBtn').addEventListener('click', () => { activeReplyTo = null; $('chatReplyBar').classList.add('hidden'); });
   $('chatSendBirthdayBtn').addEventListener('click', () => {
     const who = activeBirthdayNames.join(' & ');
-    sendCommunityPost(state.lang === 'ar' ? `🎂🎉 عيد ميلاد سعيد يا ${who}!` : `🎂🎉 Happy Birthday ${who}!`, null);
+    sendCommunityPost(state.lang === 'fr' ? `🎂🎉 Joyeux anniversaire ${who} !` : `🎂🎉 Happy Birthday ${who}!`, null);
   });
   $('chatUnblockAllBtn').addEventListener('click', () => { state.blockedUserIds = []; saveState(); loadCommunityMessages(); });
 
   $('chatRecordBtn').addEventListener('click', async () => {
     if (isRecording && mediaRecorder) { mediaRecorder.stop(); return; }
-    if (!navigator.mediaDevices || !window.MediaRecorder) { showChatMsg(state.lang === 'ar' ? 'التسجيل غير مدعوم هنا.' : 'Recording unsupported.', true); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { showChatMsg(state.lang === 'fr' ? 'Enregistrement non supporté.' : 'Recording unsupported.', true); return; }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       recordedChunks = []; mediaRecorder = new MediaRecorder(stream); isRecording = true;
@@ -1756,7 +1807,7 @@
       };
       mediaRecorder.start();
       setTimeout(() => { if (isRecording && mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 30000);
-    } catch (_) { showChatMsg(state.lang === 'ar' ? 'يرجى السماح للميكروفون.' : 'Allow mic access.', true); }
+    } catch (_) { showChatMsg(state.lang === 'fr' ? 'Autorisez le microphone.' : 'Allow mic access.', true); }
   });
   $('chatSendVoiceBtn').addEventListener('click', async () => { if (!pendingVoiceDataUrl) return; if (await sendCommunityPost(null, pendingVoiceDataUrl)) { pendingVoiceDataUrl = ''; $('chatVoicePreviewBox').classList.add('hidden'); } });
   $('chatDiscardVoiceBtn').addEventListener('click', () => { pendingVoiceDataUrl = ''; $('chatVoicePreviewBox').classList.add('hidden'); });
@@ -1774,8 +1825,8 @@
   $('aiAnalyzePhotoBtn').addEventListener('click', async () => {
     const st = $('aiPhotoStatus'); st.classList.remove('hidden');
     if (!pendingImageDataUrl) return;
-    if (!(localStorage.getItem(AI_KEY_STORAGE) || '').trim()) { st.textContent = state.lang === 'ar' ? 'أضف مفتاح Gemini في الإعدادات.' : 'Add Gemini key in Settings.'; return; }
-    st.textContent = state.lang === 'ar' ? 'جارٍ القراءة...' : 'Reading...';
+    if (!(localStorage.getItem(AI_KEY_STORAGE) || '').trim()) { st.textContent = state.lang === 'fr' ? 'Ajoutez la clé Gemini dans Paramètres.' : 'Add Gemini key in Settings.'; return; }
+    st.textContent = state.lang === 'fr' ? 'Lecture...' : 'Reading...';
     try {
       const b64 = pendingImageDataUrl.split(',')[1] || '', mime = (pendingImageDataUrl.match(/^data:([^;]+);/) || [])[1] || 'image/jpeg';
       const ans = await callGeminiText('Read medication name and dose in one short line.', b64, mime);
@@ -1835,14 +1886,14 @@
         try { await client.from('community_birthdays').upsert({ user_id: currentUser.id, display_name: getChatAuthorName(), birth_month: parseInt(parts[1], 10), birth_day: parseInt(parts[2], 10) }, { onConflict: 'user_id' }); } catch (_) {}
       } else { try { await client.from('community_birthdays').delete().eq('user_id', currentUser.id); } catch (_) {} }
     }
-    const fb = $('profileSaveFeedback'); fb.textContent = state.lang === 'ar' ? 'تم الحفظ بنجاح!' : 'Saved!'; fb.classList.remove('hidden');
+    const fb = $('profileSaveFeedback'); fb.textContent = state.lang === 'fr' ? 'Enregistré !' : 'Saved!'; fb.classList.remove('hidden');
     setTimeout(() => $('profileModal').classList.add('hidden'), 600);
   });
 
   $('closeRingtoneModalBtn').addEventListener('click', () => { stopRingtone(); $('ringtoneModal').classList.add('hidden'); });
   $('openRingtoneModalBtn').addEventListener('click', () => {
     $('ringtonePresetSelect').value = state.ringtonePreset || 'loud_phone';
-    $('customRingtoneStatus').textContent = state.customRingtoneName ? ((state.lang === 'ar' ? 'النغمة: ' : 'Saved: ') + state.customRingtoneName) : '';
+    $('customRingtoneStatus').textContent = state.customRingtoneName ? ((state.lang === 'fr' ? 'Sonnerie : ' : 'Saved: ') + state.customRingtoneName) : '';
     $('ringtoneModal').classList.remove('hidden');
   });
   $('stopRingtoneBtn').addEventListener('click', stopRingtone);
@@ -1859,7 +1910,7 @@
   $('closeAiConfigBtn').addEventListener('click', () => $('aiConfigModal').classList.add('hidden'));
   $('saveAiKeyBtn').addEventListener('click', () => {
     localStorage.setItem(AI_KEY_STORAGE, $('geminiKeyInput').value.trim());
-    const fb = $('aiKeyFeedback'); fb.textContent = state.lang === 'ar' ? 'تم الحفظ!' : 'Saved!'; fb.classList.remove('hidden');
+    const fb = $('aiKeyFeedback'); fb.textContent = state.lang === 'fr' ? 'Enregistré !' : 'Saved!'; fb.classList.remove('hidden');
     applyLang(); setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
   });
   $('askAiBtn').addEventListener('click', () => askAiQuestion($('aiQuestionInput').value.trim()));
@@ -1869,11 +1920,11 @@
   $('aiVoiceTalkBtn').addEventListener('click', () => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const b = $('aiAnswerBox');
-    if (!SR) { b.classList.remove('hidden'); b.textContent = state.lang === 'ar' ? 'استخدم Chrome للمحادثة الصوتية.' : 'Use Chrome for voice.'; return; }
-    const rec = new SR(); rec.lang = state.lang === 'ar' ? 'ar-SA' : 'en-US';
-    $('aiVoiceBtnLabel').textContent = state.lang === 'ar' ? '🎤 جاري الاستماع...' : '🎤 Listening...';
+    if (!SR) { b.classList.remove('hidden'); b.textContent = state.lang === 'fr' ? 'Utilisez Chrome pour la conversation vocale.' : 'Use Chrome for voice.'; return; }
+    const rec = new SR(); rec.lang = state.lang === 'fr' ? 'fr-FR' : 'en-US';
+    $('aiVoiceBtnLabel').textContent = state.lang === 'fr' ? '🎤 Écoute en cours...' : '🎤 Listening...';
     rec.onresult = (ev) => { const t = ev.results?.[0]?.[0]?.transcript || ''; $('aiQuestionInput').value = t; applyLang(); askAiQuestion(t); };
-    rec.onerror = () => { applyLang(); b.classList.remove('hidden'); b.textContent = state.lang === 'ar' ? 'تعذر سماع الصوت، تأكد من إذن الميكروفون أو اكتب سؤالك.' : 'Could not hear voice; check mic permission or type.'; };
+    rec.onerror = () => { applyLang(); b.classList.remove('hidden'); b.textContent = state.lang === 'fr' ? "Voix non détectée ; vérifiez le micro ou écrivez votre question." : 'Could not hear voice; check mic permission or type.'; };
     rec.onend = () => applyLang();
     rec.start();
   });
@@ -1943,11 +1994,11 @@
     try {
       const todayStart = new Date().toISOString().slice(0, 10) + 'T00:00:00';
       const [{ data: sp }, { data: chk }, { data: meds }, { data: logs }, { data: appts }] = await Promise.all([
-        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes').eq('id', currentSeniorId).single(),
+        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, water_count, water_date').eq('id', currentSeniorId).single(),
         client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
         client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
         client.from('medication_logs').select('medication_id, status').eq('senior_id', currentSeniorId).gte('logged_at', todayStart),
-        client.from('appointments').select('id, title, appointment_at').eq('senior_id', currentSeniorId).order('appointment_at', { ascending: true })
+        client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', currentSeniorId).order('appointment_at', { ascending: true })
       ]);
       if (sp) {
         if (sp.display_name) state.profile.name = sp.display_name;
@@ -1963,6 +2014,11 @@
         if (sp.allergies) state.profile.allergies = sp.allergies;
         if (sp.conditions) state.profile.conditions = sp.conditions;
         if (sp.medical_notes) state.profile.medicalNotes = sp.medical_notes;
+        const todayIso = new Date().toISOString().slice(0, 10);
+        if (sp.water_date === todayIso && typeof sp.water_count === 'number') {
+          state.waterDate = sp.water_date;
+          state.waterCount = Math.max(state.waterCount || 0, sp.water_count);
+        }
       }
       if (chk && chk.length && chk[0].checked_in_at) state.lastServerCheckInIso = chk[0].checked_in_at;
       const takenIds = new Set((logs || []).filter((l) => l.status === 'taken').map((l) => l.medication_id));
@@ -1970,7 +2026,7 @@
         state.meds = meds.map((m) => ({ id: m.id, nameAr: m.name, nameEn: m.name, time: m.dosage || '08:00', taken: takenIds.has(m.id), imageData: '' }));
       }
       if (Array.isArray(appts)) {
-        state.appts = appts.map((a) => { const dt = String(a.appointment_at || ''); return { id: a.id, doctorAr: a.title, doctorEn: a.title, date: dt.slice(0, 10), time: dt.slice(11, 16) || '10:00' }; });
+        state.appts = appts.map((a) => { const dt = String(a.appointment_at || ''); return { id: a.id, doctorAr: a.title, doctorEn: a.title, date: dt.slice(0, 10), time: dt.slice(11, 16) || '10:00', attended: !!a.attended }; });
       }
       saveState(); applyLang();
     } catch (_) {}
@@ -2015,7 +2071,7 @@
     if (!client) return;
     const display_name = $('emailName').value.trim() || 'Senior', email = $('emailInput').value.trim(), password = $('passwordInput').value;
     if (!email || !password) return;
-    try { const { data, error } = await client.auth.signUp({ email, password, options: { data: { display_name } } }); if (error) throw error; if (data.session && data.user) updateAuthUI(data.user); else showAuthMsg(state.lang === 'ar' ? 'تم إنشاء الحساب! افتح بريدك للتأكيد.' : 'Check your email.', 'success'); }
+    try { const { data, error } = await client.auth.signUp({ email, password, options: { data: { display_name } } }); if (error) throw error; if (data.session && data.user) updateAuthUI(data.user); else showAuthMsg(state.lang === 'fr' ? 'Compte créé ! Vérifiez vos e-mails.' : 'Check your email.', 'success'); }
     catch (e) { showAuthMsg(e.message || 'Sign up failed', 'error'); }
   });
   async function handleSignOut() {
@@ -2038,13 +2094,13 @@
     const fb = $('checkInFeedback'); fb.classList.remove('hidden');
     if (!currentUser) {
       fb.className = 'rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-extrabold text-amber-950';
-      fb.textContent = state.lang === 'ar' ? 'حُفظ على هذا الجهاز فقط — سجّل الدخول ليصل التأكيد لحسابك.' : 'Saved locally — sign in to sync.';
+      fb.textContent = state.lang === 'fr' ? "Enregistré localement — connectez-vous pour synchroniser." : 'Saved locally — sign in to sync.';
       return;
     }
     if (!navigator.onLine || !client || !currentSeniorId) {
       enqueueSync('checkin', {});
       fb.className = 'rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-extrabold text-amber-950';
-      fb.textContent = state.lang === 'ar' ? '⏳ حُفظ محلياً — سيتم الإرسال عند عودة الإنترنت.' : '⏳ Saved offline — will sync when online.';
+      fb.textContent = state.lang === 'fr' ? "⏳ Enregistré hors ligne — envoi dès le retour d'Internet." : '⏳ Saved offline — will sync when online.';
       return;
     }
     try {
@@ -2052,11 +2108,11 @@
       if (error) throw error;
       state.lastServerCheckInIso = nowIso; saveState(); applyLang();
       fb.className = 'rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-900';
-      fb.textContent = state.lang === 'ar' ? '✓ تم تأكيد وصول «أنا بخير» إلى الخادم بنجاح.' : '✓ Confirmed on server!';
+      fb.textContent = state.lang === 'fr' ? '✓ Confirmation « Je vais bien » enregistrée sur le serveur.' : '✓ Confirmed on server!';
     } catch (_) {
       enqueueSync('checkin', {});
       fb.className = 'rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-extrabold text-amber-950';
-      fb.textContent = state.lang === 'ar' ? '⏳ تعذر الوصول للخادم — حُفظ محلياً لإعادة المحاولة.' : '⏳ Queued to retry.';
+      fb.textContent = state.lang === 'fr' ? '⏳ Serveur injoignable — en file d\'attente pour réessayer.' : '⏳ Queued to retry.';
     }
   });
 
@@ -2100,16 +2156,16 @@
       $('carePortalView').classList.remove('hidden');
       $('authCard').classList.toggle('hidden', !!currentUser);
       $('careSignOutBtn').classList.toggle('hidden', !currentUser);
-      const ar = state.lang === 'ar';
+      const ar = state.lang === 'fr';
       const titles = {
-        family: ar ? '👨‍👩‍👧 لوحة متابعة العائلة' : '👨‍👩‍👧 Family Dashboard',
-        nurse: ar ? '🩺 لوحة الممرض المتابع' : '🩺 Nurse Follow-Up',
-        center: ar ? '🏥 مركز الرعاية المنزلية' : '🏥 Home Care Center'
+        family: ar ? '👨‍👩‍👧 Espace Famille' : '👨‍👩‍👧 Family Dashboard',
+        nurse: ar ? '🩺 Espace Infirmier(ère)' : '🩺 Nurse Follow-Up',
+        center: ar ? '🏥 Centre de Soins à Domicile' : '🏥 Home Care Center'
       };
       const subs = {
-        family: ar ? 'متابعة حالة قريبك وإرسال رسائل خاصة' : 'Monitor your loved one & send direct messages',
-        nurse: ar ? 'متابعة المريض وإرسال رسائل صوتية/نصية مباشرة' : 'Follow patient meds & send voice/text messages',
-        center: ar ? 'متابعة المسنين في منازلهم بسطر واحد واضح' : 'Monitor seniors at home in one clear list'
+        family: ar ? 'Suivre votre proche et envoyer des messages directs' : 'Monitor your loved one & send direct messages',
+        nurse: ar ? 'Suivre le patient et échanger par vocal/écrit' : 'Follow patient meds & send voice/text messages',
+        center: ar ? "Suivre les seniors à domicile en un coup d'œil" : 'Monitor seniors at home in one clear list'
       };
       $('carePortalTitle').textContent = titles[userRole] || '';
       $('carePortalSub').textContent = subs[userRole] || '';
@@ -2130,7 +2186,7 @@
   $('copySeniorCodeBtn').addEventListener('click', async () => {
     if (!myRegistrationCode) return;
     try { await navigator.clipboard.writeText(myRegistrationCode); } catch (_) {}
-    $('seniorCodeBadgeText').textContent = (state.lang === 'ar' ? 'تم النسخ: ' : 'Copied: ') + myRegistrationCode;
+    $('seniorCodeBadgeText').textContent = (state.lang === 'fr' ? 'Copié : ' : 'Copied: ') + myRegistrationCode;
     setTimeout(() => { $('seniorCodeBadgeText').textContent = myRegistrationCode; }, 2000);
   });
 
@@ -2142,17 +2198,17 @@
       if (!data || !data.length) { card.classList.add('hidden'); return; }
       card.classList.remove('hidden');
       list.replaceChildren();
-      const ar = state.lang === 'ar';
+      const ar = state.lang === 'fr';
       data.forEach((lk) => {
         const row = document.createElement('div');
         row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white p-3 border border-amber-200';
-        const roleTxt = lk.role_type === 'nurse' ? (ar ? 'ممرض' : 'Nurse') : (lk.role_type === 'center' ? (ar ? 'رعاية منزلية' : 'Home Care') : (ar ? 'عائلة' : 'Family'));
+        const roleTxt = lk.role_type === 'nurse' ? (ar ? 'Infirmier' : 'Nurse') : (lk.role_type === 'center' ? (ar ? 'Soins à domicile' : 'Home Care') : (ar ? 'Famille' : 'Family'));
         const txt = document.createElement('p'); txt.className = 'text-sm font-black text-slate-900';
         txt.textContent = `${lk.requester_name} (${roleTxt})`;
         const btns = document.createElement('div'); btns.className = 'flex gap-2';
         const okBtn = document.createElement('button'); okBtn.type = 'button'; okBtn.style.minHeight = '36px';
         okBtn.className = 'rounded-xl bg-emerald-700 px-3 py-1 text-xs font-extrabold text-white';
-        okBtn.textContent = ar ? 'موافقة ✓' : 'Approve ✓';
+        okBtn.textContent = ar ? 'Accepter ✓' : 'Approve ✓';
         okBtn.addEventListener('click', async () => {
           const { error } = await client.from('senior_care_links').update({ status: 'approved' }).eq('id', lk.id);
           if (error) { const errP = document.createElement('p'); errP.className = 'text-xs font-bold text-rose-700'; errP.textContent = friendlyError(error); list.prepend(errP); return; }
@@ -2160,7 +2216,7 @@
         });
         const noBtn = document.createElement('button'); noBtn.type = 'button'; noBtn.style.minHeight = '36px';
         noBtn.className = 'rounded-xl border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-extrabold text-rose-800';
-        noBtn.textContent = ar ? 'رفض' : 'Reject';
+        noBtn.textContent = ar ? 'Refuser' : 'Reject';
         noBtn.addEventListener('click', async () => {
           await client.from('senior_care_links').update({ status: 'rejected' }).eq('id', lk.id);
           loadPendingCareLinksForSenior();
@@ -2173,8 +2229,8 @@
   // Send Link Request by CG-... Code (Family, Nurse, Home Care)
   $('careSendLinkBtn').addEventListener('click', async () => {
     const st = $('careLinkStatus'); st.classList.remove('hidden');
-    const ar = state.lang === 'ar';
-    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = ar ? 'سجّل الدخول بحساب Google أولاً.' : 'Please sign in first.'; return; }
+    const ar = state.lang === 'fr';
+    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = ar ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.'; return; }
     const code = $('careCodeInput').value.trim().toUpperCase();
     if (!code) return;
     try {
@@ -2185,7 +2241,7 @@
       });
       if (error) throw error;
       st.className = 'text-xs font-extrabold text-emerald-800';
-      st.textContent = ar ? '✓ تم إرسال طلب الربط — بانتظار موافقة المسن.' : '✓ Request sent — waiting for senior approval.';
+      st.textContent = ar ? "✓ Demande envoyée — en attente de l'accord du senior." : '✓ Request sent — waiting for senior approval.';
       $('careCodeInput').value = '';
       loadCarePortalData();
     } catch (e) {
@@ -2197,18 +2253,18 @@
   async function loadCarePortalData() {
     const list = $('careLinkedList');
     if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
-    const ar = state.lang === 'ar';
+    const ar = state.lang === 'fr';
     try {
       const { data: links, error } = await client
         .from('senior_care_links')
-        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, blood_type, allergies, conditions)')
+        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, blood_type, allergies, conditions, water_count, water_date)')
         .eq('requester_user_id', currentUser.id);
       if (error) throw error;
       list.replaceChildren();
       if (!links || !links.length) {
         const p = document.createElement('p');
         p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
-        p.textContent = ar ? 'لا يوجد مسنون مربوطون بعد — أدخل رقم المسن (CG-...) أعلاه.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
+        p.textContent = ar ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
         list.appendChild(p);
         return;
       }
@@ -2220,38 +2276,92 @@
             ? 'rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
             : 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
           pend.textContent = isRej
-            ? (ar ? '❌ تم رفض طلب الربط.' : '❌ Link request was declined.')
-            : (ar ? '⏳ طلب ربط قيد انتظار موافقة المسن.' : '⏳ Link request pending senior approval.');
+            ? (ar ? '❌ Demande refusée.' : '❌ Link request was declined.')
+            : (ar ? "⏳ Demande de liaison en attente d'approbation." : '⏳ Link request pending senior approval.');
           list.appendChild(pend);
           continue;
         }
-        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: ar ? 'مسن مربوط' : 'Linked Senior' };
-        // Fetch latest check-in, battery, and meds for this linked senior
-        const [{ data: chk }, { data: bat }, { data: meds }] = await Promise.all([
+        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: ar ? 'Senior lié' : 'Linked Senior' };
+        // Fetch latest check-in, battery, meds, today's med logs, and appointments for this linked senior
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayStart = todayStr + 'T00:00:00';
+        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }] = await Promise.all([
           client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
           client.from('device_status').select('battery_percent').eq('senior_id', sp.id).order('recorded_at', { ascending: false }).limit(1),
-          client.from('medications').select('id').eq('senior_id', sp.id)
+          client.from('medications').select('id, name, dosage').eq('senior_id', sp.id).order('created_at', { ascending: true }),
+          client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
+          client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5)
         ]);
-        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (ar ? 'لا يوجد' : 'None');
-        const batPct = bat && bat[0] ? bat[0].battery_percent + '%' : '--%';
-        const medCnt = Array.isArray(meds) ? meds.length : 0;
+        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (ar ? 'Aucun' : 'None');
+        const batVal = bat && bat[0] ? bat[0].battery_percent : null;
+        const batPct = batVal !== null ? batVal + '%' : '--%';
+        const medList = Array.isArray(meds) ? meds : [];
+        const takenSet = new Set((mLogs || []).filter((l) => l.status === 'taken').map((l) => l.medication_id));
+        const takenCnt = medList.filter((m) => takenSet.has(m.id)).length;
+        const waterToday = (sp.water_date === todayStr && typeof sp.water_count === 'number') ? sp.water_count : 0;
 
         const card = document.createElement('div');
-        card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5';
+        card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-3';
         const top = document.createElement('div');
         top.className = 'flex flex-wrap items-center justify-between gap-2';
         const info = document.createElement('div');
         const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
         const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
-        addr.textContent = (sp.home_address || (ar ? 'في المنزل' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
+        addr.textContent = (sp.home_address || (ar ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
         info.append(nm, addr);
         const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
         const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
-        const p2 = document.createElement('span'); p2.className = 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
-        const p3 = document.createElement('span'); p3.className = 'rounded-full bg-sky-100 px-2.5 py-1 text-sky-900'; p3.textContent = '💊 ' + medCnt;
-        pills.append(p1, p2, p3);
+        const p2 = document.createElement('span'); p2.className = (batVal !== null && batVal <= 30) ? 'rounded-full bg-rose-100 px-2.5 py-1 text-rose-900' : 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
+        const p3 = document.createElement('span'); p3.className = 'rounded-full bg-sky-100 px-2.5 py-1 text-sky-900'; p3.textContent = `💊 ${takenCnt}/${medList.length}`;
+        const p4 = document.createElement('span'); p4.className = 'rounded-full bg-cyan-100 px-2.5 py-1 text-cyan-900'; p4.textContent = `💧 ${waterToday}/8`;
+        pills.append(p1, p2, p3, p4);
         top.append(info, pills);
         card.appendChild(top);
+
+        // Detailed Medications Status Today
+        const medSec = document.createElement('div');
+        medSec.className = 'rounded-2xl border border-slate-200 bg-slate-50/80 p-3 space-y-1.5';
+        const medHdr = document.createElement('p'); medHdr.className = 'text-xs font-black text-slate-700';
+        medHdr.textContent = ar ? '💊 Médicaments aujourd’hui' : "💊 Today's Medications";
+        medSec.appendChild(medHdr);
+        if (!medList.length) {
+          const nmTxt = document.createElement('p'); nmTxt.className = 'text-xs font-bold text-slate-500';
+          nmTxt.textContent = ar ? 'Aucun médicament enregistré' : 'No medications listed';
+          medSec.appendChild(nmTxt);
+        } else {
+          medList.forEach((m) => {
+            const isT = takenSet.has(m.id);
+            const mr = document.createElement('div'); mr.className = 'flex items-center justify-between gap-2 text-xs font-bold';
+            const ml = document.createElement('span'); ml.className = 'text-slate-800 truncate'; ml.textContent = m.name + (m.dosage ? ` (${m.dosage})` : '');
+            const mb = document.createElement('span'); mb.className = isT ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-amber-900';
+            mb.textContent = isT ? (ar ? '✓ Pris' : '✓ Taken') : (ar ? '⏳ En attente' : '⏳ Pending');
+            mr.append(ml, mb); medSec.appendChild(mr);
+          });
+        }
+        card.appendChild(medSec);
+
+        // Detailed Appointments & Attendance
+        const apptList = Array.isArray(appts) ? appts : [];
+        const apptSec = document.createElement('div');
+        apptSec.className = 'rounded-2xl border border-purple-200/80 bg-purple-50/50 p-3 space-y-1.5';
+        const apptHdr = document.createElement('p'); apptHdr.className = 'text-xs font-black text-purple-950';
+        apptHdr.textContent = ar ? '📅 Rendez-vous médicaux' : '📅 Medical Appointments';
+        apptSec.appendChild(apptHdr);
+        if (!apptList.length) {
+          const naTxt = document.createElement('p'); naTxt.className = 'text-xs font-bold text-slate-500';
+          naTxt.textContent = ar ? 'Aucun rendez-vous' : 'No appointments';
+          apptSec.appendChild(naTxt);
+        } else {
+          apptList.forEach((a) => {
+            const arRow = document.createElement('div'); arRow.className = 'flex items-center justify-between gap-2 text-xs font-bold';
+            const iso = String(a.appointment_at || '').slice(0, 16).replace('T', ' ');
+            const al = document.createElement('span'); al.className = 'text-slate-800 truncate'; al.textContent = (a.title || 'RDV') + (iso ? ' • ' + iso : '');
+            const ab = document.createElement('span'); ab.className = a.attended ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-purple-900';
+            ab.textContent = a.attended ? (ar ? '✓ Honoré' : '✓ Attended') : (ar ? '⏳ À venir' : '⏳ Upcoming');
+            arRow.append(al, ab); apptSec.appendChild(arRow);
+          });
+        }
+        card.appendChild(apptSec);
 
         const acts = document.createElement('div');
         acts.className = 'flex flex-wrap gap-2';
@@ -2259,14 +2369,14 @@
           const callA = document.createElement('a');
           callA.href = 'tel:' + sp.senior_phone.replace(/\s+/g, '');
           callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-extrabold text-emerald-900';
-          callA.textContent = ar ? '📞 اتصال' : '📞 Call';
+          callA.textContent = ar ? '📞 Appeler' : '📞 Call';
           acts.appendChild(callA);
         }
         if (userRole === 'family' || userRole === 'nurse') {
           const msgBtn = document.createElement('button');
           msgBtn.type = 'button';
           msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-4 py-2 text-xs font-extrabold text-white';
-          msgBtn.textContent = ar ? '🎤 رسائل صوتية وكتابية' : '🎤 Voice & Text Chat';
+          msgBtn.textContent = ar ? '🎤 Messages vocaux & écrits' : '🎤 Voice & Text Chat';
           msgBtn.addEventListener('click', () => openDirectCareModal(sp.id, sp.display_name));
           acts.appendChild(msgBtn);
         }
@@ -2281,10 +2391,10 @@
   // Direct Voice & Text Messaging (Senior <-> Nurse / Family)
   function renderDcQuickChips() {
     const box = $('dcQuickChips'); if (!box) return; box.replaceChildren();
-    const ar = state.lang === 'ar';
+    const ar = state.lang === 'fr';
     const chips = userRole === 'senior'
-      ? (ar ? ['أرجو الحضور للمساعدة', 'أحتاج مساعدة لشحن الهاتف', 'أشعر بتعب بسيط'] : ['Please come help me', 'Need help charging phone', 'Feeling a bit unwell'])
-      : (ar ? ['سأمرّ لزيارتك قريباً', 'تذكّر شحن الهاتف وشرب الماء', 'هل أخذت دواءك؟'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
+      ? (ar ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'Feeling a bit unwell'])
+      : (ar ? ['Je passerai vous voir bientôt', 'Pensez à charger le téléphone et boire de l\'eau', 'Avez-vous pris vos médicaments ?'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
     chips.forEach((txt) => {
       const b = document.createElement('button'); b.type = 'button'; b.style.minHeight = '32px';
       b.className = 'rounded-full border border-teal-300 bg-teal-50 px-3 py-1 text-xs font-extrabold text-teal-950';
@@ -2296,8 +2406,8 @@
 
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
-    const ar = state.lang === 'ar';
-    $('dcModalTitle').textContent = seniorName ? ((ar ? 'محادثة مع: ' : 'Chat with: ') + seniorName) : (ar ? 'رسائل الممرض والعائلة' : 'Nurse & Family Messages');
+    const ar = state.lang === 'fr';
+    $('dcModalTitle').textContent = seniorName ? ((ar ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (ar ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages');
     renderDcQuickChips();
     $('directCareModal').classList.remove('hidden');
     loadDirectCareMessages();
@@ -2305,7 +2415,7 @@
 
   async function loadDirectCareMessages() {
     const box = $('dcMessagesList'); if (!box || !client || !currentUser || !dcTargetSeniorId) return;
-    const ar = state.lang === 'ar';
+    const ar = state.lang === 'fr';
     try {
       const { data, error } = await client
         .from('care_direct_messages')
@@ -2317,7 +2427,7 @@
       box.replaceChildren();
       if (!data || !data.length) {
         const p = document.createElement('p'); p.className = 'py-6 text-center text-sm font-bold text-slate-500';
-        p.textContent = ar ? 'لا توجد رسائل بعد — أرسل رسالة صوتية أو اختر طلباً سريعاً.' : 'No messages yet — send a voice message or quick request.';
+        p.textContent = ar ? 'Aucun message — envoyez un vocal ou une demande rapide.' : 'No messages yet — send a voice message or quick request.';
         box.appendChild(p); return;
       }
       data.forEach((m) => {
@@ -2339,9 +2449,9 @@
   }
 
   async function sendDirectCareMessage(text, audioData) {
-    const ar = state.lang === 'ar';
+    const ar = state.lang === 'fr';
     if (!client || !currentUser || !dcTargetSeniorId) {
-      $('dcStatusMsg').textContent = ar ? 'سجّل الدخول أولاً.' : 'Sign in first.';
+      $('dcStatusMsg').textContent = ar ? "Connectez-vous d'abord." : 'Sign in first.';
       $('dcStatusMsg').classList.remove('hidden'); return false;
     }
     const { error } = await client.from('care_direct_messages').insert({
