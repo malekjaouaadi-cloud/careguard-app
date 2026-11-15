@@ -62,6 +62,37 @@
   <!-- Low Battery Top Alert Banner -->
   <div id="topBatteryBanner" class="hidden rounded-2xl border-2 border-rose-500 bg-rose-50 px-4 py-3 text-base font-black text-rose-900 shadow-sm"></div>
 
+  <!-- Role Chooser Gate (Shown on first visit or when switching role) -->
+  <section id="roleGateCard" class="hidden rounded-3xl border-2 border-emerald-200 bg-white p-5 shadow-sm space-y-4">
+    <div class="text-center">
+      <h2 id="roleGateTitle" class="text-2xl font-black text-slate-900">من يستخدم طمأنينة الآن؟</h2>
+      <p id="roleGateSub" class="mt-1 text-sm font-bold text-slate-600">اختر دورك مرة واحدة فقط لتظهر لك الشاشة المناسبة.</p>
+    </div>
+    <div class="space-y-3">
+      <button id="chooseSeniorRoleBtn" type="button" class="tap-btn flex w-full items-center justify-between rounded-2xl border-2 border-emerald-500 bg-emerald-50 px-5 py-4 text-start shadow-sm">
+        <div>
+          <p id="roleSeniorTitle" class="text-xl font-black text-emerald-950">👴 أنا المسن</p>
+          <p id="roleSeniorSub" class="text-xs font-bold text-emerald-800">الاطمئنان، الدواء، الماء، ومجلس الدردشة</p>
+        </div>
+        <span class="text-2xl font-black text-emerald-700">‹</span>
+      </button>
+      <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+        <button id="chooseFamilyRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-200 bg-sky-50 p-3.5 text-start">
+          <p id="roleFamilyTitle" class="text-base font-black text-sky-950">👨‍👩‍👧 العائلة</p>
+          <p id="roleFamilySub" class="text-xs font-bold text-sky-800">متابعة قريبك برقمه</p>
+        </button>
+        <button id="chooseNurseRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-teal-200 bg-teal-50 p-3.5 text-start">
+          <p id="roleNurseTitle" class="text-base font-black text-teal-950">🩺 الممرض المتابع</p>
+          <p id="roleNurseSub" class="text-xs font-bold text-teal-800">متابعة ورسائل صوتية</p>
+        </button>
+        <button id="chooseCenterRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-purple-200 bg-purple-50 p-3.5 text-start">
+          <p id="roleCenterTitle" class="text-base font-black text-purple-950">🏥 رعاية منزلية</p>
+          <p id="roleCenterSub" class="text-xs font-bold text-purple-800">متابعة المسنين بمنازلهم</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- Google-First Auth Card (Hidden automatically when signed in) -->
   <section id="authCard" class="rounded-3xl border border-emerald-200 bg-white p-5 shadow-sm">
     <div class="text-center">
@@ -112,6 +143,9 @@
             <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-800">
               🔋 <span id="batteryText">--%</span>
             </span>
+            <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-950" style="min-height:28px;">
+              🔑 <span id="seniorCodeBadgeText">CG------</span>
+            </button>
           </div>
         </div>
       </div>
@@ -256,6 +290,23 @@
       </svg>
     </button>
 
+    <!-- Direct Messages & Link Requests with Nurse / Family -->
+    <div id="seniorPendingLinksCard" class="hidden rounded-3xl border-2 border-amber-300 bg-amber-50 p-4 space-y-2.5 shadow-sm">
+      <p id="seniorPendingLinksTitle" class="text-base font-black text-amber-950">طلبات ربط جديدة بملفك:</p>
+      <div id="seniorPendingLinksList" class="space-y-2"></div>
+    </div>
+
+    <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex w-full items-center justify-between gap-3 rounded-3xl border border-teal-200 bg-[#e6f7f5] px-5 py-3.5 text-start shadow-sm">
+      <div class="flex items-center gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-white font-black text-lg">‹</span>
+        <div>
+          <h3 id="directCareTitle" class="text-lg font-black text-slate-900">رسائل الممرض والعائلة</h3>
+          <p id="directCareSub" class="text-xs font-bold text-teal-900">اطلب المساعدة أو شحن الهاتف بالصوت أو بلمسة</p>
+        </div>
+      </div>
+      <span id="directCareBadge" class="rounded-full bg-teal-700 px-2.5 py-0.5 text-xs font-black text-white">🩺</span>
+    </button>
+
     <div id="waterAiFeedback" class="hidden rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-bold text-sky-950"></div>
   </section>
 
@@ -304,9 +355,37 @@
         <button id="testWaterAlertBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-extrabold text-sky-900">💧 سماع تذكير الماء</button>
         <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 استماع للتذكير الصوتي</button>
         <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 نغمة التنبيه</button>
+        <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 تغيير نوع الحساب</button>
         <button id="signOutBtn" type="button" class="hidden tap-btn rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-3 text-base font-extrabold text-rose-900">تسجيل الخروج</button>
       </div>
     </div>
+  </section>
+
+  <!-- CARE PORTAL VIEW (Family, Nurse, Home Care Center — Completely Separate from Senior View) -->
+  <section id="carePortalView" class="hidden space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-3xl border border-teal-200 bg-white p-4 shadow-sm">
+      <div>
+        <h2 id="carePortalTitle" class="text-2xl font-black text-slate-900">لوحة المتابعة</h2>
+        <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">تغيير الدور</button>
+        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">خروج</button>
+      </div>
+    </div>
+
+    <!-- Link by Senior Registration Code (CG-...) -->
+    <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
+      <p id="careLinkTitle" class="text-base font-black text-slate-900">ربط بملف مسن عبر رقمه (CG-...)</p>
+      <div class="flex gap-2">
+        <input id="careCodeInput" autocomplete="off" type="text" dir="ltr" placeholder="CG-123456" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-bold uppercase" />
+        <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">طلب ربط</button>
+      </div>
+      <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
+    </div>
+
+    <!-- Linked Seniors List / Home Care Table / Nurse & Family Direct Voice & Text -->
+    <div id="careLinkedList" class="space-y-3"></div>
   </section>
 
   <!-- ISOLATED FULL-SCREEN CHAT ROOM PAGE -->
@@ -420,6 +499,39 @@
 </nav>
 
 <!-- Modals (Med Due, Upload Rx, Profile, Ringtone, AI Config, Appointment, Emergency, Confirm Delete) -->
+<!-- Modal: Direct Voice & Text Messages between Senior and Nurse / Family -->
+<div id="directCareModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-3">
+  <div class="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-white p-4 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+      <div>
+        <h3 id="dcModalTitle" class="text-xl font-black text-slate-900">رسائل الممرض والعائلة</h3>
+        <p id="dcModalSub" class="text-xs font-bold text-teal-800">رسائل صوتية وكتابية مباشرة وخاصة</p>
+      </div>
+      <button id="closeDirectCareBtn" type="button" class="rounded-xl px-3 py-1.5 text-xl font-black text-slate-600" style="min-height:40px;">✕</button>
+    </div>
+
+    <div id="dcMessagesList" class="my-3 flex-1 space-y-2.5 overflow-y-auto rounded-2xl bg-slate-50 p-3 min-h-[200px]"></div>
+
+    <!-- Quick Help Request Chips -->
+    <div id="dcQuickChips" class="flex flex-wrap gap-1.5 pb-2"></div>
+
+    <div id="dcVoicePreviewBox" class="hidden mb-2 space-y-2 rounded-xl border border-teal-300 bg-teal-50 p-2.5">
+      <audio id="dcVoicePreview" controls class="w-full h-9"></audio>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="dcSendVoiceBtn" type="button" class="rounded-xl bg-teal-700 px-3 py-2 text-sm font-extrabold text-white" style="min-height:40px;">إرسال الصوت</button>
+        <button id="dcDiscardVoiceBtn" type="button" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800" style="min-height:40px;">إلغاء</button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <button id="dcRecordBtn" type="button" class="tap-btn flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-700 text-white" style="min-height:48px;">🎤</button>
+      <input id="dcTextInput" autocomplete="off" type="text" placeholder="اكتب رسالة أو طلباً..." class="w-full rounded-full border-2 border-slate-300 bg-slate-50 px-4 py-2 text-base" style="min-height:46px;" />
+      <button id="dcSendTextBtn" type="button" class="tap-btn shrink-0 rounded-full bg-emerald-700 px-4 py-2 text-base font-extrabold text-white" style="min-height:46px;">إرسال</button>
+    </div>
+    <p id="dcStatusMsg" class="hidden mt-1.5 text-xs font-bold text-rose-800"></p>
+  </div>
+</div>
+
 <div id="medDueModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4">
   <div class="w-full max-w-md rounded-3xl border-4 border-emerald-600 bg-white p-6 text-center shadow-2xl">
     <h3 id="medDueTitle" class="text-2xl font-black text-slate-900">حان موعد الدواء!</h3>
@@ -1789,15 +1901,28 @@
     try {
       const displayName = getRealDisplayName();
       await client.from('profiles').upsert({ id: user.id, display_name: displayName }, { onConflict: 'id' });
-      const { data: existing } = await client.from('senior_profiles').select('id').eq('user_id', user.id).limit(1);
-      if (existing && existing.length) currentSeniorId = existing[0].id;
-      else {
+      const { data: existing } = await client.from('senior_profiles').select('id, registration_number').eq('user_id', user.id).limit(1);
+      if (existing && existing.length) {
+        currentSeniorId = existing[0].id;
+        myRegistrationCode = existing[0].registration_number || '';
+        if (!myRegistrationCode) {
+          const genCode = 'CG-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+          await client.from('senior_profiles').update({ registration_number: genCode }).eq('id', currentSeniorId);
+          myRegistrationCode = genCode;
+        }
+      } else {
+        const genCode = 'CG-' + Math.random().toString(36).slice(2, 8).toUpperCase();
         const { data: hid } = await client.rpc('create_careguard_household', { p_name: displayName + ' Care' });
         if (hid) {
-          const { data: created } = await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName }).select('id').single();
-          if (created) currentSeniorId = created.id;
+          const { data: created } = await client.from('senior_profiles').insert({ household_id: hid, user_id: user.id, display_name: displayName, registration_number: genCode }).select('id, registration_number').single();
+          if (created) { currentSeniorId = created.id; myRegistrationCode = created.registration_number || genCode; }
         }
       }
+      if (myRegistrationCode && $('copySeniorCodeBtn')) {
+        $('seniorCodeBadgeText').textContent = myRegistrationCode;
+        $('copySeniorCodeBtn').classList.remove('hidden');
+      }
+      loadPendingCareLinksForSenior();
     } catch (_) {}
   }
   async function loadCloudSeniorData() {
@@ -1845,6 +1970,7 @@
     if ($('authCard')) $('authCard').classList.toggle('hidden', !!user || activeTab === 'chat');
     if ($('signOutBtn')) $('signOutBtn').classList.toggle('hidden', !user);
     applyLang();
+    renderRoleViews();
   }
 
   if (client) {
@@ -1914,6 +2040,323 @@
     }
   });
 
+
+  const ROLE_STORAGE_KEY = 'careguard_user_role_v1';
+  let userRole = localStorage.getItem(ROLE_STORAGE_KEY) || '';
+  let myRegistrationCode = '';
+  let dcTargetSeniorId = null;
+  let dcMediaRecorder = null, dcChunks = [], dcPendingVoice = '', dcIsRecording = false;
+
+  function setRole(role) {
+    userRole = role || '';
+    if (userRole) localStorage.setItem(ROLE_STORAGE_KEY, userRole);
+    else localStorage.removeItem(ROLE_STORAGE_KEY);
+    renderRoleViews();
+  }
+
+  function renderRoleViews() {
+    const hasRole = ['senior', 'family', 'nurse', 'center'].includes(userRole);
+    $('roleGateCard').classList.toggle('hidden', hasRole);
+    const isSenior = userRole === 'senior';
+    $('bottomNav').classList.toggle('hidden', !isSenior || activeTab === 'chat');
+    if (!hasRole) {
+      $('homeTabView').classList.add('hidden');
+      $('medsTabView').classList.add('hidden');
+      $('apptsTabView').classList.add('hidden');
+      $('settingsTabView').classList.add('hidden');
+      $('carePortalView').classList.add('hidden');
+      $('authCard').classList.add('hidden');
+      return;
+    }
+    if (isSenior) {
+      $('carePortalView').classList.add('hidden');
+      switchTab(activeTab === 'care' ? 'home' : activeTab);
+    } else {
+      $('homeTabView').classList.add('hidden');
+      $('medsTabView').classList.add('hidden');
+      $('apptsTabView').classList.add('hidden');
+      $('settingsTabView').classList.add('hidden');
+      $('chatPageView').classList.add('hidden');
+      $('carePortalView').classList.remove('hidden');
+      $('authCard').classList.toggle('hidden', !!currentUser);
+      $('careSignOutBtn').classList.toggle('hidden', !currentUser);
+      const ar = state.lang === 'ar';
+      const titles = {
+        family: ar ? '👨‍👩‍👧 لوحة متابعة العائلة' : '👨‍👩‍👧 Family Dashboard',
+        nurse: ar ? '🩺 لوحة الممرض المتابع' : '🩺 Nurse Follow-Up',
+        center: ar ? '🏥 مركز الرعاية المنزلية' : '🏥 Home Care Center'
+      };
+      const subs = {
+        family: ar ? 'متابعة حالة قريبك وإرسال رسائل خاصة' : 'Monitor your loved one & send direct messages',
+        nurse: ar ? 'متابعة المريض وإرسال رسائل صوتية/نصية مباشرة' : 'Follow patient meds & send voice/text messages',
+        center: ar ? 'متابعة المسنين في منازلهم بسطر واحد واضح' : 'Monitor seniors at home in one clear list'
+      };
+      $('carePortalTitle').textContent = titles[userRole] || '';
+      $('carePortalSub').textContent = subs[userRole] || '';
+      loadCarePortalData();
+    }
+  }
+
+  $('chooseSeniorRoleBtn').addEventListener('click', () => setRole('senior'));
+  $('chooseFamilyRoleBtn').addEventListener('click', () => setRole('family'));
+  $('chooseNurseRoleBtn').addEventListener('click', () => setRole('nurse'));
+  $('chooseCenterRoleBtn').addEventListener('click', () => setRole('center'));
+  $('switchRoleBtn').addEventListener('click', () => setRole(''));
+  $('careSwitchRoleBtn').addEventListener('click', () => setRole(''));
+  $('careSignOutBtn').addEventListener('click', async () => { if (client) await client.auth.signOut(); updateAuthUI(null); });
+
+  $('copySeniorCodeBtn').addEventListener('click', async () => {
+    if (!myRegistrationCode) return;
+    try { await navigator.clipboard.writeText(myRegistrationCode); } catch (_) {}
+    $('seniorCodeBadgeText').textContent = (state.lang === 'ar' ? 'تم النسخ: ' : 'Copied: ') + myRegistrationCode;
+    setTimeout(() => { $('seniorCodeBadgeText').textContent = myRegistrationCode; }, 2000);
+  });
+
+  async function loadPendingCareLinksForSenior() {
+    const card = $('seniorPendingLinksCard'), list = $('seniorPendingLinksList');
+    if (!client || !currentUser || !currentSeniorId) { card.classList.add('hidden'); return; }
+    try {
+      const { data } = await client.from('senior_care_links').select('id, requester_name, role_type').eq('senior_id', currentSeniorId).eq('status', 'pending');
+      if (!data || !data.length) { card.classList.add('hidden'); return; }
+      card.classList.remove('hidden');
+      list.replaceChildren();
+      const ar = state.lang === 'ar';
+      data.forEach((lk) => {
+        const row = document.createElement('div');
+        row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white p-3 border border-amber-200';
+        const roleTxt = lk.role_type === 'nurse' ? (ar ? 'ممرض' : 'Nurse') : (lk.role_type === 'center' ? (ar ? 'رعاية منزلية' : 'Home Care') : (ar ? 'عائلة' : 'Family'));
+        const txt = document.createElement('p'); txt.className = 'text-sm font-black text-slate-900';
+        txt.textContent = `${lk.requester_name} (${roleTxt})`;
+        const btns = document.createElement('div'); btns.className = 'flex gap-2';
+        const okBtn = document.createElement('button'); okBtn.type = 'button'; okBtn.style.minHeight = '36px';
+        okBtn.className = 'rounded-xl bg-emerald-700 px-3 py-1 text-xs font-extrabold text-white';
+        okBtn.textContent = ar ? 'موافقة ✓' : 'Approve ✓';
+        okBtn.addEventListener('click', async () => {
+          await client.from('senior_care_links').update({ status: 'approved' }).eq('id', lk.id);
+          loadPendingCareLinksForSenior();
+        });
+        const noBtn = document.createElement('button'); noBtn.type = 'button'; noBtn.style.minHeight = '36px';
+        noBtn.className = 'rounded-xl border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-extrabold text-rose-800';
+        noBtn.textContent = ar ? 'رفض' : 'Reject';
+        noBtn.addEventListener('click', async () => {
+          await client.from('senior_care_links').update({ status: 'rejected' }).eq('id', lk.id);
+          loadPendingCareLinksForSenior();
+        });
+        btns.append(okBtn, noBtn); row.append(txt, btns); list.appendChild(row);
+      });
+    } catch (_) { card.classList.add('hidden'); }
+  }
+
+  // Send Link Request by CG-... Code (Family, Nurse, Home Care)
+  $('careSendLinkBtn').addEventListener('click', async () => {
+    const st = $('careLinkStatus'); st.classList.remove('hidden');
+    const ar = state.lang === 'ar';
+    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = ar ? 'سجّل الدخول بحساب Google أولاً.' : 'Please sign in first.'; return; }
+    const code = $('careCodeInput').value.trim().toUpperCase();
+    if (!code) return;
+    try {
+      const { data, error } = await client.rpc('request_link_by_code', {
+        p_code: code,
+        p_role: userRole || 'family',
+        p_name: getRealDisplayName()
+      });
+      if (error) throw error;
+      st.className = 'text-xs font-extrabold text-emerald-800';
+      st.textContent = ar ? '✓ تم إرسال طلب الربط — بانتظار موافقة المسن.' : '✓ Request sent — waiting for senior approval.';
+      $('careCodeInput').value = '';
+      loadCarePortalData();
+    } catch (e) {
+      st.className = 'text-xs font-extrabold text-rose-800';
+      st.textContent = friendlyError(e);
+    }
+  });
+
+  async function loadCarePortalData() {
+    const list = $('careLinkedList');
+    if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
+    const ar = state.lang === 'ar';
+    try {
+      const { data: links, error } = await client
+        .from('senior_care_links')
+        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, blood_type, allergies, conditions)')
+        .eq('requester_user_id', currentUser.id);
+      if (error) throw error;
+      list.replaceChildren();
+      if (!links || !links.length) {
+        const p = document.createElement('p');
+        p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
+        p.textContent = ar ? 'لا يوجد مسنون مربوطون بعد — أدخل رقم المسن (CG-...) أعلاه.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
+        list.appendChild(p);
+        return;
+      }
+      for (const lk of links) {
+        const sp = lk.senior_profiles;
+        if (lk.status !== 'approved' || !sp) {
+          const pend = document.createElement('div');
+          pend.className = 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
+          pend.textContent = ar ? '⏳ طلب ربط قيد انتظار موافقة المسن.' : '⏳ Link request pending senior approval.';
+          list.appendChild(pend);
+          continue;
+        }
+        // Fetch latest check-in, battery, and meds for this linked senior
+        const [{ data: chk }, { data: bat }, { data: meds }] = await Promise.all([
+          client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
+          client.from('device_status').select('battery_percent').eq('senior_id', sp.id).order('recorded_at', { ascending: false }).limit(1),
+          client.from('medications').select('id').eq('senior_id', sp.id)
+        ]);
+        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (ar ? 'لا يوجد' : 'None');
+        const batPct = bat && bat[0] ? bat[0].battery_percent + '%' : '--%';
+        const medCnt = Array.isArray(meds) ? meds.length : 0;
+
+        const card = document.createElement('div');
+        card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5';
+        const top = document.createElement('div');
+        top.className = 'flex flex-wrap items-center justify-between gap-2';
+        const info = document.createElement('div');
+        const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
+        const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
+        addr.textContent = (sp.home_address || (ar ? 'في المنزل' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
+        info.append(nm, addr);
+        const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
+        const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
+        const p2 = document.createElement('span'); p2.className = 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
+        const p3 = document.createElement('span'); p3.className = 'rounded-full bg-sky-100 px-2.5 py-1 text-sky-900'; p3.textContent = '💊 ' + medCnt;
+        pills.append(p1, p2, p3);
+        top.append(info, pills);
+        card.appendChild(top);
+
+        const acts = document.createElement('div');
+        acts.className = 'flex flex-wrap gap-2';
+        if (sp.senior_phone) {
+          const callA = document.createElement('a');
+          callA.href = 'tel:' + sp.senior_phone.replace(/\s+/g, '');
+          callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-extrabold text-emerald-900';
+          callA.textContent = ar ? '📞 اتصال' : '📞 Call';
+          acts.appendChild(callA);
+        }
+        if (userRole === 'family' || userRole === 'nurse') {
+          const msgBtn = document.createElement('button');
+          msgBtn.type = 'button';
+          msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-4 py-2 text-xs font-extrabold text-white';
+          msgBtn.textContent = ar ? '🎤 رسائل صوتية وكتابية' : '🎤 Voice & Text Chat';
+          msgBtn.addEventListener('click', () => openDirectCareModal(sp.id, sp.display_name));
+          acts.appendChild(msgBtn);
+        }
+        card.appendChild(acts);
+        list.appendChild(card);
+      }
+    } catch (e) {
+      list.textContent = friendlyError(e);
+    }
+  }
+
+  // Direct Voice & Text Messaging (Senior <-> Nurse / Family)
+  function renderDcQuickChips() {
+    const box = $('dcQuickChips'); if (!box) return; box.replaceChildren();
+    const ar = state.lang === 'ar';
+    const chips = userRole === 'senior'
+      ? (ar ? ['أرجو الحضور للمساعدة', 'أحتاج مساعدة لشحن الهاتف', 'أشعر بتعب بسيط'] : ['Please come help me', 'Need help charging phone', 'Feeling a bit unwell'])
+      : (ar ? ['سأمرّ لزيارتك قريباً', 'تذكّر شحن الهاتف وشرب الماء', 'هل أخذت دواءك؟'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
+    chips.forEach((txt) => {
+      const b = document.createElement('button'); b.type = 'button'; b.style.minHeight = '32px';
+      b.className = 'rounded-full border border-teal-300 bg-teal-50 px-3 py-1 text-xs font-extrabold text-teal-950';
+      b.textContent = txt;
+      b.addEventListener('click', () => sendDirectCareMessage(txt, null));
+      box.appendChild(b);
+    });
+  }
+
+  async function openDirectCareModal(seniorId, seniorName) {
+    dcTargetSeniorId = seniorId || currentSeniorId;
+    const ar = state.lang === 'ar';
+    $('dcModalTitle').textContent = seniorName ? ((ar ? 'محادثة مع: ' : 'Chat with: ') + seniorName) : (ar ? 'رسائل الممرض والعائلة' : 'Nurse & Family Messages');
+    renderDcQuickChips();
+    $('directCareModal').classList.remove('hidden');
+    loadDirectCareMessages();
+  }
+
+  async function loadDirectCareMessages() {
+    const box = $('dcMessagesList'); if (!box || !client || !currentUser || !dcTargetSeniorId) return;
+    const ar = state.lang === 'ar';
+    try {
+      const { data, error } = await client
+        .from('care_direct_messages')
+        .select('id, sender_user_id, sender_name, sender_role, message_text, audio_data, created_at')
+        .eq('senior_id', dcTargetSeniorId)
+        .order('created_at', { ascending: true })
+        .limit(40);
+      if (error) throw error;
+      box.replaceChildren();
+      if (!data || !data.length) {
+        const p = document.createElement('p'); p.className = 'py-6 text-center text-sm font-bold text-slate-500';
+        p.textContent = ar ? 'لا توجد رسائل بعد — أرسل رسالة صوتية أو اختر طلباً سريعاً.' : 'No messages yet — send a voice message or quick request.';
+        box.appendChild(p); return;
+      }
+      data.forEach((m) => {
+        const mine = m.sender_user_id === currentUser.id;
+        const c = document.createElement('div');
+        c.className = mine ? 'rounded-2xl border border-emerald-200 bg-emerald-50 p-3 space-y-1' : 'rounded-2xl border border-slate-200 bg-white p-3 space-y-1';
+        const top = document.createElement('div'); top.className = 'flex justify-between text-xs font-black text-slate-700';
+        top.textContent = m.sender_name || '';
+        c.appendChild(top);
+        if (m.message_text) { const p = document.createElement('p'); p.className = 'text-base font-bold text-slate-900'; p.textContent = m.message_text; c.appendChild(p); }
+        if (m.audio_data) { const a = document.createElement('audio'); a.controls = true; a.src = m.audio_data; a.className = 'w-full'; c.appendChild(a); }
+        box.appendChild(c);
+      });
+      box.scrollTop = box.scrollHeight;
+    } catch (e) {
+      $('dcStatusMsg').textContent = friendlyError(e);
+      $('dcStatusMsg').classList.remove('hidden');
+    }
+  }
+
+  async function sendDirectCareMessage(text, audioData) {
+    const ar = state.lang === 'ar';
+    if (!client || !currentUser || !dcTargetSeniorId) {
+      $('dcStatusMsg').textContent = ar ? 'سجّل الدخول أولاً.' : 'Sign in first.';
+      $('dcStatusMsg').classList.remove('hidden'); return false;
+    }
+    const { error } = await client.from('care_direct_messages').insert({
+      senior_id: dcTargetSeniorId,
+      sender_user_id: currentUser.id,
+      sender_name: getRealDisplayName(),
+      sender_role: userRole || 'senior',
+      message_text: text || null,
+      audio_data: audioData || null
+    });
+    if (error) { $('dcStatusMsg').textContent = friendlyError(error); $('dcStatusMsg').classList.remove('hidden'); return false; }
+    $('dcStatusMsg').classList.add('hidden');
+    loadDirectCareMessages();
+    return true;
+  }
+
+  $('openDirectCareMsgBtn').addEventListener('click', () => openDirectCareModal(currentSeniorId, ''));
+  $('closeDirectCareBtn').addEventListener('click', () => $('directCareModal').classList.add('hidden'));
+  $('dcSendTextBtn').addEventListener('click', async () => { const t = $('dcTextInput').value.trim(); if (!t) return; if (await sendDirectCareMessage(t, null)) $('dcTextInput').value = ''; });
+  $('dcRecordBtn').addEventListener('click', async () => {
+    if (dcIsRecording && dcMediaRecorder) { dcMediaRecorder.stop(); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      dcChunks = []; dcMediaRecorder = new MediaRecorder(stream); dcIsRecording = true;
+      $('dcRecordBtn').classList.replace('bg-teal-700', 'bg-rose-600');
+      dcMediaRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) dcChunks.push(ev.data); };
+      dcMediaRecorder.onstop = () => {
+        dcIsRecording = false; $('dcRecordBtn').classList.replace('bg-rose-600', 'bg-teal-700');
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(dcChunks, { type: dcMediaRecorder.mimeType || 'audio/webm' });
+        const r = new FileReader();
+        r.onload = () => { dcPendingVoice = String(r.result || ''); $('dcVoicePreview').src = dcPendingVoice; $('dcVoicePreviewBox').classList.remove('hidden'); };
+        r.readAsDataURL(blob);
+      };
+      dcMediaRecorder.start();
+      setTimeout(() => { if (dcIsRecording && dcMediaRecorder && dcMediaRecorder.state === 'recording') dcMediaRecorder.stop(); }, 30000);
+    } catch (_) {}
+  });
+  $('dcSendVoiceBtn').addEventListener('click', async () => { if (!dcPendingVoice) return; if (await sendDirectCareMessage(null, dcPendingVoice)) { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); } });
+  $('dcDiscardVoiceBtn').addEventListener('click', () => { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); });
+
+  renderRoleViews();
   loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
   initBatteryMonitor();
   applyLang();
