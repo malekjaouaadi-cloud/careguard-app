@@ -575,12 +575,37 @@
       </div>
       <input id="newMedNameInput" autocomplete="off" type="text" placeholder="Nom du médicament et dose" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="newMedTimeInput" type="time" value="08:00" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <select id="newMedFreqSelect" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-base font-bold text-slate-800">
+        <option value="1">1 fois / jour (08:00)</option>
+        <option value="2">2 fois / jour (08:00, 20:00)</option>
+        <option value="3">3 fois / jour (08:00, 14:00, 20:00)</option>
+        <option value="4">4 fois / jour (08:00, 12:00, 16:00, 20:00)</option>
+      </select>
       <label class="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-950">
         <input id="rxConfirmCheck" type="checkbox" class="mt-1 h-5 w-5 accent-emerald-700" />
         <span id="rxConfirmLabel">Je confirme que ce médicament correspond à l'ordonnance de mon médecin.</span>
       </label>
       <button id="saveNewMedBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white disabled:opacity-50" disabled>Enregistrer</button>
     </div>
+  </div>
+</div>
+
+
+<div id="editMedModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="my-auto w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between gap-2">
+      <h3 id="editMedModalTitle" class="text-xl font-black text-slate-900">Modifier les doses</h3>
+      <button id="closeEditMedBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <input id="editMedNameInput" autocomplete="off" type="text" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+    <input id="editMedTimeInput" type="time" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+    <select id="editMedFreqSelect" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-base font-bold text-slate-800">
+      <option value="1">1 fois / jour (heure ci-dessus)</option>
+      <option value="2">2 fois / jour (08:00, 20:00)</option>
+      <option value="3">3 fois / jour (08:00, 14:00, 20:00)</option>
+      <option value="4">4 fois / jour (08:00, 12:00, 16:00, 20:00)</option>
+    </select>
+    <button id="saveEditMedBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-lg font-black text-white">Enregistrer</button>
   </div>
 </div>
 
@@ -815,7 +840,45 @@
   // Bottom Navigation & View Switching
   function switchTab(tab) {
     if (!['senior', 'family', 'nurse', 'center'].includes(userRole)) {
-      renderRoleViews();
+    
+  if ($('closeEditMedBtn')) $('closeEditMedBtn').addEventListener('click', () => $('editMedModal').classList.add('hidden'));
+  if ($('saveEditMedBtn')) $('saveEditMedBtn').addEventListener('click', async () => {
+    const name = $('editMedNameInput').value.trim();
+    const baseTime = $('editMedTimeInput').value || '08:00';
+    const freq = Number($('editMedFreqSelect').value || 1);
+    if (!name || !editingMedId) return;
+    const oldMed = state.meds.find((x) => x.id === editingMedId);
+    const imgSnap = (oldMed && oldMed.imageData) || '';
+    const times = getDoseTimesForFreq(freq, baseTime);
+    const cleanBaseName = name.replace(/\s*\(\d+\/\d+\)$/, '').trim();
+    state.meds = state.meds.filter((x) => x.id !== editingMedId);
+    const newEntries = times.map((tStr, idx) => {
+      const lbl = times.length > 1 ? `${cleanBaseName} (${idx + 1}/${times.length})` : cleanBaseName;
+      const localId = 'm' + (Date.now() + idx);
+      const obj = { id: localId, nameAr: lbl, nameEn: lbl, time: tStr, taken: false, imageData: idx === 0 ? imgSnap : '' };
+      state.meds.push(obj);
+      return { obj, localId, name: lbl, time: tStr };
+    });
+    saveState(); renderMeds(); $('editMedModal').classList.add('hidden');
+    if (navigator.onLine && client && currentUser && currentSeniorId && !String(editingMedId).startsWith('m')) {
+      try { await client.from('medications').delete().eq('id', editingMedId).eq('senior_id', currentSeniorId); }
+      catch (_) { enqueueSync('med_delete', { id: editingMedId }); }
+    } else if (currentUser && !String(editingMedId).startsWith('m')) {
+      enqueueSync('med_delete', { id: editingMedId });
+    }
+    for (const c of newEntries) {
+      if (navigator.onLine && client && currentUser && currentSeniorId) {
+        try {
+          const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name: c.name, dosage: c.time }).select('id').single();
+          if (error) throw error;
+          if (data && data.id) { c.obj.id = data.id; saveState(); renderMeds(); }
+        } catch (_) { enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time }); }
+      } else if (currentUser) enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time });
+    }
+    editingMedId = null;
+  });
+
+  renderRoleViews();
       return;
     }
     activeTab = tab;
@@ -1231,6 +1294,29 @@
   setInterval(checkDueMedications, 10000);
 
   // Render Lists & Tiles
+  function detectFreqFromName(name) {
+    const s = String(name || '');
+    const m = s.match(/(?:x|\*)\s*([234])\s*(?:\/\s*j)?|\b([234])\s*(?:fois|\/?j)\b/i);
+    return m ? Number(m[1] || m[2]) : 1;
+  }
+  function getDoseTimesForFreq(freq, baseTime) {
+    const f = Number(freq) || 1;
+    if (f === 2) return ['08:00', '20:00'];
+    if (f === 3) return ['08:00', '14:00', '20:00'];
+    if (f === 4) return ['08:00', '12:00', '16:00', '20:00'];
+    return [baseTime || '08:00'];
+  }
+  let editingMedId = null;
+  function openEditMedModal(med) {
+    editingMedId = med.id;
+    const isFr = state.lang === 'fr';
+    $('editMedModalTitle').textContent = isFr ? 'Modifier les doses' : 'Edit Doses';
+    $('editMedNameInput').value = isFr ? med.nameAr : med.nameEn;
+    $('editMedTimeInput').value = med.time || '08:00';
+    $('editMedFreqSelect').value = String(detectFreqFromName(med.nameEn || med.nameAr));
+    $('saveEditMedBtn').textContent = isFr ? 'Enregistrer' : 'Save';
+    $('editMedModal').classList.remove('hidden');
+  }
   function renderMeds() {
     const box = $('medsList'); box.replaceChildren();
     const takenCount = state.meds.filter((m) => m.taken).length;
@@ -1278,7 +1364,11 @@
           catch (_) { enqueueSync('med_delete', { id: delId }); }
         } else if (currentUser && !String(delId).startsWith('m')) enqueueSync('med_delete', { id: delId });
       }));
-      actions.append(takeBtn, delBtn); top.append(info, actions); row.appendChild(top);
+      const editBtn = document.createElement('button'); editBtn.type = 'button';
+      editBtn.className = 'tap-btn rounded-2xl border-2 border-sky-200 bg-sky-50 px-3 py-2 text-sm font-extrabold text-sky-900';
+      editBtn.textContent = state.lang === 'fr' ? '⚙️ Doses' : '⚙️ Doses';
+      editBtn.addEventListener('click', () => openEditMedModal(m));
+      actions.append(takeBtn, editBtn, delBtn); top.append(info, actions); row.appendChild(top);
       if (m.imageData) {
         const iw = document.createElement('div'); iw.className = 'flex items-center gap-3 rounded-xl bg-slate-50 p-2';
         const th = document.createElement('img'); th.src = m.imageData; th.alt = title.textContent; th.className = 'h-14 w-14 rounded-lg object-cover';
@@ -1965,17 +2055,19 @@
           lines.forEach((ln) => {
             const [nmPart, tmPart] = ln.split('|').map((z) => (z || '').trim());
             const tm = /^\d{2}:\d{2}$/.test(tmPart) ? tmPart : '08:00';
+            const autoFreq = detectFreqFromName(nmPart || ln);
             const row = document.createElement('label');
             row.className = 'flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 border border-violet-200 text-xs font-bold text-slate-800';
             const left = document.createElement('span'); left.className = 'flex items-center gap-2 min-w-0';
             const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = true; cb.className = 'rx-item-cb h-4 w-4 accent-violet-700';
-            cb.dataset.name = nmPart || ln; cb.dataset.time = tm;
+            cb.dataset.name = nmPart || ln; cb.dataset.time = tm; cb.dataset.freq = String(autoFreq);
             const txt = document.createElement('span'); txt.className = 'truncate'; txt.textContent = (nmPart || ln);
             left.append(cb, txt);
-            const tInp = document.createElement('input'); tInp.type = 'time'; tInp.value = tm; tInp.className = 'rounded-lg border border-slate-300 px-1.5 py-0.5 text-xs';
-            tInp.style.minHeight = '32px';
-            tInp.addEventListener('change', () => { cb.dataset.time = tInp.value || '08:00'; });
-            row.append(left, tInp);
+            const fSel = document.createElement('select'); fSel.className = 'rounded-lg border border-slate-300 bg-white px-1.5 py-0.5 text-xs font-extrabold';
+            fSel.style.minHeight = '32px';
+            [1, 2, 3, 4].forEach((n) => { const o = document.createElement('option'); o.value = String(n); o.textContent = n + 'x/j'; if (n === autoFreq) o.selected = true; fSel.appendChild(o); });
+            fSel.addEventListener('change', () => { cb.dataset.freq = fSel.value; });
+            row.append(left, fSel);
             listEl.appendChild(row);
           });
           $('newMedNameInput').value = lines[0].split('|')[0].trim();
@@ -1984,6 +2076,7 @@
           const [nmPart, tmPart] = (lines[0] || ans).split('|').map((z) => (z || '').trim());
           $('newMedNameInput').value = nmPart || ans.trim();
           if (/^\d{2}:\d{2}$/.test(tmPart)) $('newMedTimeInput').value = tmPart;
+          if ($('newMedFreqSelect')) $('newMedFreqSelect').value = String(detectFreqFromName(nmPart || ans));
         }
         st.textContent = '✓';
       }
@@ -1991,8 +2084,16 @@
   });
   $('saveNewMedBtn').addEventListener('click', async () => {
     if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (_) {} }
-    const checkedItems = Array.from(document.querySelectorAll('.rx-item-cb:checked')).map((cb) => ({ name: cb.dataset.name, time: cb.dataset.time || '08:00' })).filter((x) => x.name);
-    const itemsToAdd = checkedItems.length ? checkedItems : ($('newMedNameInput').value.trim() ? [{ name: $('newMedNameInput').value.trim(), time: $('newMedTimeInput').value || '08:00' }] : []);
+    const checkedItems = Array.from(document.querySelectorAll('.rx-item-cb:checked')).map((cb) => ({ name: cb.dataset.name, time: cb.dataset.time || '08:00', freq: Number(cb.dataset.freq || 1) })).filter((x) => x.name);
+    const rawItems = checkedItems.length ? checkedItems : ($('newMedNameInput').value.trim() ? [{ name: $('newMedNameInput').value.trim(), time: $('newMedTimeInput').value || '08:00', freq: Number(($('newMedFreqSelect') && $('newMedFreqSelect').value) || 1) }] : []);
+    const itemsToAdd = [];
+    rawItems.forEach((it) => {
+      const times = getDoseTimesForFreq(it.freq, it.time);
+      times.forEach((tStr, i) => {
+        const label = times.length > 1 ? `${it.name} (${i + 1}/${times.length})` : it.name;
+        itemsToAdd.push({ name: label, time: tStr });
+      });
+    });
     if (!itemsToAdd.length) return;
     const imgSnap = pendingImageDataUrl || '';
     const createdObjs = [];
