@@ -555,13 +555,14 @@
     <div class="mt-4 space-y-3">
       <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-400 bg-emerald-50 p-4 text-center">
         <span id="uploadPhotoPrompt" class="text-base font-extrabold text-emerald-950">Appuyez pour importer une ordonnance ou boîte de médicament</span>
-        <input id="medImageInput" type="file" accept="image/*" capture="environment" class="hidden" />
+        <input id="medImageInput" type="file" accept="image/*" class="hidden" />
       </label>
       <div id="medImagePreviewWrap" class="hidden space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
         <img id="medImagePreview" alt="Aperçu photo" class="max-h-48 w-full rounded-xl object-contain" />
         <div class="flex flex-wrap gap-2">
           <button id="aiAnalyzePhotoBtn" type="button" class="tap-btn flex-1 rounded-xl bg-violet-700 px-3 py-2 text-sm font-extrabold text-white">Lire la photo avec l'IA</button>
           <a id="downloadPreviewLink" download="prescription.jpg" class="tap-btn inline-flex items-center rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-slate-800">Télécharger</a>
+          <button id="removeMedPhotoBtn" type="button" class="tap-btn inline-flex items-center rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-extrabold text-rose-800">🗑️ Supprimer</button>
         </div>
         <p id="aiPhotoStatus" class="hidden text-xs font-bold text-violet-900"></p>
       </div>
@@ -740,6 +741,7 @@
     lastWaterReminderAt: Date.now(),
     ringtonePreset: 'loud_phone',
     customRingtoneName: '',
+    medsDate: getLocalDateStr(),
     meds: [],
     appts: []
   };
@@ -761,6 +763,7 @@
   let activeRingtoneAudio = null;
   let ringtoneStopTimer = null;
   let activeTab = 'home';
+  let lastBatteryPct = 100, lastBatteryCharging = true;
 
   function getStorageKey(uid) { return STORAGE_KEY + '_' + (uid || (currentUser && currentUser.id) || 'guest'); }
   function loadState(uid) {
@@ -772,6 +775,7 @@
         const today = getLocalDateStr();
         if (merged.lang === 'ar') merged.lang = 'fr';
         if (merged.waterDate !== today) { merged.waterDate = today; merged.waterCount = 0; }
+        if (merged.medsDate !== today) { merged.medsDate = today; if (Array.isArray(merged.meds)) merged.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; }); }
         return merged;
       }
     } catch (_) {}
@@ -843,7 +847,7 @@
     }
     const fb = $('waterAiFeedback');
     fb.textContent = state.lang === 'fr'
-      ? `💧 Bravo ! ${state.waterCount} sur 8 verres aujourd\'hui.`
+      ? `💧 Bravo ! ${state.waterCount} sur 8 verres aujourd'hui.`
       : `💧 Great! ${state.waterCount} of 8 glasses recorded today.`;
     fb.classList.remove('hidden');
     setTimeout(() => fb.classList.add('hidden'), 4000);
@@ -1143,37 +1147,50 @@
     }).catch(() => {});
   }
 
-  // Med Scheduler
+  // Med Scheduler (local date, non-destructive snooze, daily reset)
   function checkDueMedications() {
     const now = new Date();
-    const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    const today = now.toISOString().slice(0, 10);
-    for (const m of state.meds) {
-      if (m.taken) continue;
-      const key = m.id + '|' + today + '|' + m.time;
-      if (m.time === nowTime && !alertedMedKeys.has(key)) {
-        alertedMedKeys.add(key); activeDueMedId = m.id;
-        const medName = state.lang === 'fr' ? m.nameAr : m.nameEn;
-        $('medDueName').textContent = medName; $('medDueTime').textContent = m.time;
-        $('medDueModal').classList.remove('hidden');
-        playStrongRingtone();
-        setTimeout(() => speakText(state.lang === 'fr' ? `Il est temps de prendre votre médicament : ${medName}.` : `Time for your medication: ${medName}.`), 950);
-        break;
-      }
+    const today = getLocalDateStr(now);
+    if (state.medsDate !== today) {
+      state.medsDate = today;
+      state.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; });
+      saveState(); applyLang();
     }
+    if (!$('medDueModal').classList.contains('hidden')) return;
+    const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    const dueList = state.meds.filter((m) => {
+      if (m.taken) return false;
+      if (m.snoozeUntil && Date.now() >= m.snoozeUntil) return true;
+      if (m.snoozeUntil && Date.now() < m.snoozeUntil) return false;
+      const key = m.id + '|' + today + '|' + m.time;
+      return m.time === nowTime && !alertedMedKeys.has(key);
+    });
+    if (!dueList.length) return;
+    const m = dueList[0];
+    alertedMedKeys.add(m.id + '|' + today + '|' + m.time);
+    delete m.snoozeUntil;
+    activeDueMedId = m.id;
+    const namesText = dueList.map((x) => (state.lang === 'fr' ? x.nameAr : x.nameEn)).join(' + ');
+    $('medDueName').textContent = namesText;
+    $('medDueTime').textContent = m.time;
+    $('medDueModal').classList.remove('hidden');
+    playStrongRingtone();
+    setTimeout(() => speakText(state.lang === 'fr' ? `Il est temps de prendre votre médicament : ${namesText}.` : `Time for your medication: ${namesText}.`), 950);
   }
   $('medDueTakeBtn').addEventListener('click', () => {
     stopRingtone();
-    if (activeDueMedId) { const m = state.meds.find((x) => x.id === activeDueMedId); if (m) m.taken = true; saveState(); applyLang(); }
+    if (activeDueMedId) { const m = state.meds.find((x) => x.id === activeDueMedId); if (m) { m.taken = true; delete m.snoozeUntil; } saveState(); applyLang(); }
     $('medDueModal').classList.add('hidden');
+    setTimeout(checkDueMedications, 300);
   });
   $('medDueSnoozeBtn').addEventListener('click', () => {
     stopRingtone();
     if (activeDueMedId) {
       const m = state.meds.find((x) => x.id === activeDueMedId);
-      if (m) { const d = new Date(Date.now() + 10 * 60000); m.time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); saveState(); applyLang(); }
+      if (m) { m.snoozeUntil = Date.now() + 10 * 60000; saveState(); applyLang(); }
     }
     $('medDueModal').classList.add('hidden');
+    setTimeout(checkDueMedications, 300);
   });
   setInterval(checkDueMedications, 10000);
 
@@ -1291,7 +1308,6 @@
     });
   }
 
-  let lastBatteryPct = 100, lastBatteryCharging = true;
   function renderNotificationsModal() {
     const body = $('notifListBody');
     if (!body) return;
@@ -1363,8 +1379,16 @@
     const p = state.profile;
     const familyLabel = p.emergencyPhone ? (p.emergencyPhone + (p.familyRelation ? ` (${p.familyRelation})` : '')) : '-';
     const doctorLabel = (p.doctorName || '-') + (p.doctorPhone ? ` • ${p.doctorPhone}` : '');
-    const dispAllergies = (state.lang === 'en' && p.allergies === 'Pénicilline') ? 'Penicillin' : (p.allergies || '-');
-    const dispConditions = (state.lang === 'en' && p.conditions === 'Diabète, Hypertension') ? 'Diabetes, Hypertension' : (p.conditions || '-');
+    const mapLegacyMed = (val, kind) => {
+      const v = String(val || '').trim();
+      if (!v) return '-';
+      const fr = state.lang === 'fr';
+      if (kind === 'allergies' && (v === 'البنسلين' || v === 'Pénicilline' || v === 'Penicillin')) return fr ? 'Pénicilline' : 'Penicillin';
+      if (kind === 'conditions' && (v === 'السكري، ضغط الدم' || v === 'السكري, ضغط الدم' || v === 'Diabète, Hypertension' || v === 'Diabetes, Hypertension')) return fr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension';
+      return v;
+    };
+    const dispAllergies = mapLegacyMed(p.allergies, 'allergies');
+    const dispConditions = mapLegacyMed(p.conditions, 'conditions');
     const items = state.lang === 'fr'
       ? [['Nom :', displayName], ['Date de naissance :', p.dob || '-'], ['Tél. senior :', p.phone || '-'], ['Proche :', familyLabel], ['Tél. secours :', p.backupPhone || '-'], ['Médecin traitant :', doctorLabel], ['Adresse :', p.address || '-'], ['Groupe sanguin :', p.bloodType || '-'], ['Allergies :', p.allergies || '-'], ['Pathologies :', p.conditions || '-'], ['Notes médicales :', p.medicalNotes || '-'], ['Médicaments :', medNames]]
       : [['Name:', displayName], ['Date of Birth:', p.dob || '-'], ['Senior Phone:', p.phone || '-'], ['Close Family:', familyLabel], ['Backup Phone:', p.backupPhone || '-'], ['Doctor:', doctorLabel], ['Address:', p.address || '-'], ['Blood Type:', p.bloodType || '-'], ['Allergies:', dispAllergies], ['Conditions:', dispConditions], ['Notes:', p.medicalNotes || '-'], ['Medications:', medNames]];
@@ -1702,6 +1726,7 @@
     $('uploadPhotoPrompt').textContent = ar ? 'Appuyez pour importer une ordonnance ou boîte de médicament' : 'Tap to upload prescription or pillbox photo';
     $('aiAnalyzePhotoBtn').textContent = ar ? 'Lire la photo avec l\'IA' : 'Read Photo with AI';
     $('downloadPreviewLink').textContent = ar ? 'Télécharger' : 'Download';
+    if ($('removeMedPhotoBtn')) $('removeMedPhotoBtn').textContent = ar ? '🗑️ Supprimer la photo' : '🗑️ Remove Photo';
     $('newMedNameInput').placeholder = ar ? 'Nom du médicament et dose' : 'Medication name & dose';
     $('rxConfirmLabel').textContent = ar ? 'Je confirme que ce médicament correspond à l\'ordonnance de mon médecin.' : "I confirm this matches my doctor's prescription.";
     $('saveNewMedBtn').textContent = ar ? 'Enregistrer' : 'Save Medication';
@@ -1843,6 +1868,12 @@
   // Med Upload, Profile, Ringtone, AI, Appt, Emergency Modals
   $('openUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.remove('hidden'));
   $('closeUploadMedBtn').addEventListener('click', () => $('uploadMedModal').classList.add('hidden'));
+  if ($('removeMedPhotoBtn')) $('removeMedPhotoBtn').addEventListener('click', () => {
+    pendingImageDataUrl = '';
+    $('medImageInput').value = '';
+    $('medImagePreview').src = '';
+    $('medImagePreviewWrap').classList.add('hidden');
+  });
   $('rxConfirmCheck').addEventListener('change', (e) => { $('saveNewMedBtn').disabled = !e.target.checked; });
   $('medImageInput').addEventListener('change', (e) => {
     const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -2039,8 +2070,8 @@
         if (sp.doctor_phone) state.profile.doctorPhone = sp.doctor_phone;
         if (sp.home_address) state.profile.address = sp.home_address;
         if (sp.blood_type) state.profile.bloodType = sp.blood_type;
-        if (sp.allergies) state.profile.allergies = sp.allergies;
-        if (sp.conditions) state.profile.conditions = sp.conditions;
+        if (sp.allergies) state.profile.allergies = sp.allergies === 'البنسلين' ? (state.lang === 'fr' ? 'Pénicilline' : 'Penicillin') : sp.allergies;
+        if (sp.conditions) state.profile.conditions = (sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (state.lang === 'fr' ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : sp.conditions;
         if (sp.medical_notes) state.profile.medicalNotes = sp.medical_notes;
         const todayIso = getLocalDateStr();
         const hasPendingWater = Array.isArray(state.pendingQueue) && state.pendingQueue.some((q) => q.type === 'water_sync');
@@ -2117,7 +2148,6 @@
   }
 
   $('imOkBtn').addEventListener('click', async () => {
-    playStrongRingtone();
     const nowIso = new Date().toISOString();
     state.lastCheckInIso = nowIso; saveState();
     const fb = $('checkInFeedback'); fb.classList.remove('hidden');
@@ -2401,7 +2431,7 @@
           callA.textContent = ar ? '📞 Appeler' : '📞 Call';
           acts.appendChild(callA);
         }
-        if (userRole === 'family' || userRole === 'nurse') {
+        if (userRole === 'family' || userRole === 'nurse' || userRole === 'center') {
           const msgBtn = document.createElement('button');
           msgBtn.type = 'button';
           msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-4 py-2 text-xs font-extrabold text-white';
@@ -2422,7 +2452,7 @@
     const box = $('dcQuickChips'); if (!box) return; box.replaceChildren();
     const ar = state.lang === 'fr';
     const chips = userRole === 'senior'
-      ? (ar ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'Feeling a bit unwell'])
+      ? (ar ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je souhaite modifier mon traitement', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'I want to adjust my medication', 'Feeling a bit unwell'])
       : (ar ? ['Je passerai vous voir bientôt', 'Pensez à charger le téléphone et boire de l\'eau', 'Avez-vous pris vos médicaments ?'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
     chips.forEach((txt) => {
       const b = document.createElement('button'); b.type = 'button'; b.style.minHeight = '32px';
@@ -2436,10 +2466,22 @@
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
     const ar = state.lang === 'fr';
-    $('dcModalTitle').textContent = seniorName ? ((ar ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (ar ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages');
+    $('dcModalTitle').textContent = seniorName ? ((ar ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (ar ? 'Messages Infirmier, Famille & Soins' : 'Nurse, Family & Care Messages');
+    $('dcModalSub').textContent = ar ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
     renderDcQuickChips();
     $('directCareModal').classList.remove('hidden');
     loadDirectCareMessages();
+    if (!seniorName && client && currentUser && dcTargetSeniorId) {
+      try {
+        const { data: links } = await client.from('senior_care_links').select('role_type, requester_name').eq('senior_id', dcTargetSeniorId).eq('status', 'approved');
+        if (links && links.length) {
+          const order = { nurse: 0, family: 1, center: 2 };
+          links.sort((a, b) => (order[a.role_type] ?? 9) - (order[b.role_type] ?? 9));
+          const lbl = (r) => r.role_type === 'nurse' ? (ar ? '🩺 Infirmier(ère)' : '🩺 Nurse') : (r.role_type === 'center' ? (ar ? '🏥 Soins' : '🏥 Home Care') : (ar ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family'));
+          $('dcModalSub').textContent = (ar ? 'À : ' : 'To: ') + links.map((r) => `${lbl(r)}: ${r.requester_name}`).join(' • ');
+        }
+      } catch (_) {}
+    }
   }
 
   async function loadDirectCareMessages() {
