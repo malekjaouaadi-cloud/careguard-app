@@ -1216,7 +1216,11 @@
     if (!Array.isArray(state.pendingQueue) || !state.pendingQueue.length) return;
     const remaining = [];
     for (const item of state.pendingQueue) {
-      try { await processSyncItem(item); } catch (_) { remaining.push(item); }
+      try { await processSyncItem(item); } catch (err) {
+        const msg = (err && err.message) || '';
+        item.tries = (item.tries || 0) + 1;
+        if ((!navigator.onLine || /fetch|network|timeout/i.test(msg)) && item.tries <= 5) remaining.push(item);
+      }
     }
     state.pendingQueue = remaining;
     saveState(); updateNetworkUI();
