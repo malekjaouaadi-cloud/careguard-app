@@ -288,21 +288,27 @@
 
   </section>
 
-  <!-- ISOLATED CHAT ROOM PAGE (24h Auto-Delete + Real Name or Nickname) -->
-  <section id="chatPageView" class="hidden space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3 rounded-3xl border-2 border-amber-300 bg-white p-4 shadow-sm">
-      <button id="backFromChatBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-lg font-extrabold text-slate-900 hover:bg-slate-100">
+  <!-- ISOLATED CHAT ROOM PAGE (Streamlined WhatsApp-style Senior Lounge) -->
+  <section id="chatPageView" class="hidden space-y-3">
+    <!-- Compact Top Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 border-amber-300 bg-white px-3.5 py-2.5 shadow-sm">
+      <button id="backFromChatBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-base font-extrabold text-slate-900 hover:bg-slate-100">
         ← رجوع لواجهة المسن
       </button>
-      <button id="refreshChatBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-base font-extrabold text-amber-900">
-        تحديث
-      </button>
+      <div class="flex items-center gap-2">
+        <span id="chatMembersCountBadge" class="rounded-full bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-950">👥 0</span>
+        <button id="refreshChatBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-2 text-sm font-extrabold text-amber-900">
+          تحديث
+        </button>
+      </div>
     </div>
 
-    <div class="rounded-3xl border-2 border-amber-200 bg-white p-5 shadow-sm space-y-4">
-      <div>
-        <h2 id="chatHeading" class="text-2xl font-black text-slate-900">مجلس طمأنينة</h2>
-        <p id="chatSubheading" class="text-base font-bold text-amber-800">تُحفظ المشاركات الصوتية والكتابية لمدة 24 ساعة ثم تُمحى تلقائياً.</p>
+    <div class="rounded-3xl border-2 border-amber-200 bg-white p-4 shadow-sm space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 id="chatHeading" class="text-xl font-black text-slate-900">مجلس طمأنينة</h2>
+          <p id="chatSubheading" class="text-sm font-bold text-amber-800">تُحفظ المشاركات 24 ساعة ثم تُمحى تلقائياً</p>
+        </div>
       </div>
 
       <!-- Step 1: Choose Real Name or Nickname, then tap Enter Room -->
@@ -320,46 +326,55 @@
       </div>
 
       <!-- Step 2: Inside the Chat Room -->
-      <div id="chatRoomStep" class="hidden space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-emerald-50 px-4 py-2.5">
-          <span id="chatJoinedAsBadge" class="text-base font-extrabold text-emerald-900"></span>
-          <button id="chatChangeNameBtn" type="button" class="rounded-xl border border-emerald-300 bg-white px-3 py-1.5 text-sm font-extrabold text-emerald-900">تغيير الاسم</button>
+      <div id="chatRoomStep" class="hidden space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-emerald-50 px-3.5 py-2">
+          <span id="chatJoinedAsBadge" class="text-sm font-extrabold text-emerald-900"></span>
+          <button id="chatChangeNameBtn" type="button" class="rounded-xl border border-emerald-300 bg-white px-3 py-1 text-xs font-extrabold text-emerald-900">تغيير الاسم</button>
         </div>
 
-        <!-- Active Participants (last 24h) -->
-        <div class="space-y-1.5">
-          <p id="chatMembersLabel" class="text-sm font-extrabold text-slate-600">المشاركون (آخر 24 ساعة):</p>
-          <div id="chatMembersList" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <!-- Messages List -->
-        <div id="chatMessagesList" class="max-h-96 space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-50 p-3.5"></div>
-
-      <!-- Voice & Text Posting -->
-      <div class="space-y-3">
-        <button id="chatRecordBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-3 rounded-2xl bg-amber-600 px-5 py-4 text-xl font-black text-white shadow-sm hover:bg-amber-700">
-          <svg class="h-7 w-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-          <span id="chatRecordBtnLabel">تسجيل مشاركة صوتية</span>
-        </button>
-
-        <div id="chatVoicePreviewBox" class="hidden space-y-2.5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3.5">
-          <audio id="chatVoicePreview" controls class="w-full"></audio>
-          <div class="grid grid-cols-2 gap-2.5">
-            <button id="chatSendVoiceBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-3 text-lg font-extrabold text-white">إرسال الصوت</button>
-            <button id="chatDiscardVoiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg font-extrabold text-slate-800">إلغاء</button>
+        <!-- Compact Global Icebreaker Strip -->
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2.5">
+          <div class="flex-1 min-w-[200px]">
+            <span id="icebreakerBadge" class="text-xs font-black text-amber-900">سؤال اليوم العالمي: </span>
+            <span id="icebreakerQuestion" class="text-base font-extrabold text-slate-900"></span>
           </div>
+          <button id="nextIcebreakerBtn" type="button" class="rounded-xl border border-amber-300 bg-white px-2.5 py-1 text-xs font-extrabold text-amber-900">سؤال آخر</button>
         </div>
 
-        <div class="flex flex-col gap-2.5 sm:flex-row">
-          <input id="chatTextInput" autocomplete="off" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-lg text-slate-900" />
-          <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-slate-900 px-6 py-3.5 text-lg font-extrabold text-white">
-            إرسال
-          </button>
+        <!-- Compact Participants Strip -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span id="chatMembersLabel" class="text-xs font-extrabold text-slate-500">المشاركون:</span>
+          <div id="chatMembersList" class="flex flex-wrap gap-1.5"></div>
         </div>
-        <p id="chatStatusMsg" class="hidden rounded-2xl border-2 border-rose-200 bg-rose-50 px-4 py-3 text-base font-bold text-rose-900"></p>
-      </div>
+
+        <!-- Tall WhatsApp-Style Messages Area -->
+        <div id="chatMessagesList" class="min-h-[280px] max-h-[52vh] space-y-3 overflow-y-auto rounded-2xl border-2 border-slate-200 bg-slate-100 p-3"></div>
+
+        <!-- Sticky Bottom Voice + Quick Chips + Text Composer -->
+        <div class="sticky bottom-2 z-20 space-y-2.5 rounded-2xl border-2 border-slate-200 bg-white/95 p-3 shadow-md backdrop-blur">
+          <div id="chatQuickChips" class="flex flex-wrap gap-1.5"></div>
+
+          <button id="chatRecordBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2.5 rounded-2xl bg-amber-600 px-4 py-3.5 text-lg font-black text-white shadow-sm hover:bg-amber-700">
+            <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            <span id="chatRecordBtnLabel">تسجيل مشاركة صوتية</span>
+          </button>
+
+          <div id="chatVoicePreviewBox" class="hidden space-y-2 rounded-2xl border-2 border-amber-300 bg-amber-50 p-3">
+            <audio id="chatVoicePreview" controls class="w-full"></audio>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="chatSendVoiceBtn" type="button" class="tap-btn rounded-xl bg-emerald-700 px-3 py-2.5 text-base font-extrabold text-white">إرسال الصوت</button>
+              <button id="chatDiscardVoiceBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-base font-extrabold text-slate-800">إلغاء</button>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <input id="chatTextInput" autocomplete="off" type="text" placeholder="أو اكتب تجربتك هنا..." class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-3.5 py-2.5 text-lg text-slate-900" />
+            <button id="chatSendTextBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-slate-900 px-5 py-2.5 text-lg font-extrabold text-white">إرسال</button>
+          </div>
+          <p id="chatStatusMsg" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-900"></p>
+        </div>
       </div>
     </div>
   </section>
@@ -418,22 +433,38 @@
   </div>
 </div>
 
-<!-- Modal 2: Update Senior Profile -->
+<!-- Modal 2: Update Senior Profile (Private — Emergency ID Only) -->
 <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
     <div class="flex items-center justify-between">
       <h3 id="profileModalTitle" class="text-2xl font-black text-slate-900">تحديث بيانات المسن</h3>
       <button id="closeProfileModalBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600 hover:bg-slate-100">✕</button>
     </div>
-    <div class="mt-4 space-y-3">
+    <p id="profilePrivacyNote" class="mt-1 text-sm font-bold text-slate-600">تُحفظ هذه البيانات لبطاقة الطوارئ فقط ولا تظهر في غرفة الدردشة.</p>
+    <div class="mt-3 max-h-[70vh] space-y-3 overflow-y-auto pr-1">
       <input id="profNameInput" autocomplete="off" type="text" placeholder="الاسم الكامل" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <label class="block text-sm font-extrabold text-slate-700">
+        <span id="profDobLabel">تاريخ الميلاد:</span>
+        <input id="profDobInput" type="date" class="mt-1 w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      </label>
+      <input id="profPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="رقم هاتف المسن" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <input id="profEmergencyPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="هاتف أحد أفراد العائلة المقرّبين" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+        <input id="profFamilyRelInput" autocomplete="off" type="text" placeholder="صفة القرابة (مثال: الابن / الابنة)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      </div>
+      <input id="profBackupPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="رقم عائلي ثانٍ احتياطي (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <input id="profDoctorNameInput" autocomplete="off" type="text" placeholder="اسم الطبيب المعالج (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+        <input id="profDoctorPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="هاتف الطبيب (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
+      </div>
+      <input id="profAddressInput" autocomplete="off" type="text" placeholder="عنوان السكن (اختياري)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profBloodInput" type="text" placeholder="فصيلة الدم (مثال: O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profAllergiesInput" type="text" placeholder="الحساسية (مثال: البنسلين)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
       <input id="profConditionsInput" type="text" placeholder="الأمراض المزمنة (مثال: السكري، الضغط)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
-      <input id="profEmergencyPhoneInput" type="tel" dir="ltr" placeholder="رقم الطوارئ / العائلة (مثال: +216...)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
-      <button id="saveProfileBtn" type="button" class="tap-btn w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">حفظ البيانات</button>
-      <p id="profileSaveFeedback" class="hidden text-center text-base font-extrabold text-emerald-800"></p>
+      <input id="profMedicalNotesInput" autocomplete="off" type="text" placeholder="ملاحظات طبية خاصة (مثل: صعوبة السمع / جهاز قلب)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
     </div>
+    <button id="saveProfileBtn" type="button" class="tap-btn mt-4 w-full rounded-2xl bg-emerald-700 px-5 py-4 text-xl font-black text-white">حفظ البيانات</button>
+    <p id="profileSaveFeedback" class="hidden mt-2 text-center text-base font-extrabold text-emerald-800"></p>
   </div>
 </div>
 
@@ -526,7 +557,12 @@
 
   const defaultState = {
     lang: 'ar',
-    profile: { name: '', bloodType: 'O+', allergies: 'البنسلين', conditions: 'السكري، ضغط الدم', emergencyPhone: '' },
+    profile: {
+      name: '', dob: '', phone: '', emergencyPhone: '', familyRelation: '',
+      backupPhone: '', doctorName: '', doctorPhone: '', address: '',
+      bloodType: 'O+', allergies: 'البنسلين', conditions: 'السكري، ضغط الدم', medicalNotes: ''
+    },
+    reactions: {},
     chatUseNickname: false,
     chatNickname: '',
     lastCheckInIso: null,
@@ -981,21 +1017,50 @@
 
   function renderEmergency() {
     const body = $('emBody'); body.replaceChildren();
-    const displayName = state.profile.name
+    const displayName = cleanProfileName()
       || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email))
       || (state.lang === 'ar' ? 'المسن' : 'Senior');
     const medNames = state.meds.map((m) => (state.lang === 'ar' ? m.nameAr : m.nameEn)).join(' • ') || '-';
+    const p = state.profile;
+    const familyLabel = p.emergencyPhone ? (p.emergencyPhone + (p.familyRelation ? ` (${p.familyRelation})` : '')) : '-';
+    const doctorLabel = (p.doctorName || '-') + (p.doctorPhone ? ` • ${p.doctorPhone}` : '');
     const items = state.lang === 'ar'
-      ? [['الاسم:', displayName], ['فصيلة الدم:', state.profile.bloodType || '-'], ['الحساسية:', state.profile.allergies || '-'], ['الأمراض المزمنة:', state.profile.conditions || '-'], ['الأدوية الحالية:', medNames], ['هاتف الطوارئ:', state.profile.emergencyPhone || '190']]
-      : [['Name:', displayName], ['Blood Type:', state.profile.bloodType || '-'], ['Allergies:', state.profile.allergies || '-'], ['Conditions:', state.profile.conditions || '-'], ['Medications:', medNames], ['Emergency Phone:', state.profile.emergencyPhone || '911']];
+      ? [
+          ['الاسم:', displayName],
+          ['تاريخ الميلاد:', p.dob || '-'],
+          ['هاتف المسن:', p.phone || '-'],
+          ['أحد أفراد العائلة:', familyLabel],
+          ['هاتف احتياطي:', p.backupPhone || '-'],
+          ['الطبيب المعالج:', doctorLabel],
+          ['عنوان السكن:', p.address || '-'],
+          ['فصيلة الدم:', p.bloodType || '-'],
+          ['الحساسية:', p.allergies || '-'],
+          ['الأمراض المزمنة:', p.conditions || '-'],
+          ['ملاحظات خاصة:', p.medicalNotes || '-'],
+          ['الأدوية الحالية:', medNames]
+        ]
+      : [
+          ['Name:', displayName],
+          ['Date of Birth:', p.dob || '-'],
+          ['Senior Phone:', p.phone || '-'],
+          ['Close Family Contact:', familyLabel],
+          ['Backup Family Phone:', p.backupPhone || '-'],
+          ['Primary Doctor:', doctorLabel],
+          ['Home Address:', p.address || '-'],
+          ['Blood Type:', p.bloodType || '-'],
+          ['Allergies:', p.allergies || '-'],
+          ['Conditions:', p.conditions || '-'],
+          ['Special Notes:', p.medicalNotes || '-'],
+          ['Current Medications:', medNames]
+        ];
     items.forEach(([k, v]) => {
       const line = document.createElement('div');
-      line.className = 'flex flex-wrap justify-between gap-2 rounded-2xl bg-rose-50 px-4 py-3';
+      line.className = 'flex flex-wrap justify-between gap-2 rounded-2xl bg-rose-50 px-4 py-2.5';
       const sk = document.createElement('span'); sk.className = 'font-black text-rose-900'; sk.textContent = k;
       const sv = document.createElement('span'); sv.className = 'font-bold text-slate-900'; sv.textContent = v;
       line.append(sk, sv); body.appendChild(line);
     });
-    const tel = (state.profile.emergencyPhone || (state.lang === 'ar' ? '190' : '911')).replace(/\s+/g, '');
+    const tel = (p.emergencyPhone || p.backupPhone || (state.lang === 'ar' ? '190' : '911')).replace(/\s+/g, '');
     $('emCallLink').href = 'tel:' + tel;
     $('emCallLabel').textContent = tr('emCall') + ' (' + tel + ')';
   }
@@ -1028,6 +1093,36 @@
     $('chatNicknameInput').value = state.chatNickname || '';
     $('chatNicknameInput').classList.toggle('hidden', !state.chatUseNickname);
     $('chatActiveNameNote').textContent = (state.lang === 'ar' ? 'ستظهر مشاركتك باسم: ' : 'Posting as: ') + getChatAuthorName();
+  }
+
+  const ICEBREAKERS = [
+    { ar: '☕ القهوة والذكريات: ما أجمل رحلة أو ذكرى لا تنساها من شبابك؟', en: '☕ Coffee & Memories: What is a favorite trip or memory from your youth?' },
+    { ar: '🌱 الهوايات والحدائق: ما النبات أو الهواية أو الطبق الذي تحب تحضيره؟', en: '🌱 Hobbies & Cooking: What garden plant, hobby, or recipe do you enjoy?' },
+    { ar: '🚶 المشي والصحة: ما الشيء البسيط الذي يمنحك طاقة ونشاطاً اليوم؟', en: '🚶 Daily Wellness: What simple habit keeps you energized today?' },
+    { ar: '😊 لحظة جميلة: ما الذي رسم الابتسامة على وجهك هذا الأسبوع؟', en: '😊 Bright Moment: What made you smile this week?' }
+  ];
+  let iceIdx = new Date().getDate() % ICEBREAKERS.length;
+  function renderIcebreaker() {
+    const item = ICEBREAKERS[iceIdx % ICEBREAKERS.length];
+    $('icebreakerQuestion').textContent = state.lang === 'ar' ? item.ar : item.en;
+  }
+  $('nextIcebreakerBtn').addEventListener('click', () => { iceIdx = (iceIdx + 1) % ICEBREAKERS.length; renderIcebreaker(); });
+
+  function renderQuickChips() {
+    const box = $('chatQuickChips');
+    if (!box) return;
+    box.replaceChildren();
+    const chips = state.lang === 'ar'
+      ? ['صباح الخير ☀️', 'أتمنى لكم يوماً سعيداً 😊', 'كلام جميل 👍']
+      : ['Good morning ☀️', 'Have a wonderful day 😊', 'Well said 👍'];
+    chips.forEach((txt) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tap-btn rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-extrabold text-amber-950 hover:bg-amber-100';
+      b.textContent = txt;
+      b.addEventListener('click', () => sendCommunityPost(txt, null));
+      box.appendChild(b);
+    });
   }
 
   function applyLang() {
@@ -1110,6 +1205,24 @@
     $('apptDoctorInput').placeholder = tr('apptDocPh');
     $('apptSaveBtn').textContent = tr('apptSave');
     $('emModalTitle').textContent = tr('emModalTitle');
+    $('icebreakerBadge').textContent = state.lang === 'ar' ? 'سؤال اليوم العالمي' : 'Daily Icebreaker';
+    $('nextIcebreakerBtn').textContent = state.lang === 'ar' ? 'سؤال آخر' : 'Next Topic';
+    $('profilePrivacyNote').textContent = state.lang === 'ar' ? 'تُحفظ هذه البيانات لبطاقة الطوارئ فقط ولا تظهر في غرفة الدردشة.' : 'Saved privately for your Emergency ID only — never shown in chat.';
+    $('profDobLabel').textContent = state.lang === 'ar' ? 'تاريخ الميلاد:' : 'Date of Birth:';
+    $('profNameInput').placeholder = state.lang === 'ar' ? 'الاسم الكامل' : 'Full Name';
+    $('profPhoneInput').placeholder = state.lang === 'ar' ? 'رقم هاتف المسن' : 'Senior Phone Number';
+    $('profEmergencyPhoneInput').placeholder = state.lang === 'ar' ? 'هاتف أحد أفراد العائلة المقرّبين' : 'Close Family Member Phone';
+    $('profFamilyRelInput').placeholder = state.lang === 'ar' ? 'صفة القرابة (الابن / الابنة)' : 'Relationship (Son / Daughter)';
+    $('profBackupPhoneInput').placeholder = state.lang === 'ar' ? 'رقم عائلي ثانٍ احتياطي (اختياري)' : 'Backup Family Phone (optional)';
+    $('profDoctorNameInput').placeholder = state.lang === 'ar' ? 'اسم الطبيب المعالج (اختياري)' : 'Primary Doctor Name (optional)';
+    $('profDoctorPhoneInput').placeholder = state.lang === 'ar' ? 'هاتف الطبيب (اختياري)' : 'Doctor Phone (optional)';
+    $('profAddressInput').placeholder = state.lang === 'ar' ? 'عنوان السكن (اختياري)' : 'Home Address (optional)';
+    $('profBloodInput').placeholder = state.lang === 'ar' ? 'فصيلة الدم (مثال: O+)' : 'Blood Type (e.g. O+)';
+    $('profAllergiesInput').placeholder = state.lang === 'ar' ? 'الحساسية (مثال: البنسلين)' : 'Allergies (e.g. Penicillin)';
+    $('profConditionsInput').placeholder = state.lang === 'ar' ? 'الأمراض المزمنة (مثال: السكري، الضغط)' : 'Medical Conditions';
+    $('profMedicalNotesInput').placeholder = state.lang === 'ar' ? 'ملاحظات طبية خاصة (مثل صعوبة السمع)' : 'Special Medical Notes (optional)';
+    renderIcebreaker();
+    renderQuickChips();
 
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
     $('seniorGreeting').textContent = name ? (tr('helloPrefix') + name) : tr('seniorGreetingDefault');
@@ -1219,21 +1332,38 @@
 
   // Profile Modal
   $('openProfileModalBtn').addEventListener('click', () => {
-    $('profNameInput').value = state.profile.name || '';
-    $('profBloodInput').value = state.profile.bloodType || '';
-    $('profAllergiesInput').value = state.profile.allergies || '';
-    $('profConditionsInput').value = state.profile.conditions || '';
-    $('profEmergencyPhoneInput').value = state.profile.emergencyPhone || '';
+    const p = state.profile;
+    $('profNameInput').value = p.name || '';
+    $('profDobInput').value = p.dob || '';
+    $('profPhoneInput').value = p.phone || '';
+    $('profEmergencyPhoneInput').value = p.emergencyPhone || '';
+    $('profFamilyRelInput').value = p.familyRelation || '';
+    $('profBackupPhoneInput').value = p.backupPhone || '';
+    $('profDoctorNameInput').value = p.doctorName || '';
+    $('profDoctorPhoneInput').value = p.doctorPhone || '';
+    $('profAddressInput').value = p.address || '';
+    $('profBloodInput').value = p.bloodType || '';
+    $('profAllergiesInput').value = p.allergies || '';
+    $('profConditionsInput').value = p.conditions || '';
+    $('profMedicalNotesInput').value = p.medicalNotes || '';
     $('profileSaveFeedback').classList.add('hidden');
     $('profileModal').classList.remove('hidden');
   });
   $('closeProfileModalBtn').addEventListener('click', () => $('profileModal').classList.add('hidden'));
   $('saveProfileBtn').addEventListener('click', async () => {
     state.profile.name = $('profNameInput').value.trim();
+    state.profile.dob = $('profDobInput').value;
+    state.profile.phone = $('profPhoneInput').value.trim();
+    state.profile.emergencyPhone = $('profEmergencyPhoneInput').value.trim();
+    state.profile.familyRelation = $('profFamilyRelInput').value.trim();
+    state.profile.backupPhone = $('profBackupPhoneInput').value.trim();
+    state.profile.doctorName = $('profDoctorNameInput').value.trim();
+    state.profile.doctorPhone = $('profDoctorPhoneInput').value.trim();
+    state.profile.address = $('profAddressInput').value.trim();
     state.profile.bloodType = $('profBloodInput').value.trim();
     state.profile.allergies = $('profAllergiesInput').value.trim();
     state.profile.conditions = $('profConditionsInput').value.trim();
-    state.profile.emergencyPhone = $('profEmergencyPhoneInput').value.trim();
+    state.profile.medicalNotes = $('profMedicalNotesInput').value.trim();
     saveState(); applyLang();
     if (client && currentUser && state.profile.name) {
       try { await client.from('profiles').upsert({ id: currentUser.id, display_name: state.profile.name }, { onConflict: 'id' }); } catch (_) {}
@@ -1356,55 +1486,107 @@
     membersBox.replaceChildren();
 
     const uniqueNames = Array.from(new Set((rows || []).map((r) => r.author_name).filter(Boolean)));
+    if ($('chatMembersCountBadge')) $('chatMembersCountBadge').textContent = '👥 ' + uniqueNames.length;
     if (uniqueNames.length) {
       uniqueNames.forEach((n) => {
         const chip = document.createElement('span');
-        chip.className = 'rounded-full bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-950';
+        chip.className = 'rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-extrabold text-amber-950';
         chip.textContent = n;
         membersBox.appendChild(chip);
       });
     } else {
       const none = document.createElement('span');
-      none.className = 'text-sm font-bold text-slate-500';
+      none.className = 'text-xs font-bold text-slate-500';
       none.textContent = state.lang === 'ar' ? 'لا يوجد مشاركون بعد' : 'No participants yet';
       membersBox.appendChild(none);
     }
 
     if (!rows || !rows.length) {
       const empty = document.createElement('p');
-      empty.className = 'text-center text-base font-bold text-slate-500';
+      empty.className = 'py-8 text-center text-base font-bold text-slate-500';
       empty.textContent = state.lang === 'ar' ? 'لا توجد مشاركات في آخر 24 ساعة — كن أول من يشارك!' : 'No posts in the last 24h — be the first!';
       box.appendChild(empty);
       return;
     }
 
+    const avatarColors = ['bg-emerald-600', 'bg-sky-600', 'bg-amber-600', 'bg-violet-600', 'bg-rose-600'];
     rows.forEach((r) => {
+      const isMine = !!(currentUser && r.user_id === currentUser.id);
+      const wrap = document.createElement('div');
+      wrap.className = 'flex ' + (isMine ? 'justify-start' : 'justify-end');
+
       const card = document.createElement('div');
-      card.className = 'rounded-2xl border border-slate-200 bg-white p-3.5 space-y-2';
+      card.className = isMine
+        ? 'w-[92%] rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-3.5 space-y-2 shadow-sm'
+        : 'w-[92%] rounded-2xl border border-slate-200 bg-white p-3.5 space-y-2 shadow-sm';
+
       const hdr = document.createElement('div');
       hdr.className = 'flex items-center justify-between gap-2';
+      const authorWrap = document.createElement('div');
+      authorWrap.className = 'flex items-center gap-2';
+      const avatar = document.createElement('span');
+      const nameStr = r.author_name || (state.lang === 'ar' ? 'مشارك' : 'Member');
+      const colorCls = avatarColors[nameStr.charCodeAt(0) % avatarColors.length];
+      avatar.className = 'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-black text-white ' + colorCls;
+      avatar.textContent = nameStr.charAt(0).toUpperCase();
+
       const author = document.createElement('span');
-      author.className = 'text-base font-black text-amber-900';
-      author.textContent = r.author_name || (state.lang === 'ar' ? 'مشارك' : 'Member');
+      author.className = 'text-base font-black text-slate-900';
+      author.textContent = nameStr;
+      authorWrap.append(avatar, author);
+
       const dt = document.createElement('span');
       dt.className = 'text-xs font-bold text-slate-500';
       dt.textContent = r.created_at ? new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-      hdr.append(author, dt);
+      hdr.append(authorWrap, dt);
       card.appendChild(hdr);
+
       if (r.message_text) {
-        const body = document.createElement('p'); body.className = 'text-lg font-semibold text-slate-900'; body.textContent = r.message_text; card.appendChild(body);
+        const body = document.createElement('p');
+        body.className = 'text-lg font-semibold text-slate-900';
+        body.textContent = r.message_text;
+        card.appendChild(body);
       }
       if (r.audio_data) {
-        const aud = document.createElement('audio'); aud.controls = true; aud.src = r.audio_data; aud.className = 'w-full'; card.appendChild(aud);
+        const aud = document.createElement('audio');
+        aud.controls = true; aud.src = r.audio_data; aud.className = 'w-full';
+        card.appendChild(aud);
       }
-      if (currentUser && r.user_id === currentUser.id) {
+
+      const reactRow = document.createElement('div');
+      reactRow.className = 'flex flex-wrap items-center gap-2 pt-1';
+      const msgReacts = state.reactions[r.id] || { heart: 0, clap: 0, hug: 0, mine: null };
+      [['heart', '❤️'], ['clap', '👏'], ['hug', '🤗']].forEach(([rk, emoji]) => {
+        const rb = document.createElement('button');
+        rb.type = 'button';
+        const active = msgReacts.mine === rk;
+        rb.className = active
+          ? 'rounded-xl border-2 border-amber-500 bg-amber-100 px-3 py-1 text-sm font-extrabold text-amber-950'
+          : 'rounded-xl border border-slate-300 bg-white/80 px-3 py-1 text-sm font-bold text-slate-800 hover:bg-slate-100';
+        rb.textContent = emoji + ' ' + (msgReacts[rk] || 0);
+        rb.addEventListener('click', () => {
+          const cur = state.reactions[r.id] || { heart: 0, clap: 0, hug: 0, mine: null };
+          if (cur.mine === rk) { cur[rk] = Math.max(0, (cur[rk] || 1) - 1); cur.mine = null; }
+          else {
+            if (cur.mine) cur[cur.mine] = Math.max(0, (cur[cur.mine] || 1) - 1);
+            cur[rk] = (cur[rk] || 0) + 1; cur.mine = rk;
+          }
+          state.reactions[r.id] = cur;
+          saveState();
+          renderChatMessages(rows);
+        });
+        reactRow.appendChild(rb);
+      });
+      if (isMine) {
         const del = document.createElement('button'); del.type = 'button';
         del.className = 'rounded-xl px-3 py-1 text-xs font-extrabold text-rose-700 hover:bg-rose-50';
         del.textContent = tr('deleteMed');
         del.addEventListener('click', async () => { await client.from('community_messages').delete().eq('id', r.id); loadCommunityMessages(); });
-        card.appendChild(del);
+        reactRow.appendChild(del);
       }
-      box.appendChild(card);
+      card.appendChild(reactRow);
+      wrap.appendChild(card);
+      box.appendChild(wrap);
     });
   }
 
