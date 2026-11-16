@@ -149,6 +149,7 @@
             <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1.5 rounded-full border-2 border-emerald-500 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-950 shadow-sm" style="min-height:30px;">
               🔑 <span id="seniorCodePrefix">Code d'invitation :</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
             </button>
+            <p id="heroMedicalSummary" class="hidden inline-flex flex-wrap items-center gap-1.5 rounded-xl bg-rose-50 border border-rose-200 px-2.5 py-1 text-xs font-extrabold text-rose-900"></p>
           </div>
         </div>
       </div>
@@ -2018,12 +2019,21 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v58';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v59';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
     $('seniorGreeting').textContent = name || (isFr ? 'Bienvenue' : 'Guest');
     if ($('seniorCodePrefix')) $('seniorCodePrefix').textContent = isFr ? 'Code d\'invitation :' : 'Invite Code:';
+    if ($('heroMedicalSummary')) {
+      const mp = state.profile || {};
+      const parts = [];
+      if (mp.bloodType) parts.push('🩸 ' + mp.bloodType);
+      if (mp.allergies) parts.push('⚠️ ' + (mp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : mp.allergies));
+      if (mp.conditions) parts.push('🩺 ' + ((mp.conditions === 'السكري، ضغط الدم' || mp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : mp.conditions));
+      $('heroMedicalSummary').textContent = parts.join(' • ');
+      $('heroMedicalSummary').classList.toggle('hidden', parts.length === 0);
+    }
     $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'C').toUpperCase();
     $('imOkLabel').textContent = isFr ? 'Je vais bien' : "I'm OK";
     if (state.lastServerCheckInIso) {
@@ -2371,7 +2381,13 @@
         try {
           const { error } = await client.from('senior_profiles').update(buildProfileCloudPayload()).eq('id', currentSeniorId);
           if (error) throw error;
-        } catch (_) { enqueueSync('profile_save', {}); }
+        } catch (err) {
+          enqueueSync('profile_save', {});
+          const fb = $('profileSaveFeedback');
+          fb.textContent = '⚠️ ' + ((err && err.message) || friendlyError(err));
+          fb.classList.remove('hidden');
+          return;
+        }
       } else { enqueueSync('profile_save', {}); }
       if (state.shareBirthday && state.profile.dob && state.profile.dob.includes('-')) {
         const parts = state.profile.dob.split('-');
@@ -2860,6 +2876,16 @@
         const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
         addr.textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
         info.append(nm, addr);
+        const mParts = [];
+        if (sp.blood_type) mParts.push('🩸 ' + sp.blood_type);
+        if (sp.allergies) mParts.push('⚠️ ' + (sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : sp.allergies));
+        if (sp.conditions) mParts.push('🩺 ' + ((sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : sp.conditions));
+        if (mParts.length) {
+          const mLine = document.createElement('p');
+          mLine.className = 'mt-1 text-xs font-extrabold text-rose-800';
+          mLine.textContent = mParts.join(' • ');
+          info.appendChild(mLine);
+        }
         const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
         const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
         const p2 = document.createElement('span'); p2.className = (batVal !== null && batVal <= 30) ? 'rounded-full bg-rose-100 px-2.5 py-1 text-rose-900' : 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
