@@ -1867,7 +1867,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v62';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v63';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2660,7 +2660,7 @@
     try {
       const { data: rawLinks, error } = await client
         .from('senior_care_links')
-        .select('id, senior_id, status, senior_profiles(id, invite_code, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date)')
+        .select('id, senior_id, status, senior_profiles(id, registration_number, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date)')
         .eq('requester_user_id', currentUser.id);
       if (error) throw error;
       list.replaceChildren();
@@ -2734,10 +2734,10 @@
         nameRow.className = 'flex flex-wrap items-center gap-2';
         const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
         nameRow.appendChild(nm);
-        if (sp.invite_code) {
+        if (sp.registration_number) {
           const codeTag = document.createElement('span');
           codeTag.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-extrabold text-slate-600';
-          codeTag.textContent = '🔑 ' + sp.invite_code;
+          codeTag.textContent = '🔑 ' + sp.registration_number;
           nameRow.appendChild(codeTag);
         }
         info.appendChild(nameRow);
