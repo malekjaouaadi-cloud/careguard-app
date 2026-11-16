@@ -842,6 +842,7 @@
   let pendingImageDataUrl = '';
   let customAudioDataUrl = '';
   let activeDueMedId = null;
+  let editingMedId = null;
   let activeReplyTo = null;
   let batteryLowAlerted = false;
   let pendingLowBatterySpeak = '';
@@ -877,127 +878,7 @@
   // Bottom Navigation & View Switching
   function switchTab(tab) {
     if (!['senior', 'family', 'nurse', 'center'].includes(userRole)) {
-    
-  if ($('closeEditMedBtn')) $('closeEditMedBtn').addEventListener('click', () => $('editMedModal').classList.add('hidden'));
-  if ($('saveEditMedBtn')) $('saveEditMedBtn').addEventListener('click', async () => {
-    const name = $('editMedNameInput').value.trim();
-    const baseTime = $('editMedTimeInput').value || '08:00';
-    const freq = Number($('editMedFreqSelect').value || 1);
-    if (!name || !editingMedId) return;
-    const oldMed = state.meds.find((x) => x.id === editingMedId);
-    const imgSnap = (oldMed && oldMed.imageData) || '';
-    const times = getDoseTimesForFreq(freq, baseTime);
-    const cleanBaseName = name.replace(/\s*\(\d+\/\d+\)$/, '').trim();
-    state.meds = state.meds.filter((x) => x.id !== editingMedId);
-    const newEntries = times.map((tStr, idx) => {
-      const lbl = times.length > 1 ? `${cleanBaseName} (${idx + 1}/${times.length})` : cleanBaseName;
-      const localId = 'm' + (Date.now() + idx);
-      const obj = { id: localId, nameAr: lbl, nameEn: lbl, time: tStr, taken: false, imageData: idx === 0 ? imgSnap : '' };
-      state.meds.push(obj);
-      return { obj, localId, name: lbl, time: tStr };
-    });
-    saveState(); renderMeds(); $('editMedModal').classList.add('hidden');
-    if (navigator.onLine && client && currentUser && currentSeniorId && !String(editingMedId).startsWith('m')) {
-      try { await client.from('medications').delete().eq('id', editingMedId).eq('senior_id', currentSeniorId); }
-      catch (_) { enqueueSync('med_delete', { id: editingMedId }); }
-    } else if (currentUser && !String(editingMedId).startsWith('m')) {
-      enqueueSync('med_delete', { id: editingMedId });
-    }
-    for (const c of newEntries) {
-      if (navigator.onLine && client && currentUser && currentSeniorId) {
-        try {
-          const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name: c.name, dosage: c.time }).select('id').single();
-          if (error) throw error;
-          if (data && data.id) { c.obj.id = data.id; saveState(); renderMeds(); }
-        } catch (_) { enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time }); }
-      } else if (currentUser) enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time });
-    }
-    editingMedId = null;
-  });
-
-
-  function renderPlansModal() {
-    const isFr = state.lang === 'fr';
-    $('plansModalTitle').textContent = isFr ? 'Abonnements CareGuard' : 'CareGuard Plans';
-    const planLabel = userPlan === 'plus' ? 'CareGuard Plus' : (userPlan === 'agency' ? (isFr ? 'Infirmier / Agence' : 'Nurse / Agency') : (isFr ? 'Gratuit' : 'Free'));
-    $('plansCurrentBadge').textContent = (isFr ? 'Plan actuel : ' : 'Current plan: ') + planLabel;
-    const box = $('plansCardsList'); box.replaceChildren();
-    $('plansFeedback').classList.add('hidden');
-    const plans = [
-      {
-        id: 'free',
-        title: isFr ? 'Gratuit (Découverte)' : 'Free (Starter)',
-        price: isFr ? '0 € / mois' : '$0 / month',
-        feats: isFr
-          ? ['1 senior • Bouton "Je vais bien" & Eau', 'Fiche d\'urgence médicale & Salon', '1 proche lié']
-          : ['1 senior • "I\'m OK" & Water reminders', 'Emergency Medical ID & Lounge', '1 linked family member'],
-        url: ''
-      },
-      {
-        id: 'plus',
-        title: 'CareGuard Plus',
-        price: isFr ? '7 € / mois' : '$7 / month',
-        feats: isFr
-          ? ['Lecture IA des ordonnances incluse', 'Famille illimitée + Infirmier', 'Alertes auto 24/7 + Messages vocaux']
-          : ['AI prescription scanning included', 'Unlimited family + Nurse', '24/7 missed alerts + Voice chat'],
-        url: STRIPE_PLUS_URL
-      },
-      {
-        id: 'agency',
-        title: isFr ? 'Infirmier / Soins à domicile' : 'Nurse / Home Care Agency',
-        price: isFr ? '24 € / mois' : '$24 / month',
-        feats: isFr
-          ? ['Suivi multi-patients illimité', 'Tableau complet médicaments, eau & RDV', 'Alertes temps réel & messagerie directe']
-          : ['Unlimited multi-patient monitoring', 'Full meds, water & appointment log', 'Real-time alerts & direct chat'],
-        url: STRIPE_AGENCY_URL
-      }
-    ];
-    plans.forEach((pl) => {
-      const active = userPlan === pl.id;
-      const card = document.createElement('div');
-      card.className = active ? 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 p-4 space-y-2' : 'rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2';
-      const top = document.createElement('div'); top.className = 'flex items-center justify-between';
-      const t = document.createElement('p'); t.className = 'text-base font-black text-slate-900'; t.textContent = pl.title;
-      const pr = document.createElement('span'); pr.className = 'rounded-full bg-white px-2.5 py-0.5 text-xs font-black text-emerald-900 border border-emerald-200'; pr.textContent = pl.price;
-      top.append(t, pr); card.appendChild(top);
-      const ul = document.createElement('ul'); ul.className = 'space-y-1 text-xs font-bold text-slate-700';
-      pl.feats.forEach((f) => { const li = document.createElement('li'); li.textContent = '✓ ' + f; ul.appendChild(li); });
-      card.appendChild(ul);
-      if (pl.id !== 'free' && !active) {
-        const btn = document.createElement('button'); btn.type = 'button';
-        btn.className = 'tap-btn w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-extrabold text-white';
-        btn.textContent = isFr ? 'Passer à cette offre' : 'Upgrade to this plan';
-        btn.addEventListener('click', () => {
-          if (pl.url) {
-            const sep = pl.url.includes('?') ? '&' : '?';
-            const uid = currentUser ? encodeURIComponent(currentUser.id) : '';
-            const em = currentUser && currentUser.email ? encodeURIComponent(currentUser.email) : '';
-            window.open(`${pl.url}${sep}client_reference_id=${uid}&prefilled_email=${em}`, '_blank', 'noopener');
-          } else {
-            $('plansFeedback').textContent = isFr
-              ? 'Paiement Stripe prêt à être activé : ajoutez votre lien Stripe Payment Link dans index.html.'
-              : 'Stripe checkout ready: add your Stripe Payment Link URL in index.html to go live.';
-            $('plansFeedback').classList.remove('hidden');
-          }
-        });
-        card.appendChild(btn);
-      }
-      box.appendChild(card);
-    });
-  }
-  if ($('openPlansModalBtn')) $('openPlansModalBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
-  if ($('carePlansBtn')) $('carePlansBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
-  if ($('closePlansModalBtn')) $('closePlansModalBtn').addEventListener('click', () => $('plansModal').classList.add('hidden'));
-
-
-  document.addEventListener('pointerdown', () => {
-    try {
-      if (!window.__cgAudioCtx) window.__cgAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (window.__cgAudioCtx.state === 'suspended') window.__cgAudioCtx.resume().catch(() => {});
-    } catch (_) {}
-  }, { once: true, passive: true });
-
-  renderRoleViews();
+      renderRoleViews();
       return;
     }
     activeTab = tab;
@@ -1484,7 +1365,6 @@
     if (f === 4) return ['08:00', '12:00', '16:00', '20:00'];
     return [baseTime || '08:00'];
   }
-  let editingMedId = null;
   function openEditMedModal(med) {
     editingMedId = med.id;
     const isFr = state.lang === 'fr';
@@ -2019,7 +1899,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v59';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v60';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -3302,6 +3182,126 @@
       handleSignOut();
     });
   });
+
+    
+  if ($('closeEditMedBtn')) $('closeEditMedBtn').addEventListener('click', () => $('editMedModal').classList.add('hidden'));
+  if ($('saveEditMedBtn')) $('saveEditMedBtn').addEventListener('click', async () => {
+    const name = $('editMedNameInput').value.trim();
+    const baseTime = $('editMedTimeInput').value || '08:00';
+    const freq = Number($('editMedFreqSelect').value || 1);
+    if (!name || !editingMedId) return;
+    const oldMed = state.meds.find((x) => x.id === editingMedId);
+    const imgSnap = (oldMed && oldMed.imageData) || '';
+    const times = getDoseTimesForFreq(freq, baseTime);
+    const cleanBaseName = name.replace(/\s*\(\d+\/\d+\)$/, '').trim();
+    state.meds = state.meds.filter((x) => x.id !== editingMedId);
+    const newEntries = times.map((tStr, idx) => {
+      const lbl = times.length > 1 ? `${cleanBaseName} (${idx + 1}/${times.length})` : cleanBaseName;
+      const localId = 'm' + (Date.now() + idx);
+      const obj = { id: localId, nameAr: lbl, nameEn: lbl, time: tStr, taken: false, imageData: idx === 0 ? imgSnap : '' };
+      state.meds.push(obj);
+      return { obj, localId, name: lbl, time: tStr };
+    });
+    saveState(); renderMeds(); $('editMedModal').classList.add('hidden');
+    if (navigator.onLine && client && currentUser && currentSeniorId && !String(editingMedId).startsWith('m')) {
+      try { await client.from('medications').delete().eq('id', editingMedId).eq('senior_id', currentSeniorId); }
+      catch (_) { enqueueSync('med_delete', { id: editingMedId }); }
+    } else if (currentUser && !String(editingMedId).startsWith('m')) {
+      enqueueSync('med_delete', { id: editingMedId });
+    }
+    for (const c of newEntries) {
+      if (navigator.onLine && client && currentUser && currentSeniorId) {
+        try {
+          const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name: c.name, dosage: c.time }).select('id').single();
+          if (error) throw error;
+          if (data && data.id) { c.obj.id = data.id; saveState(); renderMeds(); }
+        } catch (_) { enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time }); }
+      } else if (currentUser) enqueueSync('med_add', { localId: c.localId, name: c.name, time: c.time });
+    }
+    editingMedId = null;
+  });
+
+
+  function renderPlansModal() {
+    const isFr = state.lang === 'fr';
+    $('plansModalTitle').textContent = isFr ? 'Abonnements CareGuard' : 'CareGuard Plans';
+    const planLabel = userPlan === 'plus' ? 'CareGuard Plus' : (userPlan === 'agency' ? (isFr ? 'Infirmier / Agence' : 'Nurse / Agency') : (isFr ? 'Gratuit' : 'Free'));
+    $('plansCurrentBadge').textContent = (isFr ? 'Plan actuel : ' : 'Current plan: ') + planLabel;
+    const box = $('plansCardsList'); box.replaceChildren();
+    $('plansFeedback').classList.add('hidden');
+    const plans = [
+      {
+        id: 'free',
+        title: isFr ? 'Gratuit (Découverte)' : 'Free (Starter)',
+        price: isFr ? '0 € / mois' : '$0 / month',
+        feats: isFr
+          ? ['1 senior • Bouton "Je vais bien" & Eau', 'Fiche d\'urgence médicale & Salon', '1 proche lié']
+          : ['1 senior • "I\'m OK" & Water reminders', 'Emergency Medical ID & Lounge', '1 linked family member'],
+        url: ''
+      },
+      {
+        id: 'plus',
+        title: 'CareGuard Plus',
+        price: isFr ? '7 € / mois' : '$7 / month',
+        feats: isFr
+          ? ['Lecture IA des ordonnances incluse', 'Famille illimitée + Infirmier', 'Alertes auto 24/7 + Messages vocaux']
+          : ['AI prescription scanning included', 'Unlimited family + Nurse', '24/7 missed alerts + Voice chat'],
+        url: STRIPE_PLUS_URL
+      },
+      {
+        id: 'agency',
+        title: isFr ? 'Infirmier / Soins à domicile' : 'Nurse / Home Care Agency',
+        price: isFr ? '24 € / mois' : '$24 / month',
+        feats: isFr
+          ? ['Suivi multi-patients illimité', 'Tableau complet médicaments, eau & RDV', 'Alertes temps réel & messagerie directe']
+          : ['Unlimited multi-patient monitoring', 'Full meds, water & appointment log', 'Real-time alerts & direct chat'],
+        url: STRIPE_AGENCY_URL
+      }
+    ];
+    plans.forEach((pl) => {
+      const active = userPlan === pl.id;
+      const card = document.createElement('div');
+      card.className = active ? 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 p-4 space-y-2' : 'rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2';
+      const top = document.createElement('div'); top.className = 'flex items-center justify-between';
+      const t = document.createElement('p'); t.className = 'text-base font-black text-slate-900'; t.textContent = pl.title;
+      const pr = document.createElement('span'); pr.className = 'rounded-full bg-white px-2.5 py-0.5 text-xs font-black text-emerald-900 border border-emerald-200'; pr.textContent = pl.price;
+      top.append(t, pr); card.appendChild(top);
+      const ul = document.createElement('ul'); ul.className = 'space-y-1 text-xs font-bold text-slate-700';
+      pl.feats.forEach((f) => { const li = document.createElement('li'); li.textContent = '✓ ' + f; ul.appendChild(li); });
+      card.appendChild(ul);
+      if (pl.id !== 'free' && !active) {
+        const btn = document.createElement('button'); btn.type = 'button';
+        btn.className = 'tap-btn w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-extrabold text-white';
+        btn.textContent = isFr ? 'Passer à cette offre' : 'Upgrade to this plan';
+        btn.addEventListener('click', () => {
+          if (pl.url) {
+            const sep = pl.url.includes('?') ? '&' : '?';
+            const uid = currentUser ? encodeURIComponent(currentUser.id) : '';
+            const em = currentUser && currentUser.email ? encodeURIComponent(currentUser.email) : '';
+            window.open(`${pl.url}${sep}client_reference_id=${uid}&prefilled_email=${em}`, '_blank', 'noopener');
+          } else {
+            $('plansFeedback').textContent = isFr
+              ? 'Paiement Stripe prêt à être activé : ajoutez votre lien Stripe Payment Link dans index.html.'
+              : 'Stripe checkout ready: add your Stripe Payment Link URL in index.html to go live.';
+            $('plansFeedback').classList.remove('hidden');
+          }
+        });
+        card.appendChild(btn);
+      }
+      box.appendChild(card);
+    });
+  }
+  if ($('openPlansModalBtn')) $('openPlansModalBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
+  if ($('carePlansBtn')) $('carePlansBtn').addEventListener('click', () => { renderPlansModal(); $('plansModal').classList.remove('hidden'); });
+  if ($('closePlansModalBtn')) $('closePlansModalBtn').addEventListener('click', () => $('plansModal').classList.add('hidden'));
+
+
+  document.addEventListener('pointerdown', () => {
+    try {
+      if (!window.__cgAudioCtx) window.__cgAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (window.__cgAudioCtx.state === 'suspended') window.__cgAudioCtx.resume().catch(() => {});
+    } catch (_) {}
+  }, { once: true, passive: true });
 
   renderRoleViews();
   loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
