@@ -1422,7 +1422,11 @@
       if (m.snoozeUntil && Date.now() >= m.snoozeUntil) return true;
       if (m.snoozeUntil && Date.now() < m.snoozeUntil) return false;
       const key = m.id + '|' + today + '|' + m.time;
-      return m.time === nowTime && !(state.alertedMedKeys || []).includes(key);
+      if ((state.alertedMedKeys || []).includes(key)) return false;
+      const [mh, mm] = String(m.time || '').split(':').map(Number);
+      if (!Number.isFinite(mh) || !Number.isFinite(mm)) return false;
+      const diffMins = (now.getHours() * 60 + now.getMinutes()) - (mh * 60 + mm);
+      return diffMins >= 0 && diffMins <= 180;
     });
     if (!dueList.length) return;
     const m = dueList[0];
@@ -1972,7 +1976,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v52';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v53';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2854,8 +2858,11 @@
             const isT = takenSet.has(m.id);
             const mr = document.createElement('div'); mr.className = 'flex items-center justify-between gap-2 text-xs font-bold';
             const ml = document.createElement('span'); ml.className = 'text-slate-800 truncate'; ml.textContent = m.name + (m.dosage ? ` (${m.dosage})` : '');
-            const mb = document.createElement('span'); mb.className = isT ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-amber-900';
-            mb.textContent = isT ? (isFr ? '✓ Pris' : '✓ Taken') : (isFr ? '⏳ En attente' : '⏳ Pending');
+            const nowHHMM = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
+            const isLate = !isT && /^\d{2}:\d{2}$/.test(m.dosage || '') && nowHHMM > m.dosage;
+            const mb = document.createElement('span');
+            mb.className = isT ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : (isLate ? 'shrink-0 rounded-full bg-rose-100 px-2 py-0.5 text-rose-900' : 'shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-amber-900');
+            mb.textContent = isT ? (isFr ? '✓ Pris' : '✓ Taken') : (isLate ? (isFr ? '⚠️ En retard' : '⚠️ Overdue') : (isFr ? '⏳ En attente' : '⏳ Pending'));
             mr.append(ml, mb); medSec.appendChild(mr);
           });
         }
