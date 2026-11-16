@@ -366,7 +366,7 @@
     </div>
   </section>
 
-  <!-- CARE PORTAL VIEW (Family, Nurse, Home Care Center — Completely Separate from Senior View) -->
+  <!-- CARE PORTAL VIEW (Family, Nurse, Home Care Center — Clean 3-Tab Layout) -->
   <section id="carePortalView" class="hidden space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2 rounded-3xl border border-teal-200 bg-white p-4 shadow-sm">
       <div>
@@ -374,36 +374,51 @@
         <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
       </div>
       <div class="flex items-center gap-2">
-        <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-950" style="min-height:38px;">⭐ Plan</button>
         <button id="careEnablePushBtn" type="button" class="tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-900" style="min-height:38px;">🔔 Push</button>
         <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
-        <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">Changer rôle</button>
-        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">Quitter</button>
       </div>
     </div>
 
-    <!-- Link by Senior Registration Code (CG-...) -->
-    <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
-      <p id="careLinkTitle" class="text-base font-black text-slate-900">Lier un senior par son code (CG-...)</p>
-      <div class="flex gap-2">
-        <input id="careCodeInput" autocomplete="off" type="text" dir="ltr" placeholder="CG-123456" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-bold uppercase" />
-        <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">Lier</button>
-      </div>
-      <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
+    <!-- Clean 3-Tab Navigation Bar -->
+    <div class="grid grid-cols-3 gap-2 rounded-2xl border border-teal-200 bg-white p-1.5 shadow-sm">
+      <button id="careTabPatientsBtn" type="button" class="tap-btn rounded-xl bg-teal-700 px-3 py-2.5 text-xs font-black text-white">👥 Patients</button>
+      <button id="careTabAlertsBtn" type="button" class="tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700">🚨 Alertes (0)</button>
+      <button id="careTabLinkBtn" type="button" class="tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700">🔗 Lier & Compte</button>
     </div>
 
-
-    <!-- Care Portal Summary & Filter Bar -->
-    <div id="careSummaryBar" class="hidden flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-teal-200 bg-teal-50/70 p-3">
-      <span id="careSummaryText" class="text-xs font-black text-teal-950"></span>
-      <div class="flex flex-1 items-center gap-2 min-w-[200px]">
-        <input id="careFilterInput" type="search" placeholder="🔍 Nom ou code CG-..." class="w-full rounded-xl border border-teal-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-900" />
-        <button id="careAlertsOnlyBtn" type="button" class="tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-extrabold text-rose-900">🚨 Alertes</button>
+    <!-- TAB 1: PATIENTS -->
+    <div id="carePanelPatients" class="space-y-3">
+      <div id="careSummaryBar" class="hidden flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-teal-200 bg-teal-50/70 p-3">
+        <span id="careSummaryText" class="text-xs font-black text-teal-950"></span>
+        <div class="flex flex-1 items-center gap-2 min-w-[200px]">
+          <input id="careFilterInput" type="search" placeholder="🔍 Nom ou code CG-..." class="w-full rounded-xl border border-teal-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-900" />
+          <button id="careAlertsOnlyBtn" type="button" class="tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-extrabold text-rose-900">🚨 Alertes</button>
+        </div>
       </div>
+      <div id="careLinkedList" class="space-y-3"></div>
     </div>
 
-    <!-- Linked Seniors List / Home Care Table / Nurse & Family Direct Voice & Text -->
-    <div id="careLinkedList" class="space-y-3"></div>
+    <!-- TAB 2: ALERTS -->
+    <div id="carePanelAlerts" class="hidden space-y-3">
+      <div id="careAlertsFeed" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 3: LINK & ACCOUNT -->
+    <div id="carePanelLink" class="hidden space-y-3">
+      <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
+        <p id="careLinkTitle" class="text-base font-black text-slate-900">Lier un senior par son code (CG-...)</p>
+        <div class="flex gap-2">
+          <input id="careCodeInput" autocomplete="off" type="text" dir="ltr" placeholder="CG-123456" class="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-2.5 text-base font-bold uppercase" />
+          <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">Lier</button>
+        </div>
+        <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap gap-2">
+        <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-950">⭐ Plan & Abonnement</button>
+        <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-xs font-extrabold text-slate-800">Changer rôle</button>
+        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-extrabold text-rose-800">Quitter</button>
+      </div>
+    </div>
   </section>
 
   <!-- ISOLATED FULL-SCREEN CHAT ROOM PAGE -->
@@ -792,7 +807,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v71',
+    VERSION: 'v72',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -839,9 +854,40 @@
   let careLoadSeq = 0;
   let careFilterText = '';
   let careAlertsOnly = false;
+  let activeCareTab = 'patients';
   let cachedCardsData = [];
 
+  function switchCareTab(tab) {
+    activeCareTab = tab;
+    const isFr = CG.getState().lang === 'fr';
+    if ($('carePanelPatients')) $('carePanelPatients').classList.toggle('hidden', tab !== 'patients');
+    if ($('carePanelAlerts')) $('carePanelAlerts').classList.toggle('hidden', tab !== 'alerts');
+    if ($('carePanelLink')) $('carePanelLink').classList.toggle('hidden', tab !== 'link');
+
+    const activeCls = 'tap-btn rounded-xl bg-teal-700 px-3 py-2.5 text-xs font-black text-white shadow-sm';
+    const idleCls = 'tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700';
+    if ($('careTabPatientsBtn')) $('careTabPatientsBtn').className = tab === 'patients' ? activeCls : idleCls;
+    if ($('careTabAlertsBtn')) $('careTabAlertsBtn').className = tab === 'alerts' ? activeCls : idleCls;
+    if ($('careTabLinkBtn')) $('careTabLinkBtn').className = tab === 'link' ? activeCls : idleCls;
+
+    if ($('careTabPatientsBtn')) $('careTabPatientsBtn').textContent = isFr ? '👥 Patients' : '👥 Patients';
+    if ($('careTabLinkBtn')) $('careTabLinkBtn').textContent = isFr ? '🔗 Lier & Compte' : '🔗 Link & Account';
+  }
+
   function initCarePortalControls() {
+    if ($('careTabPatientsBtn') && !$('careTabPatientsBtn').dataset.cgBound) {
+      $('careTabPatientsBtn').dataset.cgBound = '1';
+      $('careTabPatientsBtn').addEventListener('click', () => switchCareTab('patients'));
+    }
+    if ($('careTabAlertsBtn') && !$('careTabAlertsBtn').dataset.cgBound) {
+      $('careTabAlertsBtn').dataset.cgBound = '1';
+      $('careTabAlertsBtn').addEventListener('click', () => switchCareTab('alerts'));
+    }
+    if ($('careTabLinkBtn') && !$('careTabLinkBtn').dataset.cgBound) {
+      $('careTabLinkBtn').dataset.cgBound = '1';
+      $('careTabLinkBtn').addEventListener('click', () => switchCareTab('link'));
+    }
+
     const sendBtn = $('careSendLinkBtn');
     if (sendBtn && !sendBtn.dataset.cgBound) {
       sendBtn.dataset.cgBound = '1';
@@ -895,6 +941,71 @@
     }
   }
 
+  function renderCareAlertsTab() {
+    const feed = $('careAlertsFeed');
+    if (!feed) return;
+    const isFr = CG.getState().lang === 'fr';
+    const client = CG.getClient();
+    const withAlerts = cachedCardsData.filter((d) => d.kind === 'approved' && d.openAlerts.length > 0);
+    const totalGrouped = withAlerts.reduce((acc, d) => {
+      const s = new Set(d.openAlerts.map((a) => a.message || a.alert_type || 'Alert'));
+      return acc + s.size;
+    }, 0);
+    if ($('careTabAlertsBtn')) {
+      $('careTabAlertsBtn').textContent = (isFr ? '🚨 Alertes' : '🚨 Alerts') + ` (${totalGrouped})`;
+    }
+    feed.replaceChildren();
+    if (!withAlerts.length) {
+      const ok = document.createElement('div');
+      ok.className = 'rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-center text-sm font-black text-emerald-900';
+      ok.textContent = isFr ? '✅ Aucune alerte ouverte — Tout va bien.' : '✅ No open alerts — All clear.';
+      feed.appendChild(ok);
+      return;
+    }
+    withAlerts.forEach(({ sp, openAlerts }) => {
+      const grouped = new Map();
+      openAlerts.forEach((al) => {
+        const msg = al.message || al.alert_type || 'Alert';
+        if (!grouped.has(msg)) grouped.set(msg, { msg, ids: [] });
+        grouped.get(msg).ids.push(al.id);
+      });
+      const box = document.createElement('div');
+      box.className = 'rounded-3xl border-2 border-rose-200 bg-white p-4 shadow-sm space-y-2.5';
+      const hdr = document.createElement('div');
+      hdr.className = 'flex items-center justify-between gap-2 pb-2 border-b border-rose-100';
+      const nm = document.createElement('p'); nm.className = 'text-sm font-black text-slate-900';
+      nm.textContent = `🚨 ${sp.display_name || 'Senior'}` + (sp.registration_number ? ` (${sp.registration_number})` : '');
+      const ackAllBtn = document.createElement('button');
+      ackAllBtn.type = 'button';
+      ackAllBtn.className = 'rounded-xl bg-rose-800 px-3 py-1.5 text-xs font-extrabold text-white';
+      ackAllBtn.textContent = isFr ? 'Tout vu ✓' : 'Ack All ✓';
+      ackAllBtn.addEventListener('click', async () => {
+        await client.from('alerts').update({ status: 'resolved' }).in('id', openAlerts.map((a) => a.id));
+        CG.loadCarePortalData();
+      });
+      hdr.append(nm, ackAllBtn);
+      box.appendChild(hdr);
+
+      grouped.forEach((g) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-950';
+        const txt = document.createElement('span');
+        txt.textContent = g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : '');
+        const ackBtn = document.createElement('button');
+        ackBtn.type = 'button';
+        ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
+        ackBtn.textContent = isFr ? 'Vu ✓' : 'Ack ✓';
+        ackBtn.addEventListener('click', async () => {
+          await client.from('alerts').update({ status: 'resolved' }).in('id', g.ids);
+          CG.loadCarePortalData();
+        });
+        row.append(txt, ackBtn);
+        box.appendChild(row);
+      });
+      feed.appendChild(box);
+    });
+  }
+
   function renderCareCards() {
     const list = $('careLinkedList');
     if (!list) return;
@@ -904,7 +1015,8 @@
     const currentUser = CG.getCurrentUser();
     const userRole = CG.getUserRole();
 
-    // Update Summary Bar
+    renderCareAlertsTab();
+
     const sumBar = $('careSummaryBar');
     if (sumBar) {
       const approvedCount = cachedCardsData.filter((d) => d.kind === 'approved').length;
@@ -942,7 +1054,7 @@
       p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
       p.textContent = cachedCardsData.length
         ? (isFr ? 'Aucun patient ne correspond au filtre.' : 'No patients match the current filter.')
-        : (isFr ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.');
+        : (isFr ? 'Aucun senior lié — ouvrez « 🔗 Lier & Compte » pour entrer un code CG-...' : 'No linked seniors yet — open "🔗 Link & Account" to enter a CG-... code.');
       list.replaceChildren(p);
       return;
     }
@@ -1013,51 +1125,15 @@
       top.append(info, pills);
       card.appendChild(top);
 
-      // Grouped alerts + Ack All
+      // Compact single-line alert summary button (keeps patient card clean; full alerts live in Alerts tab)
       if (openAlerts.length) {
-        const grouped = new Map();
-        openAlerts.forEach((al) => {
-          const msg = al.message || al.alert_type || 'Alert';
-          if (!grouped.has(msg)) grouped.set(msg, { msg, ids: [] });
-          grouped.get(msg).ids.push(al.id);
-        });
-        const alBox = document.createElement('div');
-        alBox.className = 'rounded-2xl border-2 border-rose-300 bg-rose-50 p-3 space-y-2';
-        if (grouped.size > 1) {
-          const allIds = openAlerts.map((a) => a.id);
-          const hdrRow = document.createElement('div');
-          hdrRow.className = 'flex items-center justify-between gap-2 pb-1 border-b border-rose-200 text-xs font-black text-rose-900';
-          const hdrTxt = document.createElement('span');
-          hdrTxt.textContent = isFr ? `🚨 ${grouped.size} alertes actives` : `🚨 ${grouped.size} active alerts`;
-          const ackAllBtn = document.createElement('button');
-          ackAllBtn.type = 'button';
-          ackAllBtn.className = 'rounded-xl bg-rose-800 px-2.5 py-1 text-[11px] font-extrabold text-white';
-          ackAllBtn.textContent = isFr ? 'Tout vu ✓' : 'Ack All ✓';
-          ackAllBtn.addEventListener('click', async () => {
-            await client.from('alerts').update({ status: 'resolved' }).in('id', allIds);
-            CG.loadCarePortalData();
-          });
-          hdrRow.append(hdrTxt, ackAllBtn);
-          alBox.appendChild(hdrRow);
-        }
-        grouped.forEach((g) => {
-          const alRow = document.createElement('div');
-          alRow.className = 'flex items-center justify-between gap-2 text-xs font-extrabold text-rose-950';
-          const alTxt = document.createElement('span');
-          alTxt.textContent = '🚨 ' + g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : '');
-          const ackBtn = document.createElement('button');
-          ackBtn.type = 'button';
-          ackBtn.style.minHeight = '30px';
-          ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
-          ackBtn.textContent = isFr ? 'Vu ✓' : 'Ack ✓';
-          ackBtn.addEventListener('click', async () => {
-            await client.from('alerts').update({ status: 'resolved' }).in('id', g.ids);
-            CG.loadCarePortalData();
-          });
-          alRow.append(alTxt, ackBtn);
-          alBox.appendChild(alRow);
-        });
-        card.appendChild(alBox);
+        const uniqueAlerts = new Set(openAlerts.map((a) => a.message || a.alert_type || 'Alert')).size;
+        const alSummaryBtn = document.createElement('button');
+        alSummaryBtn.type = 'button';
+        alSummaryBtn.className = 'flex w-full items-center justify-between rounded-2xl border border-rose-300 bg-rose-50 px-3.5 py-2 text-xs font-black text-rose-900';
+        alSummaryBtn.textContent = isFr ? `🚨 ${uniqueAlerts} alerte(s) active(s) — Voir dans Alertes ›` : `🚨 ${uniqueAlerts} active alert(s) — View in Alerts ›`;
+        alSummaryBtn.addEventListener('click', () => switchCareTab('alerts'));
+        card.appendChild(alSummaryBtn);
       }
 
       // Collapsible details
@@ -1175,6 +1251,7 @@
 
   CG.loadCarePortalData = async function () {
     initCarePortalControls();
+    switchCareTab(activeCareTab);
     const mySeq = ++careLoadSeq;
     const list = $('careLinkedList');
     const client = CG.getClient();
@@ -2421,7 +2498,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v71';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v72';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
