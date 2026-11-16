@@ -1194,8 +1194,9 @@
         try {
           const name = m.nameEn || m.nameAr || 'Med';
           const { data, error } = await client.from('medications').insert({ senior_id: currentSeniorId, name, dosage: m.time || '08:00' }).select('id').single();
-          if (!error && data && data.id) { m.id = data.id; changed = true; }
-        } catch (_) {}
+          if (error) { window.__lastSyncErr = 'Meds: ' + error.message; }
+          else if (data && data.id) { m.id = data.id; changed = true; }
+        } catch (e) { window.__lastSyncErr = 'Meds: ' + ((e && e.message) || e); }
       }
     }
     const queuedApptIds = new Set((state.pendingQueue || []).filter((q) => q.type === 'appt_add').map((q) => q.payload && q.payload.localId));
@@ -1364,11 +1365,12 @@
   async function syncBatteryToSupabase(pct, charging) {
     if (!client || !currentUser || !currentSeniorId) return;
     try {
-      await client.from('device_status').insert({ senior_id: currentSeniorId, battery_percent: pct, is_charging: !!charging });
+      const { error: batErr } = await client.from('device_status').insert({ senior_id: currentSeniorId, battery_percent: pct, is_charging: !!charging });
+      if (batErr) window.__lastSyncErr = (window.__lastSyncErr ? window.__lastSyncErr + ' | ' : '') + 'Bat: ' + batErr.message;
       if (pct <= 30 && !charging) {
         await client.from('alerts').insert({ senior_id: currentSeniorId, alert_type: 'low_battery', severity: pct <= 15 ? 'critical' : 'warning', status: 'open', message: `Low phone battery: ${pct}%` });
       }
-    } catch (_) {}
+    } catch (e) { window.__lastSyncErr = 'Bat: ' + ((e && e.message) || e); }
   }
   function updateBatteryUI(pct, charging) {
     lastBatteryPct = pct; lastBatteryCharging = charging;
@@ -1970,7 +1972,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v51';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v52';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2590,9 +2592,13 @@
     try {
       const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId });
       if (error) throw error;
-      state.lastServerCheckInIso = nowIso; saveState(); applyLang(); syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); syncUnsyncedLocalItems(); flushPendingQueue();
+      window.__lastSyncErr = '';
+      state.lastServerCheckInIso = nowIso; saveState(); applyLang();
+      await syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging);
+      await syncUnsyncedLocalItems();
+      await flushPendingQueue();
       fb.className = 'rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-900';
-      fb.textContent = state.lang === 'fr' ? '✓ Confirmation « Je vais bien » enregistrée sur le serveur.' : '✓ Confirmed on server!';
+      fb.textContent = (state.lang === 'fr' ? '✓ Confirmation « Je vais bien » enregistrée sur le serveur.' : '✓ Confirmed on server!') + (window.__lastSyncErr ? ' ⚠️ ' + window.__lastSyncErr : '');
     } catch (err) {
       const msg = (err && (err.message || err.details)) || '';
       const isNet = !navigator.onLine || /fetch|network|timeout/i.test(msg);
