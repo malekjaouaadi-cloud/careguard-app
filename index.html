@@ -210,24 +210,7 @@
         </div>
       </button>
 
-      <!-- Tile 3: Appointments -->
-      <button id="tileApptsBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-purple-200 bg-[#f5f0ff] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="tileApptsTitle" class="text-xl font-black text-purple-950">Rendez-vous</h3>
-            <p id="tileApptsSub" class="mt-0.5 text-sm font-bold text-purple-800">Médecin</p>
-          </div>
-          <svg class="h-11 w-11 shrink-0 text-purple-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <div class="mt-3 flex items-center justify-between w-full">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-600 text-white font-black text-sm">›</span>
-          <span id="tileApptsHint" class="text-xs font-bold text-purple-800">Prochain RDV</span>
-        </div>
-      </button>
-
-      <!-- Tile 4: Drink Water (Tap to log cup / hear reminder) -->
+      <!-- Tile 3: Drink Water -->
       <button id="tileWaterBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-sky-200 bg-[#edf7ff] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
@@ -244,72 +227,53 @@
         </div>
       </button>
 
-      <!-- Tile 5: AI Assistant -->
-      <button id="tileAiBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-amber-200 bg-[#fff7eb] p-4 text-start shadow-sm">
+      <!-- Tile 4: Nurse & Family Direct Messages -->
+      <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-teal-200 bg-[#e6f7f5] p-4 text-start shadow-sm">
         <div class="flex w-full items-start justify-between gap-2">
           <div>
-            <h3 id="aiHeading" class="text-xl font-black text-slate-900">Assistant IA</h3>
-            <p id="aiSubheading" class="mt-0.5 text-sm font-bold text-amber-900">Posez une question</p>
+            <h3 id="directCareTitle" class="text-lg font-black leading-snug text-slate-900">Infirmier & Famille</h3>
+            <p id="directCareSub" class="mt-0.5 text-xs font-bold text-teal-900">Messages directs</p>
           </div>
-          <svg class="h-11 w-11 shrink-0 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
+          <span id="directCareBadge" class="rounded-full bg-teal-700 px-2.5 py-1 text-sm font-black text-white">🩺</span>
         </div>
         <div class="mt-3 flex items-center justify-between w-full">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-600 text-white font-black text-sm">›</span>
-          <span id="tileAiHint" class="text-xs font-bold text-amber-900">Voix et texte</span>
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-teal-700 text-white font-black text-sm">›</span>
+          <span class="text-xs font-bold text-teal-900">Chat / Vocal</span>
         </div>
       </button>
-
-      <!-- Tile 6: Health Profile Card -->
-      <button id="openProfileModalBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-teal-200 bg-[#e9fbf8] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="updateInfoBtnLabel" class="text-lg font-black leading-snug text-teal-950">Fiche de santé</h3>
-            <p id="tileProfileSub" class="mt-0.5 text-sm font-bold text-teal-800">Voir et modifier</p>
-          </div>
-          <svg class="h-11 w-11 shrink-0 text-teal-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <div class="mt-3 flex items-center justify-between w-full">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-teal-600 text-white font-black text-sm">›</span>
-          <span id="tileProfileHint" class="text-xs font-bold text-teal-800">Infos médicales</span>
-        </div>
-      </button>
-
     </div>
 
-    <!-- Full-Width Chat Room Banner -->
-    <button id="openChatPageBtn" type="button" class="tap-btn flex w-full items-center justify-between gap-3 rounded-3xl border border-emerald-200 bg-[#dff7e9] px-5 py-4 text-start shadow-sm">
-      <div class="flex items-center gap-3">
-        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white font-black text-lg">›</span>
-        <div>
-          <h3 id="chatLauncherTitle" class="text-xl font-black text-slate-900">Salon CareGuard</h3>
-          <p id="chatLauncherSub" class="text-sm font-bold text-emerald-900">Discutez par voix ou écrit dans le salon</p>
-        </div>
-      </div>
-      <svg class="h-12 w-12 shrink-0 text-emerald-700" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-      </svg>
-    </button>
-
-    <!-- Direct Messages & Link Requests with Nurse / Family -->
+    <!-- Pending Care Link Requests -->
     <div id="seniorPendingLinksCard" class="hidden rounded-3xl border-2 border-amber-300 bg-amber-50 p-4 space-y-2.5 shadow-sm">
       <p id="seniorPendingLinksTitle" class="text-base font-black text-amber-950">Nouvelles demandes de liaison :</p>
       <div id="seniorPendingLinksList" class="space-y-2"></div>
     </div>
 
-    <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex w-full items-center justify-between gap-3 rounded-3xl border border-teal-200 bg-[#e6f7f5] px-5 py-3.5 text-start shadow-sm">
-      <div class="flex items-center gap-3">
-        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-white font-black text-lg">›</span>
+    <!-- Compact Secondary Tools Row (Health Profile & AI Assistant) -->
+    <div class="grid grid-cols-2 gap-3">
+      <button id="openProfileModalBtn" type="button" class="tap-btn flex items-center justify-between gap-2 rounded-2xl border border-teal-200 bg-white px-4 py-3 text-start shadow-sm">
         <div>
-          <h3 id="directCareTitle" class="text-lg font-black text-slate-900">Messages Infirmier & Famille</h3>
-          <p id="directCareSub" class="text-xs font-bold text-teal-900">Demandez de l'aide ou de charger le téléphone</p>
+          <h3 id="updateInfoBtnLabel" class="text-sm font-black text-teal-950">Fiche de santé</h3>
+          <p id="tileProfileSub" class="text-[11px] font-bold text-teal-700">Voir / modifier</p>
         </div>
-      </div>
-      <span id="directCareBadge" class="rounded-full bg-teal-700 px-2.5 py-0.5 text-xs font-black text-white">🩺</span>
-    </button>
+        <span id="tileProfileHint" class="hidden"></span>
+        <span class="text-lg">📄</span>
+      </button>
+      <button id="tileAiBtn" type="button" class="tap-btn flex items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-start shadow-sm">
+        <div>
+          <h3 id="aiHeading" class="text-sm font-black text-slate-900">Assistant IA</h3>
+          <p id="aiSubheading" class="text-[11px] font-bold text-amber-800">Poser une question</p>
+        </div>
+        <span id="tileAiHint" class="hidden"></span>
+        <span class="text-lg">💡</span>
+      </button>
+    </div>
+
+    <!-- Hidden compatibility placeholders (already in Bottom Nav) -->
+    <div class="hidden">
+      <button id="tileApptsBtn" type="button"><span id="tileApptsTitle"></span><span id="tileApptsSub"></span><span id="tileApptsHint"></span></button>
+      <button id="openChatPageBtn" type="button"><span id="chatLauncherTitle"></span><span id="chatLauncherSub"></span></button>
+    </div>
 
     <div id="waterAiFeedback" class="hidden rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-bold text-sky-950"></div>
   </section>
@@ -807,7 +771,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v72',
+    VERSION: 'v73',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2498,7 +2462,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v72';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v73';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
