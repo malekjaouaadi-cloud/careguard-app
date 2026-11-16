@@ -791,7 +791,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v68',
+    VERSION: 'v70',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1926,7 +1926,7 @@
       const title = document.createElement('p'); title.className = 'text-xl font-black text-slate-900'; title.textContent = state.lang === 'fr' ? m.nameAr : m.nameEn;
       const nowHHMM = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
       const hasValidTime = /^\d{2}:\d{2}$/.test(m.time || '');
-      const isFutureDose = !m.taken && hasValidTime && nowHHMM < m.time;
+      const isFutureDose = hasValidTime && nowHHMM < m.time;
       const isLate = !m.taken && hasValidTime && nowHHMM > m.time;
       const time = document.createElement('p');
       time.className = isLate ? 'text-base font-extrabold text-rose-700' : 'text-base font-bold text-slate-600';
@@ -1941,10 +1941,12 @@
       }
       const takeBtn = document.createElement('button'); takeBtn.type = 'button';
       if (isFutureDose) takeBtn.className = 'hidden';
-      else takeBtn.className = m.taken ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2 text-base font-extrabold text-white' : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2 text-base font-extrabold text-emerald-900';
+      else takeBtn.className = m.taken ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2 text-base font-extrabold text-white opacity-95 cursor-default' : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2 text-base font-extrabold text-emerald-900';
+      if (m.taken) takeBtn.disabled = true;
       takeBtn.textContent = m.taken ? (state.lang === 'fr' ? 'Pris ✓' : 'Taken ✓') : (state.lang === 'fr' ? 'Marquer pris' : 'Mark Taken');
       takeBtn.addEventListener('click', async () => {
-        m.taken = !m.taken; saveState(); renderMeds();
+        if (m.taken) return;
+        m.taken = true; saveState(); renderMeds();
         if (navigator.onLine && client && currentUser && currentSeniorId && !String(m.id).startsWith('m')) {
           try { const { error } = await client.from('medication_logs').insert({ medication_id: m.id, senior_id: currentSeniorId, status: m.taken ? 'taken' : 'skipped' }); if (error) throw error; }
           catch (_) { enqueueSync('med_log', { medId: m.id, taken: m.taken }); }
@@ -2418,7 +2420,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v68';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v70';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
