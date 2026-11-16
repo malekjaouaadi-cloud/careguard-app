@@ -1867,7 +1867,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v61';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v62';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2658,13 +2658,24 @@
     if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
     const isFr = state.lang === 'fr';
     try {
-      const { data: links, error } = await client
+      const { data: rawLinks, error } = await client
         .from('senior_care_links')
-        .select('senior_id, status, senior_profiles(id, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date)')
+        .select('id, senior_id, status, senior_profiles(id, invite_code, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date)')
         .eq('requester_user_id', currentUser.id);
       if (error) throw error;
       list.replaceChildren();
-      if (!links || !links.length) {
+      // Deduplicate links by senior_id (prefer approved > pending > rejected)
+      const rank = { approved: 3, pending: 2, rejected: 1 };
+      const dedupMap = new Map();
+      (rawLinks || []).forEach((lk) => {
+        const key = lk.senior_id || lk.id;
+        const prev = dedupMap.get(key);
+        if (!prev || (rank[lk.status] || 0) > (rank[prev.status] || 0)) {
+          dedupMap.set(key, lk);
+        }
+      });
+      const links = Array.from(dedupMap.values());
+      if (!links.length) {
         const p = document.createElement('p');
         p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
         p.textContent = isFr ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.';
@@ -2676,16 +2687,25 @@
           const pend = document.createElement('div');
           const isRej = lk.status === 'rejected';
           pend.className = isRej
-            ? 'rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
-            : 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
-          pend.textContent = isRej
+            ? 'flex items-center justify-between gap-2 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
+            : 'flex items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
+          const pTxt = document.createElement('span');
+          pTxt.textContent = isRej
             ? (isFr ? '❌ Demande refusée.' : '❌ Link request was declined.')
             : (isFr ? "⏳ Demande de liaison en attente d'approbation." : '⏳ Link request pending senior approval.');
+          const rmPendBtn = document.createElement('button');
+          rmPendBtn.type = 'button';
+          rmPendBtn.className = 'shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-extrabold text-slate-700';
+          rmPendBtn.textContent = isFr ? '🗑️ Retirer' : '🗑️ Remove';
+          rmPendBtn.addEventListener('click', async () => {
+            await client.from('senior_care_links').delete().eq('requester_user_id', currentUser.id).eq('senior_id', lk.senior_id);
+            loadCarePortalData();
+          });
+          pend.append(pTxt, rmPendBtn);
           list.appendChild(pend);
           continue;
         }
         const sp = lk.senior_profiles || { id: lk.senior_id, display_name: isFr ? 'Senior lié' : 'Linked Senior' };
-        // Fetch latest check-in, battery, meds, today's med logs, and appointments for this linked senior
         const todayStr = getLocalDateStr();
         const todayStart = getLocalDayStartIso();
         const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }, { data: openAlerts }, { data: lastDm }] = await Promise.all([
@@ -2694,7 +2714,7 @@
           client.from('medications').select('id, name, dosage').eq('senior_id', sp.id).order('created_at', { ascending: true }),
           client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
           client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
-          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(5),
+          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(20),
           client.from('care_direct_messages').select('sender_name, message_text, audio_data, created_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(1)
         ]);
         const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (isFr ? 'Aucun' : 'None');
@@ -2708,12 +2728,22 @@
         const card = document.createElement('div');
         card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-3';
         const top = document.createElement('div');
-        top.className = 'flex flex-wrap items-center justify-between gap-2';
+        top.className = 'flex flex-wrap items-start justify-between gap-2';
         const info = document.createElement('div');
+        const nameRow = document.createElement('div');
+        nameRow.className = 'flex flex-wrap items-center gap-2';
         const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
+        nameRow.appendChild(nm);
+        if (sp.invite_code) {
+          const codeTag = document.createElement('span');
+          codeTag.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-extrabold text-slate-600';
+          codeTag.textContent = '🔑 ' + sp.invite_code;
+          nameRow.appendChild(codeTag);
+        }
+        info.appendChild(nameRow);
         const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
         addr.textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
-        info.append(nm, addr);
+        info.appendChild(addr);
         const mParts = [];
         if (sp.blood_type) mParts.push('🩸 ' + sp.blood_type);
         if (sp.allergies) mParts.push('⚠️ ' + (sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : sp.allergies));
@@ -2733,22 +2763,28 @@
         top.append(info, pills);
         card.appendChild(top);
 
-        // Open Automatic Alerts (Missed Check-in / Missed Med / Low Battery)
+        // Group & deduplicate identical open alerts
         if (Array.isArray(openAlerts) && openAlerts.length) {
+          const grouped = new Map();
+          openAlerts.forEach((al) => {
+            const msg = al.message || al.alert_type || 'Alert';
+            if (!grouped.has(msg)) grouped.set(msg, { msg, ids: [] });
+            grouped.get(msg).ids.push(al.id);
+          });
           const alBox = document.createElement('div');
           alBox.className = 'rounded-2xl border-2 border-rose-300 bg-rose-50 p-3 space-y-2';
-          openAlerts.forEach((al) => {
+          grouped.forEach((g) => {
             const alRow = document.createElement('div');
             alRow.className = 'flex items-center justify-between gap-2 text-xs font-extrabold text-rose-950';
             const alTxt = document.createElement('span');
-            alTxt.textContent = '🚨 ' + (al.message || al.alert_type);
+            alTxt.textContent = '🚨 ' + g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : '');
             const ackBtn = document.createElement('button');
             ackBtn.type = 'button';
             ackBtn.style.minHeight = '30px';
             ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
             ackBtn.textContent = isFr ? 'Vu ✓' : 'Ack ✓';
             ackBtn.addEventListener('click', async () => {
-              await client.from('alerts').update({ status: 'resolved' }).eq('id', al.id);
+              await client.from('alerts').update({ status: 'resolved' }).in('id', g.ids);
               loadCarePortalData();
             });
             alRow.append(alTxt, ackBtn);
@@ -2757,7 +2793,10 @@
           card.appendChild(alBox);
         }
 
-        // Detailed Medications Status Today
+        // Collapsible details section (Meds + Appointments) — collapsed by default to keep mobile view compact
+        const detailsWrap = document.createElement('div');
+        detailsWrap.className = 'hidden space-y-2.5';
+
         const medSec = document.createElement('div');
         medSec.className = 'rounded-2xl border border-slate-200 bg-slate-50/80 p-3 space-y-1.5';
         const medHdr = document.createElement('p'); medHdr.className = 'text-xs font-black text-slate-700';
@@ -2780,9 +2819,8 @@
             mr.append(ml, mb); medSec.appendChild(mr);
           });
         }
-        card.appendChild(medSec);
+        detailsWrap.appendChild(medSec);
 
-        // Detailed Appointments & Attendance
         const apptList = Array.isArray(appts) ? appts : [];
         const apptSec = document.createElement('div');
         apptSec.className = 'rounded-2xl border border-purple-200/80 bg-purple-50/50 p-3 space-y-1.5';
@@ -2803,7 +2841,8 @@
             arRow.append(al, ab); apptSec.appendChild(arRow);
           });
         }
-        card.appendChild(apptSec);
+        detailsWrap.appendChild(apptSec);
+        card.appendChild(detailsWrap);
 
         if (Array.isArray(lastDm) && lastDm[0]) {
           const dm = lastDm[0];
@@ -2816,9 +2855,19 @@
 
         const acts = document.createElement('div');
         acts.className = 'flex flex-wrap gap-2';
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900';
+        toggleBtn.textContent = isFr ? '▾ Détails' : '▾ Details';
+        toggleBtn.addEventListener('click', () => {
+          const open = detailsWrap.classList.toggle('hidden');
+          toggleBtn.textContent = open ? (isFr ? '▾ Détails' : '▾ Details') : (isFr ? '▴ Masquer' : '▴ Hide');
+        });
+        acts.appendChild(toggleBtn);
+
         const fullBtn = document.createElement('button');
         fullBtn.type = 'button';
-        fullBtn.className = 'tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-900';
+        fullBtn.className = 'tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-900';
         fullBtn.textContent = isFr ? '📋 État complet' : '📋 Full Status';
         fullBtn.addEventListener('click', () => openCareFullStatusModal({ sp, lastChk, batPct, batVal, medList, takenSet, waterToday, apptList, openAlerts }));
         acts.appendChild(fullBtn);
@@ -2826,18 +2875,39 @@
         if (spTelHref) {
           const callA = document.createElement('a');
           callA.href = spTelHref;
-          callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-extrabold text-emerald-900';
+          callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-extrabold text-emerald-900';
           callA.textContent = isFr ? '📞 Appeler' : '📞 Call';
           acts.appendChild(callA);
         }
         if (userRole === 'family' || userRole === 'nurse' || userRole === 'center') {
           const msgBtn = document.createElement('button');
           msgBtn.type = 'button';
-          msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-4 py-2 text-xs font-extrabold text-white';
-          msgBtn.textContent = isFr ? '🎤 Messages vocaux & écrits' : '🎤 Voice & Text Chat';
+          msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-3.5 py-2 text-xs font-extrabold text-white';
+          msgBtn.textContent = isFr ? '🎤 Chat' : '🎤 Chat';
           msgBtn.addEventListener('click', () => openDirectCareModal(sp.id, sp.display_name));
           acts.appendChild(msgBtn);
         }
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800';
+        removeBtn.textContent = isFr ? '🗑️ Retirer' : '🗑️ Remove';
+        removeBtn.addEventListener('click', async () => {
+          const msg = isFr
+            ? `Retirer ${sp.display_name || 'ce patient'} de votre liste de suivi ?`
+            : `Remove ${sp.display_name || 'this patient'} from your care list?`;
+          if (!window.confirm(msg)) return;
+          const { error: delErr } = await client
+            .from('senior_care_links')
+            .delete()
+            .eq('requester_user_id', currentUser.id)
+            .eq('senior_id', sp.id);
+          if (delErr) {
+            alert(friendlyError(delErr));
+            return;
+          }
+          loadCarePortalData();
+        });
+        acts.appendChild(removeBtn);
         card.appendChild(acts);
         list.appendChild(card);
       }
