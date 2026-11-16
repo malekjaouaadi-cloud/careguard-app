@@ -1132,7 +1132,7 @@
   async function processSyncItem(item) {
     if (!client || !currentUser || !currentSeniorId) return false;
     if (item.type === 'checkin') {
-      const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, source: 'senior_button', checked_in_at: item.createdAt });
+      const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, checked_in_at: item.createdAt });
       if (error) throw error;
       state.lastServerCheckInIso = item.createdAt;
       return true;
@@ -1970,7 +1970,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v49';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v50';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2588,7 +2588,7 @@
       return;
     }
     try {
-      const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId, source: 'senior_button' });
+      const { error } = await client.from('safety_checkins').insert({ senior_id: currentSeniorId });
       if (error) throw error;
       state.lastServerCheckInIso = nowIso; saveState(); applyLang();
       fb.className = 'rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-900';
