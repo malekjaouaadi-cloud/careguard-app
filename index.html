@@ -311,6 +311,17 @@
       <span id="directCareBadge" class="rounded-full bg-teal-700 px-2.5 py-0.5 text-xs font-black text-white">🩺</span>
     </button>
 
+    <button id="openVisitRequestBtn" type="button" class="tap-btn flex w-full items-center justify-between gap-3 rounded-3xl border border-sky-200 bg-[#edf6ff] px-5 py-3.5 text-start shadow-sm">
+      <div class="flex items-center gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-700 text-white font-black text-lg">🩺</span>
+        <div>
+          <h3 id="visitReqBtnTitle" class="text-lg font-black text-slate-900">Demander un infirmier à domicile</h3>
+          <p id="visitReqBtnSub" class="text-xs font-bold text-sky-900">Soins non urgents (US / Canada) • Urgence : 911</p>
+        </div>
+      </div>
+      <span class="rounded-full bg-sky-700 px-2.5 py-0.5 text-xs font-black text-white">US/CA</span>
+    </button>
+
     <div id="waterAiFeedback" class="hidden rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-bold text-sky-950"></div>
   </section>
 
@@ -374,6 +385,7 @@
         <p id="carePortalSub" class="text-xs font-bold text-teal-800"></p>
       </div>
       <div class="flex items-center gap-2">
+        <button id="careVisitReqBtn" type="button" class="hidden tap-btn rounded-xl border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-900" style="min-height:38px;">🩺 Visite</button>
         <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-950" style="min-height:38px;">⭐ Plan</button>
         <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
         <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">Changer rôle</button>
@@ -389,6 +401,59 @@
         <button id="careSendLinkBtn" type="button" class="tap-btn shrink-0 rounded-2xl bg-teal-700 px-5 py-2.5 text-base font-extrabold text-white">Lier</button>
       </div>
       <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
+    </div>
+
+    <!-- Nurse Verification & Availability Card (US / Canada, Nurse Role Only) -->
+    <div id="nurseVerifyCard" class="hidden rounded-3xl border border-sky-200 bg-white p-4 shadow-sm space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 id="nvTitle" class="text-base font-black text-slate-900">🪪 Vérification Infirmier(ère) (US / CA)</h3>
+          <p id="nvSub" class="text-xs font-bold text-slate-600">Licence professionnelle requise pour accepter des visites</p>
+        </div>
+        <span id="nvStatusBadge" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800">📋 Non enregistré</span>
+      </div>
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <select id="nvCountry" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold">
+          <option value="CA">🇨🇦 Canada</option>
+          <option value="US">🇺🇸 United States</option>
+        </select>
+        <input id="nvRegion" type="text" placeholder="État / Province (ex: QC, ON, NY)" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+        <input id="nvCity" type="text" placeholder="Ville (ex: Montréal, Toronto, NYC)" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+        <select id="nvCredType" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold">
+          <option value="RN">RN (Registered Nurse)</option>
+          <option value="LPN">LPN (Licensed Practical Nurse)</option>
+          <option value="RPN">RPN (Registered Practical Nurse)</option>
+          <option value="CNA">CNA (Certified Nursing Assistant)</option>
+          <option value="PAB">PAB (Préposé aux bénéficiaires)</option>
+        </select>
+        <input id="nvLicense" type="text" placeholder="N° de licence (ex: OIIQ / CNO / State)" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+        <input id="nvPhone" type="tel" placeholder="Téléphone pro (ex: +1 514 ...)" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">
+          <input id="nvAvailable" type="checkbox" class="h-4 w-4 accent-sky-700" />
+          <span id="nvAvailableLabel">Disponible pour visites à domicile</span>
+        </label>
+        <button id="nvGpsBtn" type="button" class="tap-btn rounded-xl border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-900">📍 Ma position</button>
+        <span id="nvGpsStatus" class="text-xs font-bold text-slate-500"></span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-xs font-extrabold text-slate-700" for="nvDocFile" id="nvDocLabel">Carte / Licence (photo ou PDF) :</label>
+        <input id="nvDocFile" type="file" accept="image/*,.pdf" class="text-xs font-bold text-slate-700" />
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <button id="nvSaveBtn" type="button" class="tap-btn rounded-xl bg-sky-700 px-4 py-2 text-xs font-extrabold text-white">💾 Enregistrer profil pro</button>
+        <span id="nvMsg" class="text-xs font-extrabold"></span>
+      </div>
+    </div>
+
+    <!-- Nurse Incoming Home Visit Requests Card -->
+    <div id="nurseVisitsCard" class="hidden rounded-3xl border border-emerald-200 bg-white p-4 shadow-sm space-y-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <h3 id="nvrTitle" class="text-base font-black text-slate-900">🚗 Demandes de visite à proximité</h3>
+        <button id="nvrRefreshBtn" type="button" class="tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-900">↻</button>
+      </div>
+      <div id="nvrList" class="space-y-2"></div>
     </div>
 
     <!-- Care Portal Summary & Filter Bar -->
@@ -761,6 +826,50 @@
 </div>
 
 
+<!-- Home Nurse Visit Request Modal (US / CA, Non-Emergency) -->
+<div id="visitRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+  <div class="w-full max-w-lg rounded-3xl border-2 border-sky-200 bg-white p-5 shadow-xl space-y-3 my-auto">
+    <div class="flex items-center justify-between gap-2">
+      <div>
+        <h3 id="vrModalTitle" class="text-xl font-black text-slate-900">🩺 Demander un infirmier (US / CA)</h3>
+        <p id="vrEmergencyWarn" class="text-xs font-black text-rose-700">⚠️ Urgence vitale ? Appelez le 911 immédiatement.</p>
+      </div>
+      <button id="closeVisitRequestBtn" type="button" class="rounded-xl bg-slate-100 px-3 py-1.5 text-sm font-black text-slate-700">✕</button>
+    </div>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <select id="vrCountry" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold">
+        <option value="CA">🇨🇦 Canada</option>
+        <option value="US">🇺🇸 United States</option>
+      </select>
+      <input id="vrCity" type="text" placeholder="Ville (ex: Montréal, Toronto, NYC)" class="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+    </div>
+    <input id="vrAddress" type="text" placeholder="Quartier / Code porte / Étage (optionnel)" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold" />
+    <select id="vrCareType" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold">
+      <option value="vitals">🩺 Constantes / Tension & Glycémie</option>
+      <option value="med_assist">💊 Aide à la prise des médicaments</option>
+      <option value="wound_care">🩹 Pansement / Soins infirmiers</option>
+      <option value="daily_help">🤝 Aide quotidienne à domicile</option>
+    </select>
+    <textarea id="vrNotes" rows="2" placeholder="Précisions pour l'infirmier(ère)..." class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-bold"></textarea>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <button id="vrGpsBtn" type="button" class="tap-btn rounded-xl border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-900">📍 Utiliser ma position GPS</button>
+      <span id="vrGpsText" class="text-xs font-bold text-slate-500"></span>
+    </div>
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 space-y-1.5">
+      <p id="vrNearestTitle" class="text-xs font-black text-slate-800">👩‍⚕️ Infirmiers vérifiés disponibles à proximité :</p>
+      <div id="vrNearestList" class="space-y-1 text-xs font-bold text-slate-600"></div>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <button id="vrSubmitBtn" type="button" class="tap-btn rounded-xl bg-sky-700 px-5 py-2.5 text-sm font-black text-white">🩺 Envoyer la demande</button>
+      <span id="vrStatusMsg" class="text-xs font-extrabold"></span>
+    </div>
+    <div class="border-t border-slate-200 pt-2 space-y-1.5">
+      <p id="vrMyTitle" class="text-xs font-black text-slate-700">📋 Mes demandes récentes :</p>
+      <div id="vrMyList" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+    </div>
+  </div>
+</div>
+
 <div id="plansModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
   <div class="my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-4">
     <div class="flex items-center justify-between gap-2">
@@ -778,7 +887,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v65',
+    VERSION: 'v66',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2377,7 +2486,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v65';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v66';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2950,6 +3059,8 @@
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alerts' }, (payload) => {
         if (['family', 'nurse', 'center'].includes(userRole)) {
           loadCarePortalData();
+      if ($('careVisitReqBtn')) $('careVisitReqBtn').classList.toggle('hidden', userRole === 'nurse');
+      if (window.CG && window.CG.loadNurseModule) window.CG.loadNurseModule();
           const msg = payload && payload.new && payload.new.message ? payload.new.message : 'CareGuard Alert';
           sendSwNotification('🚨 CareGuard Alert', msg, 'cg-alert-' + ((payload.new && payload.new.id) || Date.now()));
         }
@@ -3869,6 +3980,317 @@
   loadCustomRingtone().then((url) => { if (url) customAudioDataUrl = url; });
   initBatteryMonitor();
   applyLang();
+})();
+</script>
+
+<!-- ===== MODULE 4: US/CA NURSE VERIFICATION & HOME VISIT REQUESTS ===== -->
+<script>
+(function () {
+  'use strict';
+  const CG = window.CG;
+  const $ = CG.$;
+  let nvLat = null, nvLng = null;
+  let vrLat = null, vrLng = null;
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    if ([lat1, lon1, lat2, lon2].some((v) => typeof v !== 'number' || Number.isNaN(v))) return null;
+    const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
+  }
+
+  function applyVisitLang() {
+    const isFr = CG.getState().lang === 'fr';
+    if ($('visitReqBtnTitle')) $('visitReqBtnTitle').textContent = isFr ? 'Demander un infirmier à domicile' : 'Request Home Nurse Visit';
+    if ($('visitReqBtnSub')) $('visitReqBtnSub').textContent = isFr ? 'Soins non urgents (US / Canada) • Urgence : 911' : 'Non-emergency care (US / Canada) • Emergency: 911';
+    if ($('careVisitReqBtn')) $('careVisitReqBtn').textContent = isFr ? '🩺 Visite' : '🩺 Visit';
+    if ($('nvTitle')) $('nvTitle').textContent = isFr ? '🪪 Vérification Infirmier(ère) (US / CA)' : '🪪 Nurse Verification (US / CA)';
+    if ($('nvSub')) $('nvSub').textContent = isFr ? 'Licence professionnelle requise pour accepter des visites' : 'Professional license required to accept home visits';
+    if ($('nvAvailableLabel')) $('nvAvailableLabel').textContent = isFr ? 'Disponible pour visites à domicile' : 'Available for home visits';
+    if ($('nvGpsBtn')) $('nvGpsBtn').textContent = isFr ? '📍 Ma position' : '📍 My GPS';
+    if ($('nvDocLabel')) $('nvDocLabel').textContent = isFr ? 'Carte / Licence (photo ou PDF) :' : 'License card (photo or PDF):';
+    if ($('nvSaveBtn')) $('nvSaveBtn').textContent = isFr ? '💾 Enregistrer profil pro' : '💾 Save Pro Profile';
+    if ($('nvrTitle')) $('nvrTitle').textContent = isFr ? '🚗 Demandes de visite à proximité' : '🚗 Nearby Visit Requests';
+    if ($('vrModalTitle')) $('vrModalTitle').textContent = isFr ? '🩺 Demander un infirmier (US / CA)' : '🩺 Request Home Nurse (US / CA)';
+    if ($('vrEmergencyWarn')) $('vrEmergencyWarn').textContent = isFr ? '⚠️ Urgence vitale ? Appelez le 911 immédiatement.' : '⚠️ Life-threatening emergency? Call 911 immediately.';
+    if ($('vrGpsBtn')) $('vrGpsBtn').textContent = isFr ? '📍 Utiliser ma position GPS' : '📍 Use my GPS location';
+    if ($('vrNearestTitle')) $('vrNearestTitle').textContent = isFr ? '👩‍⚕️ Infirmiers vérifiés disponibles à proximité :' : '👩‍⚕️ Available verified nurses nearby:';
+    if ($('vrSubmitBtn')) $('vrSubmitBtn').textContent = isFr ? '🩺 Envoyer la demande' : '🩺 Send Visit Request';
+    if ($('vrMyTitle')) $('vrMyTitle').textContent = isFr ? '📋 Mes demandes récentes :' : '📋 My recent requests:';
+  }
+
+  async function loadNurseProfileAndVisits() {
+    applyVisitLang();
+    const role = CG.getUserRole();
+    const client = CG.getClient();
+    const user = CG.getCurrentUser();
+    const isNurse = role === 'nurse';
+    if ($('nurseVerifyCard')) $('nurseVerifyCard').classList.toggle('hidden', !isNurse);
+    if ($('nurseVisitsCard')) $('nurseVisitsCard').classList.toggle('hidden', !isNurse);
+    if (!isNurse || !client || !user) return;
+    const isFr = CG.getState().lang === 'fr';
+    try {
+      const { data: np } = await client.from('nurse_profiles').select('*').eq('user_id', user.id).maybeSingle();
+      const badge = $('nvStatusBadge');
+      if (np) {
+        if ($('nvCountry')) $('nvCountry').value = np.country || 'CA';
+        if ($('nvRegion')) $('nvRegion').value = np.region || '';
+        if ($('nvCity')) $('nvCity').value = np.city || '';
+        if ($('nvCredType')) $('nvCredType').value = np.credential_type || 'RN';
+        if ($('nvLicense')) $('nvLicense').value = np.license_number || '';
+        if ($('nvPhone')) $('nvPhone').value = np.phone || '';
+        if ($('nvAvailable')) $('nvAvailable').checked = !!np.is_available;
+        nvLat = np.lat; nvLng = np.lng;
+        if (nvLat && $('nvGpsStatus')) $('nvGpsStatus').textContent = '✓ GPS';
+        if (badge) {
+          if (np.verification_status === 'verified') {
+            badge.className = 'rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-900';
+            badge.textContent = isFr ? '✅ Vérifié' : '✅ Verified';
+          } else if (np.verification_status === 'rejected') {
+            badge.className = 'rounded-full bg-rose-100 px-3 py-1 text-xs font-extrabold text-rose-900';
+            badge.textContent = isFr ? '❌ Refusé' : '❌ Rejected';
+          } else {
+            badge.className = 'rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold text-amber-900';
+            badge.textContent = isFr ? '⏳ En attente' : '⏳ Pending';
+          }
+        }
+      } else if (badge) {
+        badge.className = 'rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-800';
+        badge.textContent = isFr ? '📋 Non enregistré' : '📋 Not registered';
+      }
+      await loadIncomingVisitRequests(np);
+    } catch (_) {}
+  }
+
+  async function loadIncomingVisitRequests(np) {
+    const box = $('nvrList');
+    const client = CG.getClient();
+    const user = CG.getCurrentUser();
+    if (!box || !client || !user) return;
+    const isFr = CG.getState().lang === 'fr';
+    box.replaceChildren();
+    if (!np || np.verification_status !== 'verified') {
+      const p = document.createElement('p'); p.className = 'text-xs font-bold text-slate-500';
+      p.textContent = isFr ? 'Votre profil doit être vérifié pour voir les demandes.' : 'Your profile must be verified to view visit requests.';
+      box.appendChild(p);
+      return;
+    }
+    const { data, error } = await client.from('visit_requests').select('*').in('status', ['open', 'accepted']).order('created_at', { ascending: false }).limit(20);
+    if (error || !data || !data.length) {
+      const p = document.createElement('p'); p.className = 'text-xs font-bold text-slate-500';
+      p.textContent = isFr ? 'Aucune demande ouverte pour le moment.' : 'No open visit requests right now.';
+      box.appendChild(p);
+      return;
+    }
+    data.forEach((vr) => {
+      const dist = haversineKm(np.lat, np.lng, vr.lat, vr.lng);
+      const row = document.createElement('div');
+      row.className = 'flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3';
+      const info = document.createElement('div');
+      const t = document.createElement('p'); t.className = 'text-xs font-black text-slate-900';
+      t.textContent = `${vr.country} • ${vr.city} • ${vr.care_type}` + (dist !== null ? ` (~${dist} km)` : '');
+      const sub = document.createElement('p'); sub.className = 'text-xs font-bold text-slate-600';
+      sub.textContent = [vr.address_note, vr.notes].filter(Boolean).join(' — ') || (isFr ? 'Visite à domicile' : 'Home care visit');
+      info.append(t, sub);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      if (vr.status === 'open') {
+        btn.className = 'tap-btn rounded-xl bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white';
+        btn.textContent = isFr ? '✅ Accepter' : '✅ Accept';
+        btn.addEventListener('click', async () => {
+          await client.from('visit_requests').update({ status: 'accepted', nurse_user_id: user.id }).eq('id', vr.id);
+          loadIncomingVisitRequests(np);
+        });
+      } else {
+        btn.className = 'tap-btn rounded-xl bg-sky-700 px-3 py-1.5 text-xs font-extrabold text-white';
+        btn.textContent = isFr ? '✓ Terminer' : '✓ Complete';
+        btn.addEventListener('click', async () => {
+          await client.from('visit_requests').update({ status: 'completed' }).eq('id', vr.id);
+          loadIncomingVisitRequests(np);
+        });
+      }
+      row.append(info, btn);
+      box.appendChild(row);
+    });
+  }
+
+  async function saveNurseProfile() {
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    const isFr = CG.getState().lang === 'fr';
+    const msg = $('nvMsg');
+    if (!client || !user) return;
+    const region = $('nvRegion').value.trim(), city = $('nvCity').value.trim(), license = $('nvLicense').value.trim();
+    if (!region || !city || !license) {
+      msg.className = 'text-xs font-extrabold text-rose-700';
+      msg.textContent = isFr ? 'État/Province, ville et licence requis.' : 'Region, city & license required.';
+      return;
+    }
+    msg.className = 'text-xs font-extrabold text-slate-600';
+    msg.textContent = isFr ? 'Enregistrement...' : 'Saving...';
+    let docUrl = null;
+    const file = $('nvDocFile') && $('nvDocFile').files && $('nvDocFile').files[0];
+    if (file) {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${user.id}/license_${Date.now()}.${ext}`;
+      const { error: upErr } = await client.storage.from('nurse-docs').upload(path, file, { upsert: true });
+      if (!upErr) docUrl = path;
+    }
+    const payload = {
+      user_id: user.id,
+      full_name: CG.getRealDisplayName(),
+      country: $('nvCountry').value,
+      region,
+      city,
+      credential_type: $('nvCredType').value,
+      license_number: license,
+      is_available: !!$('nvAvailable').checked,
+      phone: $('nvPhone').value.trim() || null,
+      lat: nvLat,
+      lng: nvLng
+    };
+    if (docUrl) payload.license_doc_url = docUrl;
+    const { error } = await client.from('nurse_profiles').upsert(payload, { onConflict: 'user_id' });
+    if (error) {
+      msg.className = 'text-xs font-extrabold text-rose-700';
+      msg.textContent = CG.friendlyError(error);
+      return;
+    }
+    msg.className = 'text-xs font-extrabold text-emerald-700';
+    msg.textContent = isFr ? '✓ Profil enregistré' : '✓ Profile saved';
+    loadNurseProfileAndVisits();
+  }
+
+  async function refreshNearestNursesAndMyRequests() {
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    const isFr = CG.getState().lang === 'fr';
+    const nearBox = $('vrNearestList'), myBox = $('vrMyList');
+    if (!client || !user || !nearBox || !myBox) return;
+    const country = $('vrCountry').value;
+    const cityQ = $('vrCity').value.trim().toLowerCase();
+    const { data: nurses } = await client
+      .from('nurse_profiles')
+      .select('full_name, credential_type, city, region, lat, lng, is_available')
+      .eq('verification_status', 'verified')
+      .eq('is_available', true)
+      .eq('country', country)
+      .limit(25);
+    nearBox.replaceChildren();
+    let list = (nurses || []).map((n) => ({
+      n,
+      dist: haversineKm(vrLat, vrLng, n.lat, n.lng),
+      cityMatch: cityQ && String(n.city || '').toLowerCase().includes(cityQ) ? 0 : 1
+    }));
+    list.sort((a, b) => {
+      if (a.dist !== null && b.dist !== null) return a.dist - b.dist;
+      return a.cityMatch - b.cityMatch;
+    });
+    if (!list.length) {
+      const p = document.createElement('p');
+      p.textContent = isFr ? 'Aucun infirmier vérifié disponible dans ce pays pour le moment.' : 'No verified nurses available in this country yet.';
+      nearBox.appendChild(p);
+    } else {
+      list.slice(0, 5).forEach(({ n, dist }) => {
+        const p = document.createElement('p');
+        p.textContent = `✅ ${n.full_name} (${n.credential_type}) — ${n.city}, ${n.region}` + (dist !== null ? ` • ~${dist} km` : '');
+        nearBox.appendChild(p);
+      });
+    }
+
+    const { data: mine } = await client.from('visit_requests').select('*').eq('requester_user_id', user.id).order('created_at', { ascending: false }).limit(5);
+    myBox.replaceChildren();
+    if (!mine || !mine.length) {
+      const p = document.createElement('p'); p.className = 'text-xs font-bold text-slate-500';
+      p.textContent = isFr ? 'Aucune demande récente.' : 'No recent requests.';
+      myBox.appendChild(p);
+    } else {
+      mine.forEach((vr) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold';
+        const s = document.createElement('span');
+        s.textContent = `${vr.city} • ${vr.care_type} (${vr.status})`;
+        row.appendChild(s);
+        if (vr.status === 'open') {
+          const cb = document.createElement('button'); cb.type = 'button';
+          cb.className = 'rounded-lg border border-rose-300 bg-rose-50 px-2 py-0.5 text-[11px] font-extrabold text-rose-800';
+          cb.textContent = isFr ? 'Annuler' : 'Cancel';
+          cb.addEventListener('click', async () => {
+            await client.from('visit_requests').update({ status: 'cancelled' }).eq('id', vr.id);
+            refreshNearestNursesAndMyRequests();
+          });
+          row.appendChild(cb);
+        }
+        myBox.appendChild(row);
+      });
+    }
+  }
+
+  function openVisitModal() {
+    applyVisitLang();
+    $('vrStatusMsg').textContent = '';
+    $('visitRequestModal').classList.remove('hidden');
+    refreshNearestNursesAndMyRequests();
+  }
+
+  if ($('openVisitRequestBtn')) $('openVisitRequestBtn').addEventListener('click', openVisitModal);
+  if ($('careVisitReqBtn')) $('careVisitReqBtn').addEventListener('click', openVisitModal);
+  if ($('closeVisitRequestBtn')) $('closeVisitRequestBtn').addEventListener('click', () => $('visitRequestModal').classList.add('hidden'));
+  if ($('vrCountry')) $('vrCountry').addEventListener('change', refreshNearestNursesAndMyRequests);
+  if ($('vrCity')) $('vrCity').addEventListener('input', refreshNearestNursesAndMyRequests);
+  if ($('nvSaveBtn')) $('nvSaveBtn').addEventListener('click', saveNurseProfile);
+  if ($('nvrRefreshBtn')) $('nvrRefreshBtn').addEventListener('click', loadNurseProfileAndVisits);
+
+  if ($('nvGpsBtn')) $('nvGpsBtn').addEventListener('click', () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      nvLat = pos.coords.latitude; nvLng = pos.coords.longitude;
+      if ($('nvGpsStatus')) $('nvGpsStatus').textContent = '✓ GPS';
+    });
+  });
+
+  if ($('vrGpsBtn')) $('vrGpsBtn').addEventListener('click', () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      vrLat = pos.coords.latitude; vrLng = pos.coords.longitude;
+      if ($('vrGpsText')) $('vrGpsText').textContent = '✓ GPS';
+      refreshNearestNursesAndMyRequests();
+    });
+  });
+
+  if ($('vrSubmitBtn')) $('vrSubmitBtn').addEventListener('click', async () => {
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    const isFr = CG.getState().lang === 'fr';
+    const st = $('vrStatusMsg');
+    if (!client || !user) return;
+    const city = $('vrCity').value.trim();
+    if (!city) {
+      st.className = 'text-xs font-extrabold text-rose-700';
+      st.textContent = isFr ? 'Entrez votre ville.' : 'Enter your city.';
+      return;
+    }
+    const { error } = await client.from('visit_requests').insert({
+      requester_user_id: user.id,
+      country: $('vrCountry').value,
+      city,
+      address_note: $('vrAddress').value.trim() || null,
+      care_type: $('vrCareType').value,
+      notes: $('vrNotes').value.trim() || null,
+      lat: vrLat,
+      lng: vrLng
+    });
+    if (error) {
+      st.className = 'text-xs font-extrabold text-rose-700';
+      st.textContent = CG.friendlyError(error);
+      return;
+    }
+    st.className = 'text-xs font-extrabold text-emerald-700';
+    st.textContent = isFr ? '✓ Demande envoyée' : '✓ Request sent';
+    $('vrNotes').value = '';
+    refreshNearestNursesAndMyRequests();
+  });
+
+  CG.loadNurseModule = loadNurseProfileAndVisits;
+  if ($('chooseNurseRoleBtn')) $('chooseNurseRoleBtn').addEventListener('click', () => setTimeout(loadNurseProfileAndVisits, 100));
+  if ($('langToggleBtn')) $('langToggleBtn').addEventListener('click', () => setTimeout(applyVisitLang, 50));
 })();
 </script>
 </body>
