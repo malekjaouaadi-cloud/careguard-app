@@ -391,6 +391,15 @@
       <p id="careLinkStatus" class="hidden text-xs font-extrabold"></p>
     </div>
 
+    <!-- Care Portal Summary & Filter Bar -->
+    <div id="careSummaryBar" class="hidden flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-teal-200 bg-teal-50/70 p-3">
+      <span id="careSummaryText" class="text-xs font-black text-teal-950"></span>
+      <div class="flex flex-1 items-center gap-2 min-w-[200px]">
+        <input id="careFilterInput" type="search" placeholder="🔍 Nom ou code CG-..." class="w-full rounded-xl border border-teal-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-900" />
+        <button id="careAlertsOnlyBtn" type="button" class="tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-extrabold text-rose-900">🚨 Alertes</button>
+      </div>
+    </div>
+
     <!-- Linked Seniors List / Home Care Table / Nurse & Family Direct Voice & Text -->
     <div id="careLinkedList" class="space-y-3"></div>
   </section>
@@ -764,6 +773,496 @@
   </div>
 </div>
 
+<!-- ===== MODULE 1: CONFIG & HELPERS ===== -->
+<script>
+(function () {
+  'use strict';
+  window.CG_CONFIG = {
+    VERSION: 'v65',
+    SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
+    SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
+    STORAGE_KEY: 'careguard_senior_state_v2',
+    ROLE_STORAGE_KEY: 'careguard_user_role_v1',
+    AUDIO_BUCKET: 'careguard-audio',
+    WATER_SLOTS: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:30'],
+    SENIOR_PROFILE_COLS: 'id, registration_number, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date'
+  };
+
+  window.CG = window.CG || {};
+  window.CG.$ = (id) => document.getElementById(id);
+
+  window.CG.safeTelHref = function (raw) {
+    const clean = String(raw || '').trim();
+    return /^\+?[0-9\s\-]{6,}$/.test(clean) ? ('tel:' + clean.replace(/\s+/g, '')) : '';
+  };
+
+  window.CG.getLocalDateStr = function (d = new Date()) {
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  window.CG.getLocalDayStartIso = function (d = new Date()) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).toISOString();
+  };
+
+  window.CG.friendlyError = function (err, lang) {
+    const raw = String((err && err.message) || err || '');
+    console.warn('[CareGuard diagnostic]', raw);
+    const isFr = (lang || (window.CG.getState && window.CG.getState().lang) || 'fr') === 'fr';
+    if (!navigator.onLine || /fetch|network|offline/i.test(raw)) return isFr ? 'Aucune connexion Internet.' : 'No internet connection.';
+    if (/permission|policy|rls|jwt|auth/i.test(raw)) return isFr ? 'Connectez-vous pour enregistrer.' : 'Please sign in to save.';
+    return isFr ? 'Serveur indisponible ; enregistré localement.' : 'Server unreachable; saved locally.';
+  };
+})();
+</script>
+<!-- ===== MODULE 2: CARE PORTAL (NURSE / FAMILY / HOME CARE) ===== -->
+<script>
+(function () {
+  'use strict';
+  const CG = window.CG;
+  const $ = CG.$;
+
+  let careLoadSeq = 0;
+  let careFilterText = '';
+  let careAlertsOnly = false;
+  let cachedCardsData = [];
+
+  function initCarePortalControls() {
+    const sendBtn = $('careSendLinkBtn');
+    if (sendBtn && !sendBtn.dataset.cgBound) {
+      sendBtn.dataset.cgBound = '1';
+      sendBtn.addEventListener('click', async () => {
+        const st = $('careLinkStatus'); st.classList.remove('hidden');
+        const state = CG.getState();
+        const isFr = state.lang === 'fr';
+        const client = CG.getClient();
+        const currentUser = CG.getCurrentUser();
+        if (!client || !currentUser) {
+          st.className = 'text-xs font-extrabold text-rose-800';
+          st.textContent = isFr ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.';
+          return;
+        }
+        const code = $('careCodeInput').value.trim().toUpperCase();
+        if (!code) return;
+        try {
+          const { error } = await client.rpc('request_link_by_code', {
+            p_code: code,
+            p_role: CG.getUserRole() || 'family',
+            p_name: CG.getRealDisplayName()
+          });
+          if (error) throw error;
+          st.className = 'text-xs font-extrabold text-emerald-800';
+          st.textContent = isFr ? "✓ Demande envoyée — en attente de l'accord du senior." : '✓ Request sent — waiting for senior approval.';
+          $('careCodeInput').value = '';
+          CG.loadCarePortalData();
+        } catch (e) {
+          st.className = 'text-xs font-extrabold text-rose-800';
+          st.textContent = CG.friendlyError(e);
+        }
+      });
+    }
+
+    const filterInp = $('careFilterInput');
+    if (filterInp && !filterInp.dataset.cgBound) {
+      filterInp.dataset.cgBound = '1';
+      filterInp.addEventListener('input', () => {
+        careFilterText = filterInp.value.trim().toLowerCase();
+        renderCareCards();
+      });
+    }
+
+    const alertsToggle = $('careAlertsOnlyBtn');
+    if (alertsToggle && !alertsToggle.dataset.cgBound) {
+      alertsToggle.dataset.cgBound = '1';
+      alertsToggle.addEventListener('click', () => {
+        careAlertsOnly = !careAlertsOnly;
+        renderCareCards();
+      });
+    }
+  }
+
+  function renderCareCards() {
+    const list = $('careLinkedList');
+    if (!list) return;
+    const state = CG.getState();
+    const isFr = state.lang === 'fr';
+    const client = CG.getClient();
+    const currentUser = CG.getCurrentUser();
+    const userRole = CG.getUserRole();
+
+    // Update Summary Bar
+    const sumBar = $('careSummaryBar');
+    if (sumBar) {
+      const approvedCount = cachedCardsData.filter((d) => d.kind === 'approved').length;
+      const alertPatients = cachedCardsData.filter((d) => d.kind === 'approved' && d.openAlerts.length > 0).length;
+      if ($('careSummaryText')) {
+        $('careSummaryText').textContent = isFr
+          ? `👥 ${approvedCount} patient(s) • 🚨 ${alertPatients} avec alertes`
+          : `👥 ${approvedCount} patient(s) • 🚨 ${alertPatients} with alerts`;
+      }
+      const ab = $('careAlertsOnlyBtn');
+      if (ab) {
+        ab.textContent = isFr ? '🚨 Alertes' : '🚨 Alerts';
+        ab.className = careAlertsOnly
+          ? 'tap-btn shrink-0 rounded-xl bg-rose-700 px-3 py-2 text-xs font-extrabold text-white'
+          : 'tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-900';
+      }
+      if ($('careFilterInput')) {
+        $('careFilterInput').placeholder = isFr ? '🔍 Nom ou code CG-...' : '🔍 Name or CG-... code';
+      }
+      sumBar.classList.toggle('hidden', cachedCardsData.length === 0);
+    }
+
+    const filtered = cachedCardsData.filter((item) => {
+      if (item.kind !== 'approved') return !careAlertsOnly && !careFilterText;
+      if (careAlertsOnly && !item.openAlerts.length) return false;
+      if (careFilterText) {
+        const hay = ((item.sp.display_name || '') + ' ' + (item.sp.registration_number || '')).toLowerCase();
+        if (!hay.includes(careFilterText)) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      const p = document.createElement('p');
+      p.className = 'rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500';
+      p.textContent = cachedCardsData.length
+        ? (isFr ? 'Aucun patient ne correspond au filtre.' : 'No patients match the current filter.')
+        : (isFr ? 'Aucun senior lié — entrez un code senior (CG-...) ci-dessus.' : 'No linked seniors yet — enter a senior code (CG-...) above.');
+      list.replaceChildren(p);
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    for (const item of filtered) {
+      if (item.kind !== 'approved') {
+        const pend = document.createElement('div');
+        const isRej = item.status === 'rejected';
+        pend.className = isRej
+          ? 'flex items-center justify-between gap-2 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-extrabold text-rose-900'
+          : 'flex items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-extrabold text-amber-900';
+        const pTxt = document.createElement('span');
+        pTxt.textContent = isRej
+          ? (isFr ? '❌ Demande refusée.' : '❌ Link request was declined.')
+          : (isFr ? "⏳ Demande de liaison en attente d'approbation." : '⏳ Link request pending senior approval.');
+        const rmPendBtn = document.createElement('button');
+        rmPendBtn.type = 'button';
+        rmPendBtn.className = 'shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-extrabold text-slate-700';
+        rmPendBtn.textContent = isFr ? '🗑️ Retirer' : '🗑️ Remove';
+        rmPendBtn.addEventListener('click', async () => {
+          await client.from('senior_care_links').delete().eq('requester_user_id', currentUser.id).eq('senior_id', item.seniorId);
+          CG.loadCarePortalData();
+        });
+        pend.append(pTxt, rmPendBtn);
+        frag.appendChild(pend);
+        continue;
+      }
+
+      const { sp, lastChk, batPct, batVal, medList, takenSet, takenCnt, waterToday, apptList, openAlerts, lastDm } = item;
+      const card = document.createElement('div');
+      card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-3';
+      const top = document.createElement('div');
+      top.className = 'flex flex-wrap items-start justify-between gap-2';
+      const info = document.createElement('div');
+      const nameRow = document.createElement('div');
+      nameRow.className = 'flex flex-wrap items-center gap-2';
+      const nm = document.createElement('p'); nm.className = 'text-lg font-black text-slate-900'; nm.textContent = sp.display_name || 'Senior';
+      nameRow.appendChild(nm);
+      if (sp.registration_number) {
+        const codeTag = document.createElement('span');
+        codeTag.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-extrabold text-slate-600';
+        codeTag.textContent = '🔑 ' + sp.registration_number;
+        nameRow.appendChild(codeTag);
+      }
+      info.appendChild(nameRow);
+      const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
+      addr.textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
+      info.appendChild(addr);
+
+      const mParts = [];
+      if (sp.blood_type) mParts.push('🩸 ' + sp.blood_type);
+      if (sp.allergies) mParts.push('⚠️ ' + (sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : sp.allergies));
+      if (sp.conditions) mParts.push('🩺 ' + ((sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : sp.conditions));
+      if (mParts.length) {
+        const mLine = document.createElement('p');
+        mLine.className = 'mt-1 text-xs font-extrabold text-rose-800';
+        mLine.textContent = mParts.join(' • ');
+        info.appendChild(mLine);
+      }
+
+      const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
+      const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
+      const p2 = document.createElement('span'); p2.className = (batVal !== null && batVal <= 30) ? 'rounded-full bg-rose-100 px-2.5 py-1 text-rose-900' : 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
+      const p3 = document.createElement('span'); p3.className = 'rounded-full bg-sky-100 px-2.5 py-1 text-sky-900'; p3.textContent = `💊 ${takenCnt}/${medList.length}`;
+      const p4 = document.createElement('span'); p4.className = 'rounded-full bg-cyan-100 px-2.5 py-1 text-cyan-900'; p4.textContent = `💧 ${waterToday}/8`;
+      pills.append(p1, p2, p3, p4);
+      top.append(info, pills);
+      card.appendChild(top);
+
+      // Grouped alerts + Ack All
+      if (openAlerts.length) {
+        const grouped = new Map();
+        openAlerts.forEach((al) => {
+          const msg = al.message || al.alert_type || 'Alert';
+          if (!grouped.has(msg)) grouped.set(msg, { msg, ids: [] });
+          grouped.get(msg).ids.push(al.id);
+        });
+        const alBox = document.createElement('div');
+        alBox.className = 'rounded-2xl border-2 border-rose-300 bg-rose-50 p-3 space-y-2';
+        if (grouped.size > 1) {
+          const allIds = openAlerts.map((a) => a.id);
+          const hdrRow = document.createElement('div');
+          hdrRow.className = 'flex items-center justify-between gap-2 pb-1 border-b border-rose-200 text-xs font-black text-rose-900';
+          const hdrTxt = document.createElement('span');
+          hdrTxt.textContent = isFr ? `🚨 ${grouped.size} alertes actives` : `🚨 ${grouped.size} active alerts`;
+          const ackAllBtn = document.createElement('button');
+          ackAllBtn.type = 'button';
+          ackAllBtn.className = 'rounded-xl bg-rose-800 px-2.5 py-1 text-[11px] font-extrabold text-white';
+          ackAllBtn.textContent = isFr ? 'Tout vu ✓' : 'Ack All ✓';
+          ackAllBtn.addEventListener('click', async () => {
+            await client.from('alerts').update({ status: 'resolved' }).in('id', allIds);
+            CG.loadCarePortalData();
+          });
+          hdrRow.append(hdrTxt, ackAllBtn);
+          alBox.appendChild(hdrRow);
+        }
+        grouped.forEach((g) => {
+          const alRow = document.createElement('div');
+          alRow.className = 'flex items-center justify-between gap-2 text-xs font-extrabold text-rose-950';
+          const alTxt = document.createElement('span');
+          alTxt.textContent = '🚨 ' + g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : '');
+          const ackBtn = document.createElement('button');
+          ackBtn.type = 'button';
+          ackBtn.style.minHeight = '30px';
+          ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
+          ackBtn.textContent = isFr ? 'Vu ✓' : 'Ack ✓';
+          ackBtn.addEventListener('click', async () => {
+            await client.from('alerts').update({ status: 'resolved' }).in('id', g.ids);
+            CG.loadCarePortalData();
+          });
+          alRow.append(alTxt, ackBtn);
+          alBox.appendChild(alRow);
+        });
+        card.appendChild(alBox);
+      }
+
+      // Collapsible details
+      const detailsWrap = document.createElement('div');
+      detailsWrap.className = 'hidden space-y-2.5';
+
+      const medSec = document.createElement('div');
+      medSec.className = 'rounded-2xl border border-slate-200 bg-slate-50/80 p-3 space-y-1.5';
+      const medHdr = document.createElement('p'); medHdr.className = 'text-xs font-black text-slate-700';
+      medHdr.textContent = isFr ? '💊 Médicaments aujourd’hui' : "💊 Today's Medications";
+      medSec.appendChild(medHdr);
+      if (!medList.length) {
+        const nmTxt = document.createElement('p'); nmTxt.className = 'text-xs font-bold text-slate-500';
+        nmTxt.textContent = isFr ? 'Aucun médicament enregistré' : 'No medications listed';
+        medSec.appendChild(nmTxt);
+      } else {
+        medList.forEach((m) => {
+          const isT = takenSet.has(m.id);
+          const mr = document.createElement('div'); mr.className = 'flex items-center justify-between gap-2 text-xs font-bold';
+          const ml = document.createElement('span'); ml.className = 'text-slate-800 truncate'; ml.textContent = m.name + (m.dosage ? ` (${m.dosage})` : '');
+          const nowHHMM = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
+          const isLate = !isT && /^\d{2}:\d{2}$/.test(m.dosage || '') && nowHHMM > m.dosage;
+          const mb = document.createElement('span');
+          mb.className = isT ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : (isLate ? 'shrink-0 rounded-full bg-rose-100 px-2 py-0.5 text-rose-900' : 'shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-amber-900');
+          mb.textContent = isT ? (isFr ? '✓ Pris' : '✓ Taken') : (isLate ? (isFr ? '⚠️ En retard' : '⚠️ Overdue') : (isFr ? '⏳ En attente' : '⏳ Pending'));
+          mr.append(ml, mb); medSec.appendChild(mr);
+        });
+      }
+      detailsWrap.appendChild(medSec);
+
+      const apptSec = document.createElement('div');
+      apptSec.className = 'rounded-2xl border border-purple-200/80 bg-purple-50/50 p-3 space-y-1.5';
+      const apptHdr = document.createElement('p'); apptHdr.className = 'text-xs font-black text-purple-950';
+      apptHdr.textContent = isFr ? '📅 Rendez-vous médicaux' : '📅 Medical Appointments';
+      apptSec.appendChild(apptHdr);
+      if (!apptList.length) {
+        const naTxt = document.createElement('p'); naTxt.className = 'text-xs font-bold text-slate-500';
+        naTxt.textContent = isFr ? 'Aucun rendez-vous' : 'No appointments';
+        apptSec.appendChild(naTxt);
+      } else {
+        apptList.forEach((a) => {
+          const arRow = document.createElement('div'); arRow.className = 'flex items-center justify-between gap-2 text-xs font-bold';
+          const iso = String(a.appointment_at || '').slice(0, 16).replace('T', ' ');
+          const al = document.createElement('span'); al.className = 'text-slate-800 truncate'; al.textContent = (a.title || 'RDV') + (iso ? ' • ' + iso : '');
+          const ab = document.createElement('span'); ab.className = a.attended ? 'shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-900' : 'shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-purple-900';
+          ab.textContent = a.attended ? (isFr ? '✓ Honoré' : '✓ Attended') : (isFr ? '⏳ À venir' : '⏳ Upcoming');
+          arRow.append(al, ab); apptSec.appendChild(arRow);
+        });
+      }
+      detailsWrap.appendChild(apptSec);
+      card.appendChild(detailsWrap);
+
+      if (lastDm) {
+        const tm = lastDm.created_at ? new Date(lastDm.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const dmBar = document.createElement('div');
+        dmBar.className = 'rounded-xl border border-teal-200 bg-teal-50/70 px-3 py-2 text-xs font-bold text-teal-950';
+        dmBar.textContent = `💬 ${lastDm.sender_name || ''} (${tm}): ` + (lastDm.message_text || (isFr ? '🎤 Message vocal' : '🎤 Voice message'));
+        card.appendChild(dmBar);
+      }
+
+      const acts = document.createElement('div');
+      acts.className = 'flex flex-wrap gap-2';
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900';
+      toggleBtn.textContent = isFr ? '▾ Détails' : '▾ Details';
+      toggleBtn.addEventListener('click', () => {
+        const hidden = detailsWrap.classList.toggle('hidden');
+        toggleBtn.textContent = hidden ? (isFr ? '▾ Détails' : '▾ Details') : (isFr ? '▴ Masquer' : '▴ Hide');
+      });
+      acts.appendChild(toggleBtn);
+
+      const fullBtn = document.createElement('button');
+      fullBtn.type = 'button';
+      fullBtn.className = 'tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-900';
+      fullBtn.textContent = isFr ? '📋 État complet' : '📋 Full Status';
+      fullBtn.addEventListener('click', () => CG.openCareFullStatusModal({ sp, lastChk, batPct, batVal, medList, takenSet, waterToday, apptList, openAlerts }));
+      acts.appendChild(fullBtn);
+
+      const spTelHref = CG.safeTelHref(sp.senior_phone);
+      if (spTelHref) {
+        const callA = document.createElement('a');
+        callA.href = spTelHref;
+        callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-extrabold text-emerald-900';
+        callA.textContent = isFr ? '📞 Appeler' : '📞 Call';
+        acts.appendChild(callA);
+      }
+      if (['family', 'nurse', 'center'].includes(userRole)) {
+        const msgBtn = document.createElement('button');
+        msgBtn.type = 'button';
+        msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-3.5 py-2 text-xs font-extrabold text-white';
+        msgBtn.textContent = '🎤 Chat';
+        msgBtn.addEventListener('click', () => CG.openDirectCareModal(sp.id, sp.display_name));
+        acts.appendChild(msgBtn);
+      }
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800';
+      removeBtn.textContent = isFr ? '🗑️ Retirer' : '🗑️ Remove';
+      removeBtn.addEventListener('click', async () => {
+        const msg = isFr
+          ? `Retirer ${sp.display_name || 'ce patient'} de votre liste de suivi ?`
+          : `Remove ${sp.display_name || 'this patient'} from your care list?`;
+        if (!window.confirm(msg)) return;
+        const { error: delErr } = await client.from('senior_care_links').delete().eq('requester_user_id', currentUser.id).eq('senior_id', sp.id);
+        if (delErr) { alert(CG.friendlyError(delErr)); return; }
+        CG.loadCarePortalData();
+      });
+      acts.appendChild(removeBtn);
+      card.appendChild(acts);
+      frag.appendChild(card);
+    }
+    list.replaceChildren(frag);
+  }
+
+  CG.loadCarePortalData = async function () {
+    initCarePortalControls();
+    const mySeq = ++careLoadSeq;
+    const list = $('careLinkedList');
+    const client = CG.getClient();
+    const currentUser = CG.getCurrentUser();
+    if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
+    const state = CG.getState();
+    const isFr = state.lang === 'fr';
+    try {
+      const { data: rawLinks, error } = await client
+        .from('senior_care_links')
+        .select(`id, senior_id, status, senior_profiles(${window.CG_CONFIG.SENIOR_PROFILE_COLS})`)
+        .eq('requester_user_id', currentUser.id);
+      if (error) throw error;
+      if (mySeq !== careLoadSeq) return;
+
+      const rank = { approved: 3, pending: 2, rejected: 1 };
+      const dedupMap = new Map();
+      (rawLinks || []).forEach((lk) => {
+        const key = lk.senior_id || lk.id;
+        const prev = dedupMap.get(key);
+        if (!prev || (rank[lk.status] || 0) > (rank[prev.status] || 0)) dedupMap.set(key, lk);
+      });
+      const links = Array.from(dedupMap.values());
+      const todayStr = CG.getLocalDateStr();
+      const todayStart = CG.getLocalDayStartIso();
+
+      const results = await Promise.all(links.map(async (lk) => {
+        if (lk.status !== 'approved') return { kind: 'pending', status: lk.status, seniorId: lk.senior_id };
+        const sp = lk.senior_profiles || { id: lk.senior_id, display_name: isFr ? 'Senior lié' : 'Linked Senior' };
+        const [{ data: chk }, { data: bat }, { data: meds }, { data: mLogs }, { data: appts }, { data: openAlerts }, { data: lastDm }] = await Promise.all([
+          client.from('safety_checkins').select('checked_in_at').eq('senior_id', sp.id).order('checked_in_at', { ascending: false }).limit(1),
+          client.from('device_status').select('battery_percent').eq('senior_id', sp.id).limit(30),
+          client.from('medications').select('id, name, dosage').eq('senior_id', sp.id).order('created_at', { ascending: true }),
+          client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
+          client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
+          client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(20),
+          client.from('care_direct_messages').select('sender_name, message_text, audio_data, created_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(1)
+        ]);
+        const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (isFr ? 'Aucun' : 'None');
+        const batVal = (bat && bat.length) ? bat[bat.length - 1].battery_percent : null;
+        const batPct = batVal !== null ? batVal + '%' : '--%';
+        const medList = Array.isArray(meds) ? meds : [];
+        const takenSet = new Set((mLogs || []).filter((l) => l.status === 'taken').map((l) => l.medication_id));
+        const takenCnt = medList.filter((m) => takenSet.has(m.id)).length;
+        const waterToday = (sp.water_date === todayStr && typeof sp.water_count === 'number') ? sp.water_count : 0;
+        return {
+          kind: 'approved',
+          sp,
+          lastChk,
+          batPct,
+          batVal,
+          medList,
+          takenSet,
+          takenCnt,
+          waterToday,
+          apptList: Array.isArray(appts) ? appts : [],
+          openAlerts: Array.isArray(openAlerts) ? openAlerts : [],
+          lastDm: Array.isArray(lastDm) && lastDm[0] ? lastDm[0] : null
+        };
+      }));
+
+      if (mySeq !== careLoadSeq) return;
+      cachedCardsData = results;
+      renderCareCards();
+    } catch (e) {
+      if (mySeq !== careLoadSeq) return;
+      list.textContent = CG.friendlyError(e);
+    }
+  };
+})();
+</script>
+<!-- ===== MODULE 3: VOICE STORAGE & DIRECT CHAT ===== -->
+<script>
+(function () {
+  'use strict';
+  const CG = window.CG;
+  const $ = CG.$;
+
+  CG.uploadVoiceToStorage = async function (audioDataUrl, folder) {
+    const client = CG.getClient();
+    const currentUser = CG.getCurrentUser();
+    if (!audioDataUrl || !client || !currentUser) return null;
+    if (!String(audioDataUrl).startsWith('data:')) return audioDataUrl;
+    try {
+      const m = audioDataUrl.match(/^data:([^;]+);base64,(.*)$/);
+      if (!m) return audioDataUrl;
+      const mime = m[1] || 'audio/webm';
+      const bin = atob(m[2]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const ext = mime.includes('mp4') ? 'm4a' : (mime.includes('ogg') ? 'ogg' : 'webm');
+      const path = `${folder || 'voice'}/${currentUser.id}/${Date.now()}.${ext}`;
+      const { error } = await client.storage.from(window.CG_CONFIG.AUDIO_BUCKET).upload(path, bytes.buffer, { contentType: mime, upsert: false });
+      if (error) return audioDataUrl;
+      const { data } = client.storage.from(window.CG_CONFIG.AUDIO_BUCKET).getPublicUrl(path);
+      return (data && data.publicUrl) ? data.publicUrl : audioDataUrl;
+    } catch (_) {
+      return audioDataUrl;
+    }
+  };
+})();
+</script>
 <script>
 (function () {
   'use strict';
@@ -839,6 +1338,16 @@
   let ringtoneStopTimer = null;
   let activeTab = 'home';
   let lastBatteryPct = 100, lastBatteryCharging = true;
+  window.CG = window.CG || {};
+  Object.assign(window.CG, {
+    getClient: () => client,
+    getCurrentUser: () => currentUser,
+    getUserRole: () => userRole,
+    getState: () => state,
+    getRealDisplayName: () => getRealDisplayName(),
+    openCareFullStatusModal: (ctx) => openCareFullStatusModal(ctx),
+    openDirectCareModal: (id, nm) => openDirectCareModal(id, nm)
+  });
 
   function getStorageKey(uid) { return STORAGE_KEY + '_' + (uid || (currentUser && currentUser.id) || 'guest'); }
   function loadState(uid) {
@@ -1826,6 +2335,7 @@
 
 
   async function uploadVoiceToStorage(audioDataUrl, folder) {
+    if (window.CG && window.CG.uploadVoiceToStorage) return window.CG.uploadVoiceToStorage(audioDataUrl, folder);
     if (!audioDataUrl || !String(audioDataUrl).startsWith('data:') || !client || !currentUser) return audioDataUrl;
     try {
       const m = String(audioDataUrl).match(/^data:([^;]+);base64,(.+)$/);
@@ -1867,7 +2377,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v64';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v65';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2655,6 +3165,7 @@
 
   let careLoadSeq = 0;
   async function loadCarePortalData() {
+    if (window.CG && window.CG.loadCarePortalData) return window.CG.loadCarePortalData();
     const mySeq = ++careLoadSeq;
     const list = $('careLinkedList');
     if (!list || !client || !currentUser) { if (list) list.replaceChildren(); return; }
