@@ -338,7 +338,6 @@
     <div class="rounded-3xl border-2 border-violet-200 bg-white p-5 shadow-sm space-y-3">
       <div class="flex items-center justify-between gap-2">
         <h2 id="aiPanelTitle" class="text-2xl font-black text-slate-900">Assistant IA</h2>
-        <button id="openAiConfigBtn" type="button" class="tap-btn rounded-xl border-2 border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-extrabold text-violet-900">Config. IA</button>
       </div>
       <button id="aiVoiceTalkBtn" type="button" class="tap-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-700 px-4 py-3.5 text-lg font-black text-white">
         <span id="aiVoiceBtnLabel">🎤 Parler à l'assistant</span>
@@ -688,20 +687,6 @@
   </div>
 </div>
 
-<div id="aiConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
-  <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
-    <div class="flex items-center justify-between">
-      <h3 id="aiConfigTitle" class="text-2xl font-black text-slate-900">Connecter l'IA (Gemini)</h3>
-      <button id="closeAiConfigBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
-    </div>
-    <p id="aiConfigHint" class="mt-2 text-sm font-semibold text-slate-600">Entrez votre clé API Gemini (sauvegardée localement).</p>
-    <div class="mt-4 space-y-3">
-      <input id="geminiKeyInput" type="password" dir="ltr" placeholder="AIza..." class="w-full rounded-2xl border-2 border-slate-300 px-4 py-3 text-lg" />
-      <button id="saveAiKeyBtn" type="button" class="tap-btn w-full rounded-2xl bg-violet-700 px-5 py-3.5 text-lg font-black text-white">Enregistrer sur cet appareil</button>
-      <p id="aiKeyFeedback" class="hidden text-center text-sm font-extrabold text-violet-900"></p>
-    </div>
-  </div>
-</div>
 
 <div id="apptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
   <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
@@ -787,7 +772,7 @@
   const SUPABASE_URL = 'https://jobzviplbwfdoyrdrblt.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi';
   const STORAGE_KEY = 'careguard_senior_state_v2';
-  const AI_KEY_STORAGE = 'careguard_local_gemini_key';
+  try { localStorage.removeItem('careguard_local_gemini_key'); } catch (_) {}
 
   function safeTelHref(raw) {
     const clean = String(raw || '').trim();
@@ -1613,54 +1598,14 @@
     });
   }
 
-  // Gemini AI (Edge Function `gemini-proxy` first when signed in, then local key fallback)
+  // Gemini AI (Server-only via Supabase Edge Function `gemini-proxy`)
   async function callGeminiText(prompt, imageBase64, mimeType) {
-    if (client && currentUser && navigator.onLine) {
-      try {
-        const { data, error } = await client.functions.invoke('gemini-proxy', {
-          body: { prompt, imageBase64: imageBase64 || null, mimeType: mimeType || 'image/jpeg' }
-        });
-        if (!error && data && typeof data.text === 'string' && data.text.trim()) {
-          return data.text;
-        }
-      } catch (_) {}
-    }
-    const key = (localStorage.getItem(AI_KEY_STORAGE) || '').trim();
-    if (!key) return null;
-    const parts = [{ text: prompt }];
-    if (imageBase64) parts.push({ inline_data: { mime_type: mimeType || 'image/jpeg', data: imageBase64 } });
-    const tryModel = async (modelName, apiVer = 'v1beta') => {
-      const cleanName = String(modelName).replace(/^models\//, '');
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), imageBase64 ? 25000 : 12000);
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/${apiVer}/models/${cleanName}:generateContent?key=` + encodeURIComponent(key),
-          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }), signal: ctrl.signal });
-        if (res.ok) { const d = await res.json(); return { ok: true, text: d?.candidates?.[0]?.content?.parts?.[0]?.text || '' }; }
-        if (res.status === 401 || res.status === 403) { const ej = await res.json().catch(() => ({})); throw new Error(ej?.error?.message || ('HTTP ' + res.status)); }
-        return { ok: false };
-      } finally { clearTimeout(timer); }
-    };
-
-    for (const model of ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest', 'gemini-1.5-flash']) {
-      const r = await tryModel(model, 'v1beta');
-      if (r.ok) return r.text;
-    }
-    const listRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(key));
-    if (listRes.ok) {
-      const listJson = await listRes.json();
-      const cands = (listJson.models || []).filter((m) =>
-        Array.isArray(m.supportedGenerationMethods) &&
-        m.supportedGenerationMethods.includes('generateContent') &&
-        /gemini/i.test(m.name) &&
-        !/tts|audio|live|image-gen|robotics|embedding|aqa/i.test(m.name)
-      );
-      for (const cand of cands.slice(0, 6)) {
-        const r2 = await tryModel(cand.name, 'v1beta');
-        if (r2.ok) return r2.text;
-      }
-    }
-    throw new Error('Model unavailable');
+    if (!client || !currentUser || !navigator.onLine) return null;
+    const { data, error } = await client.functions.invoke('gemini-proxy', {
+      body: { prompt, imageBase64: imageBase64 || null, mimeType: mimeType || 'image/jpeg' }
+    });
+    if (error) throw new Error(error.message || 'AI error');
+    return (data && typeof data.text === 'string') ? data.text : null;
   }
 
   const WATER_SLOTS = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:30'];
@@ -1879,6 +1824,28 @@
     $('chatBirthdayText').textContent = state.lang === 'fr' ? `🎂 Anniversaire : ${names.join(', ')} !` : `🎂 Birthday: ${names.join(', ')}!`;
   }
 
+
+  async function uploadVoiceToStorage(audioDataUrl, folder) {
+    if (!audioDataUrl || !String(audioDataUrl).startsWith('data:') || !client || !currentUser) return audioDataUrl;
+    try {
+      const m = String(audioDataUrl).match(/^data:([^;]+);base64,(.+)$/);
+      if (!m) return audioDataUrl;
+      const mime = m[1] || 'audio/webm';
+      const bin = atob(m[2]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const blob = new Blob([bytes], { type: mime });
+      const ext = mime.includes('mp4') ? 'm4a' : (mime.includes('ogg') ? 'ogg' : 'webm');
+      const path = `${folder}/${currentUser.id}/${Date.now()}.${ext}`;
+      const { error } = await client.storage.from('careguard-audio').upload(path, blob, { contentType: mime, upsert: false });
+      if (error) return audioDataUrl;
+      const { data: signed } = await client.storage.from('careguard-audio').createSignedUrl(path, 60 * 60 * 24 * 7);
+      if (signed && signed.signedUrl) return signed.signedUrl;
+      const { data: pub } = client.storage.from('careguard-audio').getPublicUrl(path);
+      return (pub && pub.publicUrl) ? pub.publicUrl : audioDataUrl;
+    } catch (_) { return audioDataUrl; }
+  }
+
   async function sendCommunityPost(text, audioData) {
     if (!client || !currentUser) { showChatMsg(state.lang === 'fr' ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.', true); return false; }
     let finalText = text || null;
@@ -1886,7 +1853,8 @@
       const prefix = `↩️ ${activeReplyTo.author}: ${activeReplyTo.snippet}`;
       finalText = finalText ? (prefix + '\n' + finalText) : prefix;
     }
-    const { error } = await client.from('community_messages').insert({ user_id: currentUser.id, author_name: getChatAuthorName(), message_text: finalText, audio_data: audioData || null });
+    const storedAudio = audioData ? await uploadVoiceToStorage(audioData, 'lounge') : null;
+    const { error } = await client.from('community_messages').insert({ user_id: currentUser.id, author_name: getChatAuthorName(), message_text: finalText, audio_data: storedAudio });
     if (error) { showChatMsg(friendlyError(error), true); return false; }
     activeReplyTo = null; $('chatReplyBar').classList.add('hidden'); $('chatReplyBar').classList.remove('flex');
     $('chatStatusMsg').classList.add('hidden');
@@ -1899,7 +1867,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v60';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v61';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -1950,9 +1918,7 @@
     $('apptsHeading').textContent = isFr ? 'Rendez-vous médicaux' : 'Medical Appointments';
     $('openApptModalBtn').textContent = isFr ? '+ Ajouter' : '+ Add';
     $('aiPanelTitle').textContent = isFr ? 'Assistant IA' : 'AI Assistant';
-    const hasAiKey = !!(localStorage.getItem(AI_KEY_STORAGE) || '').trim();
-    $('openAiConfigBtn').classList.toggle('hidden', !!currentUser && !hasAiKey);
-    $('openAiConfigBtn').textContent = hasAiKey ? (isFr ? 'IA connectée ✓' : 'AI Connected ✓') : (isFr ? 'Config. IA' : 'AI Setup');
+
     $('aiVoiceBtnLabel').textContent = isFr ? '🎤 Parler à l\'assistant' : '🎤 Talk to AI Assistant';
     $('aiQuestionInput').placeholder = isFr ? 'Ex : Quand est mon prochain médicament ?' : 'e.g. When is my next medication?';
     $('askAiBtn').textContent = isFr ? 'Demander' : 'Ask';
@@ -2029,9 +1995,7 @@
       rOpts[2].text = isFr ? 'Alarme médicale claire' : 'High-Clarity Medical Alarm';
       rOpts[3].text = isFr ? 'Sonnerie depuis mon téléphone' : 'Custom File from My Phone';
     }
-    $('aiConfigTitle').textContent = isFr ? 'Connecter l\'IA (Gemini)' : 'Connect AI (Gemini)';
-    $('aiConfigHint').textContent = isFr ? 'Entrez votre clé API Gemini (sauvegardée localement).' : 'Enter Gemini API key (saved on this device only).';
-    $('saveAiKeyBtn').textContent = isFr ? 'Enregistrer sur cet appareil' : 'Save on This Device';
+
     $('apptModalTitle').textContent = isFr ? 'Ajouter un rendez-vous' : 'Add Medical Appointment';
     $('apptDoctorInput').placeholder = isFr ? 'Nom du médecin ou spécialité' : 'Doctor name or specialty';
     $('apptSaveBtn').textContent = isFr ? 'Enregistrer' : 'Save Appointment';
@@ -2155,7 +2119,7 @@
   $('aiAnalyzePhotoBtn').addEventListener('click', async () => {
     const st = $('aiPhotoStatus'); st.classList.remove('hidden');
     if (!pendingImageDataUrl) return;
-    if (!currentUser && !(localStorage.getItem(AI_KEY_STORAGE) || '').trim()) { st.textContent = state.lang === 'fr' ? 'Connectez-vous ou ajoutez une clé Gemini.' : 'Sign in or add Gemini key in Settings.'; return; }
+    if (!currentUser) { st.textContent = state.lang === 'fr' ? 'Connectez-vous avec Google pour lire l\'ordonnance.' : 'Sign in with Google to scan prescription.'; return; }
     st.textContent = state.lang === 'fr' ? 'Lecture...' : 'Reading...';
     try {
       const compressed = await compressImageDataUrl(pendingImageDataUrl, 1280);
@@ -2294,13 +2258,7 @@
     r.readAsDataURL(f);
   });
 
-  $('openAiConfigBtn').addEventListener('click', () => { $('geminiKeyInput').value = localStorage.getItem(AI_KEY_STORAGE) || ''; $('aiKeyFeedback').classList.add('hidden'); $('aiConfigModal').classList.remove('hidden'); });
-  $('closeAiConfigBtn').addEventListener('click', () => $('aiConfigModal').classList.add('hidden'));
-  $('saveAiKeyBtn').addEventListener('click', () => {
-    localStorage.setItem(AI_KEY_STORAGE, $('geminiKeyInput').value.trim());
-    const fb = $('aiKeyFeedback'); fb.textContent = state.lang === 'fr' ? 'Enregistré !' : 'Saved!'; fb.classList.remove('hidden');
-    applyLang(); setTimeout(() => $('aiConfigModal').classList.add('hidden'), 600);
-  });
+
   $('askAiBtn').addEventListener('click', () => askAiQuestion($('aiQuestionInput').value.trim()));
   $('aiQuestionInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); askAiQuestion($('aiQuestionInput').value.trim()); }
@@ -3096,7 +3054,7 @@
       sender_name: getRealDisplayName(),
       sender_role: userRole || 'senior',
       message_text: text || null,
-      audio_data: audioData || null
+      audio_data: audioData ? await uploadVoiceToStorage(audioData, 'direct') : null
     });
     if (error) { $('dcStatusMsg').textContent = friendlyError(error); $('dcStatusMsg').classList.remove('hidden'); return false; }
     $('dcStatusMsg').classList.add('hidden');
@@ -3244,8 +3202,8 @@
         title: 'CareGuard Plus',
         price: isFr ? '7 € / mois' : '$7 / month',
         feats: isFr
-          ? ['Lecture IA des ordonnances incluse', 'Famille illimitée + Infirmier', 'Alertes auto 24/7 + Messages vocaux']
-          : ['AI prescription scanning included', 'Unlimited family + Nurse', '24/7 missed alerts + Voice chat'],
+          ? ['Lecture IA sécurisée des ordonnances', 'Famille + Infirmier liés', 'Alertes serveur auto (15 min) + Vocaux']
+          : ['Server-secured AI prescription scan', 'Linked Family + Nurse', 'Auto server alerts (15m) + Voice chat'],
         url: STRIPE_PLUS_URL
       },
       {
@@ -3272,7 +3230,7 @@
       if (pl.id !== 'free' && !active) {
         const btn = document.createElement('button'); btn.type = 'button';
         btn.className = 'tap-btn w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-extrabold text-white';
-        btn.textContent = isFr ? 'Passer à cette offre' : 'Upgrade to this plan';
+        btn.textContent = pl.url ? (isFr ? 'Passer à cette offre' : 'Upgrade to this plan') : (isFr ? 'Bientôt disponible (Stripe)' : 'Coming soon (Stripe)');
         btn.addEventListener('click', () => {
           if (pl.url) {
             const sep = pl.url.includes('?') ? '&' : '?';
