@@ -816,6 +816,7 @@
     lastServerCheckInIso: null,
     pendingQueue: [],
     waterCount: 0,
+    waterAlertedSlots: [],
     waterDate: getLocalDateStr(),
     lastWaterReminderAt: Date.now(),
     ringtonePreset: 'loud_phone',
@@ -861,7 +862,8 @@
         merged.profile = Object.assign({}, defaultState.profile, raw.profile || {});
         const today = getLocalDateStr();
         if (merged.lang === 'ar') merged.lang = 'fr';
-        if (merged.waterDate !== today) { merged.waterDate = today; merged.waterCount = 0; }
+        if (!Array.isArray(merged.waterAlertedSlots)) merged.waterAlertedSlots = [];
+        if (merged.waterDate !== today) { merged.waterDate = today; merged.waterCount = 0; merged.waterAlertedSlots = []; }
         if (!Array.isArray(merged.alertedMedKeys)) merged.alertedMedKeys = [];
         if (merged.medsDate !== today) { merged.medsDate = today; merged.alertedMedKeys = []; if (Array.isArray(merged.meds)) merged.meds.forEach((m) => { m.taken = false; delete m.snoozeUntil; }); }
         return merged;
@@ -1780,6 +1782,34 @@
     throw new Error('Model unavailable');
   }
 
+  const WATER_SLOTS = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:30'];
+  function getNextWaterSlot() {
+    if ((state.waterCount || 0) >= 8) return null;
+    const now = new Date();
+    const nowHHMM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    return WATER_SLOTS.find((t, idx) => idx >= (state.waterCount || 0) && t >= nowHHMM) || WATER_SLOTS[Math.min(7, state.waterCount || 0)];
+  }
+  function checkWaterSchedule() {
+    if (userRole !== 'senior') return;
+    const today = getLocalDateStr();
+    if (state.waterDate !== today) { state.waterDate = today; state.waterCount = 0; state.waterAlertedSlots = []; saveState(); applyLang(); }
+    if ((state.waterCount || 0) >= 8) return;
+    const now = new Date();
+    const nowHHMM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    if (!Array.isArray(state.waterAlertedSlots)) state.waterAlertedSlots = [];
+    for (let i = 0; i < WATER_SLOTS.length; i++) {
+      const slot = WATER_SLOTS[i];
+      const key = today + '|' + slot;
+      if ((state.waterCount || 0) <= i && nowHHMM >= slot && !state.waterAlertedSlots.includes(key)) {
+        state.waterAlertedSlots.push(key);
+        saveState();
+        triggerWaterReminder(false);
+        sendSwNotification(state.lang === 'fr' ? '💧 Rappel eau' : '💧 Water Reminder', (state.lang === 'fr' ? 'Verre ' : 'Glass ') + (state.waterCount + 1) + '/8 (' + slot + ')', 'water-' + slot);
+        break;
+      }
+    }
+  }
+
   async function triggerWaterReminder(manualTest) {
     playStrongRingtone();
     const name = getRealDisplayName();
@@ -1988,7 +2018,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v56';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v58';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2151,9 +2181,12 @@
 
 
 
-    const elapsedMs = Date.now() - (state.lastWaterReminderAt || Date.now());
-    const remMin = Math.max(1, Math.ceil((2 * 60 * 60 * 1000 - elapsedMs) / 60000));
-    $('waterNextText').textContent = (isFr ? "Prochain rappel d'eau dans : " : 'Next water reminder in: ') + remMin + (isFr ? ' min' : ' min');
+    const nextSlot = getNextWaterSlot();
+    if ((state.waterCount || 0) >= 8) {
+      $('waterNextText').textContent = isFr ? '✓ Objectif eau atteint aujourd\'hui (8/8) !' : '✓ Daily water goal reached (8/8)!';
+    } else {
+      $('waterNextText').textContent = (isFr ? `Prochain verre (${(state.waterCount || 0) + 1}/8) à ${nextSlot} — ` : `Next glass (${(state.waterCount || 0) + 1}/8) at ${nextSlot} — `) + WATER_SLOTS.join(' • ');
+    }
 
     updateNetworkUI();
     renderMeds();
@@ -2168,10 +2201,7 @@
   $('voiceBtn').addEventListener('click', () => { playStrongRingtone(); setTimeout(() => speakText(state.lang === 'fr' ? "Bonjour de CareGuard, rappel pour votre médicament." : 'Hello from CareGuard, reminder for your medication.'), 900); });
   $('testWaterAlertBtn').addEventListener('click', () => triggerWaterReminder(true));
 
-  setInterval(() => {
-    const nowHour = new Date().getHours();
-    if (nowHour >= 7 && nowHour <= 22 && Date.now() - (state.lastWaterReminderAt || 0) >= 2 * 60 * 60 * 1000) triggerWaterReminder(false);
-  }, 60000);
+  setInterval(checkWaterSchedule, 20000);
 
   // Chat Room Events
   $('chatUseNickname').addEventListener('change', (e) => { state.chatUseNickname = !!e.target.checked; saveState(); syncChatIdentityUI(); });
@@ -2426,6 +2456,10 @@
         if (pRow && pRow.plan) userPlan = pRow.plan;
         applyLang();
       } catch (_) {}
+      if (userRole !== 'senior') {
+        currentSeniorId = null; myRegistrationCode = '';
+        return;
+      }
       const { data: existing } = await client.from('senior_profiles').select('id, registration_number').eq('user_id', user.id).limit(1);
       if (existing && existing.length) {
         try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz) client.from('senior_profiles').update({ timezone: tz }).eq('id', existing[0].id).then(() => {}); } catch (_) {}
@@ -2640,6 +2674,9 @@
     if (userRole) localStorage.setItem(ROLE_STORAGE_KEY, userRole);
     else localStorage.removeItem(ROLE_STORAGE_KEY);
     renderRoleViews();
+    if (userRole === 'senior' && currentUser && !currentSeniorId) {
+      ensureSeniorProfile(currentUser).then(async () => { await flushPendingQueue(); await syncUnsyncedLocalItems(); await loadCloudSeniorData(); syncBatteryToSupabase(lastBatteryPct, lastBatteryCharging); });
+    }
   }
 
   function renderRoleViews() {
