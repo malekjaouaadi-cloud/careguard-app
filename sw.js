@@ -1,4 +1,4 @@
-const CACHE_NAME = 'careguard-shell-v1';
+const CACHE_NAME = 'careguard-shell-v2';
 const SHELL_ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
@@ -54,6 +54,25 @@ self.addEventListener('message', (event) => {
       })
     );
   }
+});
+
+
+self.addEventListener('push', (event) => {
+  let payload = { title: '🚨 CareGuard', body: 'Nouvelle alerte / New alert', tag: 'careguard-push' };
+  try {
+    if (event.data) payload = Object.assign(payload, event.data.json());
+  } catch (_) {
+    try { if (event.data) payload.body = event.data.text(); } catch (__) {}
+  }
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      tag: payload.tag || 'careguard-push',
+      vibrate: [300, 150, 300, 150, 400],
+      renotify: true,
+      requireInteraction: true
+    })
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {

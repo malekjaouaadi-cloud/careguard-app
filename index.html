@@ -375,6 +375,7 @@
       </div>
       <div class="flex items-center gap-2">
         <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-950" style="min-height:38px;">⭐ Plan</button>
+        <button id="careEnablePushBtn" type="button" class="tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-900" style="min-height:38px;">🔔 Push</button>
         <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
         <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800" style="min-height:38px;">Changer rôle</button>
         <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">Quitter</button>
@@ -791,7 +792,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v70',
+    VERSION: 'v71',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2420,7 +2421,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v70';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v71';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -4047,5 +4048,71 @@
 })();
 </script>
 
+
+<!-- ===== MODULE 4: WEB PUSH SUBSCRIPTION (NURSE & FAMILY) ===== -->
+<script>
+(function () {
+  'use strict';
+  const CG = window.CG;
+  const $ = CG.$;
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = atob(base64);
+    const out = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) out[i] = rawData.charCodeAt(i);
+    return out;
+  }
+
+  async function subscribeCarePush() {
+    const btn = $('careEnablePushBtn');
+    const isFr = CG.getState().lang === 'fr';
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    if (!client || !user) return;
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+      alert(isFr ? 'Push non supporté sur ce navigateur.' : 'Web Push is not supported on this browser.');
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      alert(isFr ? 'Activez les notifications dans les paramètres.' : 'Please allow notifications in browser settings.');
+      return;
+    }
+    try {
+      const res = await fetch(window.CG_CONFIG.SUPABASE_URL + '/functions/v1/notify-alerts-ts?vapid=1');
+      const json = await res.json();
+      if (!json || !json.publicKey) {
+        alert(isFr ? 'Clé VAPID non configurée sur le serveur.' : 'VAPID public key is not configured on the server yet.');
+        return;
+      }
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(json.publicKey)
+        });
+      }
+      const raw = sub.toJSON();
+      const { error } = await client.from('push_subscriptions').upsert({
+        user_id: user.id,
+        endpoint: raw.endpoint,
+        p256dh: raw.keys && raw.keys.p256dh ? raw.keys.p256dh : '',
+        auth: raw.keys && raw.keys.auth ? raw.keys.auth : ''
+      }, { onConflict: 'endpoint' });
+      if (error) throw error;
+      if (btn) {
+        btn.className = 'tap-btn rounded-xl bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white';
+        btn.textContent = isFr ? '🔔 Push ✓' : '🔔 Push ✓';
+      }
+    } catch (e) {
+      alert(CG.friendlyError(e));
+    }
+  }
+
+  if ($('careEnablePushBtn')) $('careEnablePushBtn').addEventListener('click', subscribeCarePush);
+})();
+</script>
 </body>
 </html>
