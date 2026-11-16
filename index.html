@@ -655,17 +655,29 @@
       <input id="profPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone du senior" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <input id="profEmergencyPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone d'un proche" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-        <input id="profFamilyRelInput" autocomplete="off" type="text" placeholder="Lien de parenté (Fils/Fille)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+        <div class="space-y-1.5">
+          <select id="profFamilyRelSelect" class="w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-2.5 text-lg font-bold text-slate-900"></select>
+          <input id="profFamilyRelInput" autocomplete="off" type="text" placeholder="Préciser le lien..." class="hidden w-full rounded-2xl border-2 border-slate-300 px-4 py-2 text-base" />
+        </div>
       </div>
       <input id="profBackupPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Téléphone famille secondaire (optionnel)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <input id="profFamilyEmailInput" autocomplete="off" type="email" dir="ltr" placeholder="Email d'un proche (pour alertes)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <input id="profDoctorNameInput" autocomplete="off" type="text" placeholder="Médecin traitant" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
         <input id="profDoctorPhoneInput" autocomplete="off" type="tel" dir="ltr" placeholder="Tél. médecin" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       </div>
       <input id="profAddressInput" autocomplete="off" type="text" placeholder="Adresse du domicile (optionnel)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
       <input id="profBloodInput" type="text" placeholder="Groupe sanguin (O+)" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profAllergiesInput" type="text" placeholder="Allergies" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
-      <input id="profConditionsInput" type="text" placeholder="Maladies chroniques" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-3 space-y-2">
+        <p id="profAllergiesLabel" class="text-sm font-black text-slate-800">⚠️ Allergies (choix multiple) :</p>
+        <div id="profAllergyChips" class="flex flex-wrap gap-1.5"></div>
+        <input id="profAllergiesInput" type="text" placeholder="Autre allergie (optionnel)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold" />
+      </div>
+      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-3 space-y-2">
+        <p id="profConditionsLabel" class="text-sm font-black text-slate-800">🩺 Maladies chroniques (choix multiple) :</p>
+        <div id="profConditionChips" class="flex flex-wrap gap-1.5"></div>
+        <input id="profConditionsInput" type="text" placeholder="Autre maladie chronique (optionnel)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold" />
+      </div>
       <input id="profMedicalNotesInput" autocomplete="off" type="text" placeholder="Notes médicales" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
     </div>
     <button id="saveProfileBtn" type="button" class="tap-btn mt-4 w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">Enregistrer</button>
@@ -779,14 +791,14 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v65',
+    VERSION: 'v68',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
     ROLE_STORAGE_KEY: 'careguard_user_role_v1',
     AUDIO_BUCKET: 'careguard-audio',
     WATER_SLOTS: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:30'],
-    SENIOR_PROFILE_COLS: 'id, registration_number, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, water_count, water_date'
+    SENIOR_PROFILE_COLS: 'id, registration_number, display_name, home_address, senior_phone, emergency_phone, doctor_name, doctor_phone, blood_type, allergies, conditions, medical_notes, family_email, water_count, water_date'
   };
 
   window.CG = window.CG || {};
@@ -1290,7 +1302,7 @@
     lang: 'fr',
     profile: {
       name: '', dob: '', phone: '', emergencyPhone: '', familyRelation: '',
-      backupPhone: '', doctorName: '', doctorPhone: '', address: '',
+      backupPhone: '', familyEmail: '', doctorName: '', doctorPhone: '', address: '',
       bloodType: '', allergies: '', conditions: '', medicalNotes: ''
     },
     shareBirthday: true,
@@ -1417,10 +1429,28 @@
   $('headerBellBtn').addEventListener('click', () => { renderNotificationsModal(); $('notificationsModal').classList.remove('hidden'); });
   $('closeNotifModalBtn').addEventListener('click', () => $('notificationsModal').classList.add('hidden'));
 
-  // Tap Water Tile: Log 1 glass immediately + gentle feedback + cloud sync
+  function getUnlockedWaterInfo() {
+    const slots = (window.CG_CONFIG && window.CG_CONFIG.WATER_SLOTS) || ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '21:30'];
+    const nowHHMM = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
+    const unlocked = slots.filter((s) => nowHHMM >= s).length;
+    const nextSlot = slots.find((s) => nowHHMM < s) || null;
+    return { unlocked, nextSlot, total: slots.length };
+  }
+
+  // Tap Water Tile: Time-gated by WATER_SLOTS + cloud sync
   $('tileWaterBtn').addEventListener('click', () => {
     const todayStr = getLocalDateStr();
     if (state.waterDate !== todayStr) { state.waterDate = todayStr; state.waterCount = 0; }
+    const { unlocked, nextSlot } = getUnlockedWaterInfo();
+    const fb = $('waterAiFeedback');
+    if (state.waterCount >= unlocked && state.waterCount < 8 && nextSlot) {
+      fb.textContent = state.lang === 'fr'
+        ? `⏳ Prochain verre débloqué à ${nextSlot} (${state.waterCount}/${unlocked} disponibles pour l'instant).`
+        : `⏳ Next glass unlocks at ${nextSlot} (${state.waterCount}/${unlocked} available right now).`;
+      fb.classList.remove('hidden');
+      setTimeout(() => fb.classList.add('hidden'), 4500);
+      return;
+    }
     state.waterCount = Math.min(8, state.waterCount + 1);
     state.lastWaterReminderAt = Date.now();
     saveState();
@@ -1432,7 +1462,6 @@
     } else if (currentUser) {
       enqueueSync('water_sync', { count: state.waterCount, date: state.waterDate });
     }
-    const fb = $('waterAiFeedback');
     fb.textContent = state.lang === 'fr'
       ? `💧 Bravo ! ${state.waterCount} sur 8 verres aujourd'hui.`
       : `💧 Great! ${state.waterCount} of 8 glasses recorded today.`;
@@ -1505,6 +1534,7 @@
       emergency_phone: p.emergencyPhone || null,
       family_relation: p.familyRelation || null,
       backup_phone: p.backupPhone || null,
+      family_email: p.familyEmail || null,
       doctor_name: p.doctorName || null,
       doctor_phone: p.doctorPhone || null,
       home_address: p.address || null,
@@ -1872,11 +1902,12 @@
   }
   function renderMeds() {
     const box = $('medsList'); box.replaceChildren();
+    const nowHHMMGlobal = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
     const takenCount = state.meds.filter((m) => m.taken).length;
-    const remCount = state.meds.length - takenCount;
+    const dueCount = state.meds.filter((m) => !m.taken && (!/^\d{2}:\d{2}$/.test(m.time || '') || nowHHMMGlobal >= m.time)).length;
     $('tileMedsSub').textContent = state.lang === 'fr' ? `${takenCount} / ${state.meds.length} doses` : `${takenCount} / ${state.meds.length} doses`;
     const batAlertCnt = (lastBatteryPct <= 30 && !lastBatteryCharging) ? 1 : 0;
-    $('headerBellCount').textContent = String(Math.max(0, remCount + batAlertCnt));
+    $('headerBellCount').textContent = String(Math.max(0, dueCount + batAlertCnt));
 
     if (!state.meds.length) {
       const empty = document.createElement('p');
@@ -1894,14 +1925,23 @@
       const info = document.createElement('div');
       const title = document.createElement('p'); title.className = 'text-xl font-black text-slate-900'; title.textContent = state.lang === 'fr' ? m.nameAr : m.nameEn;
       const nowHHMM = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
-      const isLate = !m.taken && /^\d{2}:\d{2}$/.test(m.time || '') && nowHHMM > m.time;
+      const hasValidTime = /^\d{2}:\d{2}$/.test(m.time || '');
+      const isFutureDose = !m.taken && hasValidTime && nowHHMM < m.time;
+      const isLate = !m.taken && hasValidTime && nowHHMM > m.time;
       const time = document.createElement('p');
       time.className = isLate ? 'text-base font-extrabold text-rose-700' : 'text-base font-bold text-slate-600';
       time.textContent = m.time + (isLate ? (state.lang === 'fr' ? ' • ⚠️ En retard' : ' • ⚠️ Overdue') : '');
       info.append(title, time);
       const actions = document.createElement('div'); actions.className = 'flex items-center gap-2';
+      if (isFutureDose) {
+        const waitBadge = document.createElement('span');
+        waitBadge.className = 'rounded-2xl border border-slate-200 bg-slate-100 px-3.5 py-2 text-sm font-extrabold text-slate-600';
+        waitBadge.textContent = state.lang === 'fr' ? `⏳ À ${m.time}` : `⏳ At ${m.time}`;
+        actions.appendChild(waitBadge);
+      }
       const takeBtn = document.createElement('button'); takeBtn.type = 'button';
-      takeBtn.className = m.taken ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2 text-base font-extrabold text-white' : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2 text-base font-extrabold text-emerald-900';
+      if (isFutureDose) takeBtn.className = 'hidden';
+      else takeBtn.className = m.taken ? 'tap-btn rounded-2xl bg-emerald-700 px-4 py-2 text-base font-extrabold text-white' : 'tap-btn rounded-2xl border-2 border-emerald-500 bg-white px-4 py-2 text-base font-extrabold text-emerald-900';
       takeBtn.textContent = m.taken ? (state.lang === 'fr' ? 'Pris ✓' : 'Taken ✓') : (state.lang === 'fr' ? 'Marquer pris' : 'Mark Taken');
       takeBtn.addEventListener('click', async () => {
         m.taken = !m.taken; saveState(); renderMeds();
@@ -2378,7 +2418,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v65';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v68';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
@@ -2410,7 +2450,10 @@
     $('tileApptsHint').textContent = isFr ? 'Prochain RDV' : 'Upcoming';
     $('waterHeading').textContent = isFr ? 'Boire de l\'eau' : 'Drink Water';
     $('waterCountBadge').textContent = state.waterCount + (isFr ? ' / 8 verres' : ' / 8 glasses');
-    $('tileWaterHint').textContent = isFr ? '+ 1 verre' : '+ Log glass';
+    const wInfo = getUnlockedWaterInfo();
+    $('tileWaterHint').textContent = state.waterCount >= 8
+      ? '✓ 8/8'
+      : (state.waterCount >= wInfo.unlocked && wInfo.nextSlot ? ('⏳ ' + wInfo.nextSlot) : (isFr ? '+ 1 verre' : '+ Log glass'));
     $('aiHeading').textContent = isFr ? 'Assistant IA' : 'AI Assistant';
     $('aiSubheading').textContent = isFr ? 'Posez une question' : 'Ask anything';
     $('tileAiHint').textContent = isFr ? 'Voix et texte' : 'Voice & text';
@@ -2707,15 +2750,134 @@
     }
   });
 
+  const REL_OPTIONS = [
+    { v: '', fr: 'Lien de parenté...', en: 'Relationship...' },
+    { v: 'Fils', fr: 'Fils', en: 'Son' },
+    { v: 'Fille', fr: 'Fille', en: 'Daughter' },
+    { v: 'Conjoint(e)', fr: 'Conjoint(e)', en: 'Spouse' },
+    { v: 'Frère', fr: 'Frère', en: 'Brother' },
+    { v: 'Sœur', fr: 'Sœur', en: 'Sister' },
+    { v: 'Petit-enfant', fr: 'Petit-enfant', en: 'Grandchild' },
+    { v: 'Aidant(e)', fr: 'Aidant(e)', en: 'Caregiver' },
+    { v: '__other__', fr: 'Autre...', en: 'Other...' }
+  ];
+  const ALLERGY_OPTIONS = [
+    { key: 'none', fr: 'Aucune', en: 'None', aliases: ['aucune', 'none', 'ras'] },
+    { key: 'penicillin', fr: 'Pénicilline', en: 'Penicillin', aliases: ['penicilline', 'pénicilline', 'penicillin', 'penicelline', 'البنسلين'] },
+    { key: 'aspirin', fr: 'Aspirine / AINS', en: 'Aspirin / NSAIDs', aliases: ['aspirine', 'aspirin', 'ains', 'nsaids'] },
+    { key: 'sulfa', fr: 'Sulfamides', en: 'Sulfa drugs', aliases: ['sulfamides', 'sulfa'] },
+    { key: 'iodine', fr: 'Iode', en: 'Iodine', aliases: ['iode', 'iodine'] },
+    { key: 'latex', fr: 'Latex', en: 'Latex', aliases: ['latex'] },
+    { key: 'nuts', fr: 'Arachides / Noix', en: 'Peanuts / Nuts', aliases: ['arachides', 'noix', 'peanuts', 'nuts'] },
+    { key: 'pollen', fr: 'Pollen / Poussière', en: 'Pollen / Dust', aliases: ['pollen', 'poussiere', 'poussière', 'dust'] }
+  ];
+  const CONDITION_OPTIONS = [
+    { key: 'diabetes', fr: 'Diabète', en: 'Diabetes', aliases: ['diabete', 'diabète', 'diabetique', 'diabetes', 'السكري'] },
+    { key: 'hta', fr: 'HTA (Hypertension)', en: 'Hypertension (HTA)', aliases: ['hta', 'hypertension', 'tension', 'ضغط الدم'] },
+    { key: 'cardiac', fr: 'Cardiaque', en: 'Cardiac / Heart', aliases: ['cardiaque', 'cardiac', 'heart', 'coeur', 'cœur'] },
+    { key: 'asthma', fr: 'Asthme / BPCO', en: 'Asthma / COPD', aliases: ['asthme', 'asthma', 'bpco', 'copd'] },
+    { key: 'kidney', fr: 'Insuffisance rénale', en: 'Kidney disease', aliases: ['renale', 'rénale', 'kidney'] },
+    { key: 'cholesterol', fr: 'Cholestérol', en: 'Cholesterol', aliases: ['cholesterol', 'cholestérol'] },
+    { key: 'arthritis', fr: 'Arthrose', en: 'Arthritis', aliases: ['arthrose', 'arthritis'] },
+    { key: 'memory', fr: 'Mémoire / Alzheimer', en: 'Memory / Alzheimer', aliases: ['alzheimer', 'memoire', 'mémoire', 'memory'] },
+    { key: 'stroke', fr: 'AVC antérieur', en: 'Prior Stroke', aliases: ['avc', 'stroke'] }
+  ];
+
+  function renderMultiChips(containerId, options, currentVal, customInputId, hasExclusiveNone) {
+    const box = $(containerId);
+    const customInp = $(customInputId);
+    if (!box || !customInp) return;
+    const isFr = state.lang === 'fr';
+    const tokens = String(currentVal || '').split(/[,+;/]+/).map((s) => s.trim()).filter(Boolean);
+    const selectedKeys = new Set();
+    const unknownTokens = [];
+    tokens.forEach((tok) => {
+      const low = tok.toLowerCase();
+      const match = options.find((o) => low === (isFr ? o.fr : o.en).toLowerCase() || o.aliases.some((a) => low.includes(a)));
+      if (match) selectedKeys.add(match.key);
+      else unknownTokens.push(tok);
+    });
+    customInp.value = unknownTokens.join(', ');
+    box.replaceChildren();
+    options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.key = opt.key;
+      const active = selectedKeys.has(opt.key);
+      btn.className = active
+        ? 'rounded-full bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white shadow-sm'
+        : 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-extrabold text-slate-700';
+      btn.textContent = (active ? '✓ ' : '') + (isFr ? opt.fr : opt.en);
+      btn.addEventListener('click', () => {
+        if (hasExclusiveNone && opt.key === 'none') {
+          selectedKeys.clear();
+          selectedKeys.add('none');
+          customInp.value = '';
+        } else {
+          if (hasExclusiveNone) selectedKeys.delete('none');
+          if (selectedKeys.has(opt.key)) selectedKeys.delete(opt.key);
+          else selectedKeys.add(opt.key);
+        }
+        box.querySelectorAll('button').forEach((b) => {
+          const k = b.dataset.key;
+          const o = options.find((x) => x.key === k);
+          const on = selectedKeys.has(k);
+          b.className = on
+            ? 'rounded-full bg-emerald-700 px-3 py-1.5 text-xs font-extrabold text-white shadow-sm'
+            : 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-extrabold text-slate-700';
+          b.textContent = (on ? '✓ ' : '') + (isFr ? o.fr : o.en);
+        });
+      });
+      box.appendChild(btn);
+    });
+    box._getSelectedText = () => {
+      const list = options.filter((o) => selectedKeys.has(o.key)).map((o) => (isFr ? o.fr : o.en));
+      const extra = customInp.value.trim();
+      if (extra) list.push(extra);
+      return list.join(', ');
+    };
+  }
+
+  if ($('profFamilyRelSelect')) {
+    $('profFamilyRelSelect').addEventListener('change', () => {
+      const isOther = $('profFamilyRelSelect').value === '__other__';
+      $('profFamilyRelInput').classList.toggle('hidden', !isOther);
+    });
+  }
+
   $('openProfileModalBtn').addEventListener('click', () => {
     const p = state.profile;
+    const isFr = state.lang === 'fr';
     $('profNameInput').value = p.name || ''; $('profDobInput').value = p.dob || '';
     $('profShareBirthday').checked = state.shareBirthday !== false;
     $('profPhoneInput').value = p.phone || ''; $('profEmergencyPhoneInput').value = p.emergencyPhone || '';
-    $('profFamilyRelInput').value = p.familyRelation || ''; $('profBackupPhoneInput').value = p.backupPhone || '';
+    if ($('profFamilyRelSelect')) {
+      const sel = $('profFamilyRelSelect');
+      sel.replaceChildren();
+      REL_OPTIONS.forEach((o) => {
+        const opt = document.createElement('option');
+        opt.value = o.v;
+        opt.textContent = isFr ? o.fr : o.en;
+        sel.appendChild(opt);
+      });
+      const curRel = String(p.familyRelation || '').trim();
+      const matchedRel = REL_OPTIONS.find((o) => o.v && o.v !== '__other__' && (o.v.toLowerCase() === curRel.toLowerCase() || o.en.toLowerCase() === curRel.toLowerCase()));
+      if (!curRel) { sel.value = ''; $('profFamilyRelInput').classList.add('hidden'); $('profFamilyRelInput').value = ''; }
+      else if (matchedRel) { sel.value = matchedRel.v; $('profFamilyRelInput').classList.add('hidden'); $('profFamilyRelInput').value = ''; }
+      else { sel.value = '__other__'; $('profFamilyRelInput').classList.remove('hidden'); $('profFamilyRelInput').value = curRel; }
+    } else {
+      $('profFamilyRelInput').value = p.familyRelation || '';
+    }
+    $('profBackupPhoneInput').value = p.backupPhone || '';
+    if ($('profFamilyEmailInput')) { $('profFamilyEmailInput').value = p.familyEmail || ''; $('profFamilyEmailInput').placeholder = isFr ? "Email d'un proche (pour alertes)" : 'Close Family Email (for alerts)'; }
     $('profDoctorNameInput').value = p.doctorName || ''; $('profDoctorPhoneInput').value = p.doctorPhone || '';
     $('profAddressInput').value = p.address || ''; $('profBloodInput').value = p.bloodType || '';
-    $('profAllergiesInput').value = p.allergies || ''; $('profConditionsInput').value = p.conditions || '';
+    if ($('profAllergiesLabel')) $('profAllergiesLabel').textContent = isFr ? '⚠️ Allergies (choix multiple) :' : '⚠️ Allergies (multi-select):';
+    if ($('profConditionsLabel')) $('profConditionsLabel').textContent = isFr ? '🩺 Maladies chroniques (choix multiple) :' : '🩺 Chronic Conditions (multi-select):';
+    if ($('profAllergiesInput')) $('profAllergiesInput').placeholder = isFr ? 'Autre allergie (optionnel)' : 'Other allergy (optional)';
+    if ($('profConditionsInput')) $('profConditionsInput').placeholder = isFr ? 'Autre maladie chronique (optionnel)' : 'Other condition (optional)';
+    renderMultiChips('profAllergyChips', ALLERGY_OPTIONS, p.allergies || '', 'profAllergiesInput', true);
+    renderMultiChips('profConditionChips', CONDITION_OPTIONS, p.conditions || '', 'profConditionsInput', false);
     $('profMedicalNotesInput').value = p.medicalNotes || '';
     $('profileSaveFeedback').classList.add('hidden'); $('profileModal').classList.remove('hidden');
   });
@@ -2724,10 +2886,18 @@
     state.profile.name = $('profNameInput').value.trim(); state.profile.dob = $('profDobInput').value;
     state.shareBirthday = !!$('profShareBirthday').checked;
     state.profile.phone = $('profPhoneInput').value.trim(); state.profile.emergencyPhone = $('profEmergencyPhoneInput').value.trim();
-    state.profile.familyRelation = $('profFamilyRelInput').value.trim(); state.profile.backupPhone = $('profBackupPhoneInput').value.trim();
+    if ($('profFamilyRelSelect')) {
+      const rv = $('profFamilyRelSelect').value;
+      state.profile.familyRelation = rv === '__other__' ? $('profFamilyRelInput').value.trim() : rv;
+    } else {
+      state.profile.familyRelation = $('profFamilyRelInput').value.trim();
+    }
+    state.profile.backupPhone = $('profBackupPhoneInput').value.trim();
+    if ($('profFamilyEmailInput')) state.profile.familyEmail = $('profFamilyEmailInput').value.trim();
     state.profile.doctorName = $('profDoctorNameInput').value.trim(); state.profile.doctorPhone = $('profDoctorPhoneInput').value.trim();
     state.profile.address = $('profAddressInput').value.trim(); state.profile.bloodType = $('profBloodInput').value.trim();
-    state.profile.allergies = $('profAllergiesInput').value.trim(); state.profile.conditions = $('profConditionsInput').value.trim();
+    state.profile.allergies = $('profAllergyChips') && $('profAllergyChips')._getSelectedText ? $('profAllergyChips')._getSelectedText() : $('profAllergiesInput').value.trim();
+    state.profile.conditions = $('profConditionChips') && $('profConditionChips')._getSelectedText ? $('profConditionChips')._getSelectedText() : $('profConditionsInput').value.trim();
     state.profile.medicalNotes = $('profMedicalNotesInput').value.trim();
     saveState(); applyLang();
     if (client && currentUser) {
@@ -2860,7 +3030,7 @@
     try {
       const todayStart = getLocalDayStartIso();
       const [spRes, chkRes, medsRes, logsRes, apptsRes] = await Promise.all([
-        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, water_count, water_date').eq('id', currentSeniorId).single(),
+        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, family_email, water_count, water_date').eq('id', currentSeniorId).single(),
         client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
         client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
         client.from('medication_logs').select('medication_id, status').eq('senior_id', currentSeniorId).gte('logged_at', todayStart),
@@ -2874,6 +3044,7 @@
         if (sp.emergency_phone) state.profile.emergencyPhone = sp.emergency_phone;
         if (sp.family_relation) state.profile.familyRelation = sp.family_relation;
         if (sp.backup_phone) state.profile.backupPhone = sp.backup_phone;
+        if (sp.family_email) state.profile.familyEmail = sp.family_email;
         if (sp.doctor_name) state.profile.doctorName = sp.doctor_name;
         if (sp.doctor_phone) state.profile.doctorPhone = sp.doctor_phone;
         if (sp.home_address) state.profile.address = sp.home_address;
@@ -3486,6 +3657,7 @@
       [isFr ? 'Pathologies' : 'Conditions', (sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : (sp.conditions || '-')],
       [isFr ? 'Médecin' : 'Doctor', (sp.doctor_name || '-') + (sp.doctor_phone ? ' (' + sp.doctor_phone + ')' : '')],
       [isFr ? 'Tél. urgence' : 'Emergency Phone', sp.emergency_phone || '-'],
+      [isFr ? 'Email proche' : 'Family Email', sp.family_email || '-'],
       [isFr ? 'Notes' : 'Notes', sp.medical_notes || '-']
     ].forEach(([k, v]) => {
       const r = document.createElement('p'); r.className = 'text-xs font-bold text-slate-700';
