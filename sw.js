@@ -1,34 +1,88 @@
-const CACHE = 'careguard-v2';
-const ASSETS = ['./index.html', './manifest.json'];
+const CACHE_NAME = 'careguard-shell-v2';
+const SHELL_ASSETS = ['./', './index.html', './manifest.json'];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS)).catch(() => {})
+  );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ).then(() => self.clients.claim()));
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  if (!e.request.url.startsWith(self.location.origin)) return;
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      const clone = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, clone));
-      return res;
-    }).catch(() => caches.match('./index.html')))
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
+  // Network-first for HTML so GitHub Pages updates appear immediately when online
+  if (req.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => caches.match(req).then((r) => r || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });
 
-self.addEventListener('push', e => {
-  const data = e.data?.json() || { title: 'CareGuard', body: 'Nouvelle notification' };
-  e.waitUntil(self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    vibrate: [200, 100, 200]
-  }));
+self.addEventListener('message', (event) => {
+  const data = event.data || {};
+  if (data.type === 'SHOW_NOTIFICATION' && self.registration) {
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'CareGuard', {
+        body: data.body || '',
+        tag: data.tag || 'careguard-alert',
+        renotify: true,
+        requireInteraction: true
+      })
+    );
+  }
+});
+
+
+self.addEventListener('push', (event) => {
+  let payload = { title: '🚨 CareGuard', body: 'Nouvelle alerte / New alert', tag: 'careguard-push' };
+  try {
+    if (event.data) payload = Object.assign(payload, event.data.json());
+  } catch (_) {
+    try { if (event.data) payload.body = event.data.text(); } catch (__) {}
+  }
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      tag: payload.tag || 'careguard-push',
+      vibrate: [300, 150, 300, 150, 400],
+      renotify: true,
+      requireInteraction: true
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      if (clients.length > 0) {
+        return clients[0].focus();
+      }
+      return self.clients.openWindow('./');
+    })
+  );
 });
