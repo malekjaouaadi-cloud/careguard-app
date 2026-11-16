@@ -340,6 +340,7 @@
       <div class="flex items-center gap-2">
         <button id="careEnablePushBtn" type="button" class="tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-900" style="min-height:38px;">🔔 Push</button>
         <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
+        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">🚪 Quitter</button>
       </div>
     </div>
 
@@ -380,7 +381,6 @@
       <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap gap-2">
         <button id="carePlansBtn" type="button" class="tap-btn rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-950">⭐ Plan & Abonnement</button>
         <button id="careSwitchRoleBtn" type="button" class="tap-btn rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-xs font-extrabold text-slate-800">Changer rôle</button>
-        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-extrabold text-rose-800">Quitter</button>
       </div>
     </div>
   </section>
@@ -771,7 +771,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v73',
+    VERSION: 'v74',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2462,7 +2462,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v73';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v74';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bienvenue' : 'Welcome back';
     const name = cleanProfileName() || (currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email));
