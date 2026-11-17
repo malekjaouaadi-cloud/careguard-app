@@ -147,65 +147,66 @@
     <button id="authSwitchRoleBtn" type="button" class="tap-btn mt-3 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-extrabold text-slate-800">🔄 Changer de rôle (Senior / Famille / Infirmier / Soins)</button>
   </section>
 
-  <!-- TAB 1: HOME DASHBOARD (Sérénité Warm Design + 4 Core Tiles) -->
+  <!-- TAB 1: HOME DASHBOARD (Matched to Sérénité Mockup 1000061787) -->
   <section id="homeTabView" class="space-y-4">
 
-    <!-- Warm Cream Hero Greeting Card with Photo Upload -->
-    <div class="serenite-card relative overflow-hidden rounded-3xl p-5">
+    <!-- Clean Editorial Hero Greeting Card -->
+    <div class="rounded-[28px] border border-[#E6DCCB] bg-gradient-to-b from-[#FFFDF9] to-[#FAF3E6] p-5 shadow-[0_8px_24px_-10px_rgba(35,50,38,0.12)]">
       <div class="flex items-center gap-4">
         <div class="relative shrink-0">
-          <div id="heroAvatar" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-[#E8DFCE] bg-[#0E5A3E] text-3xl font-black text-white shadow-sm">
+          <div id="heroAvatar" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-[#EFE7D8] bg-[#0E5A3E] text-3xl font-black text-white shadow-sm">
             C
           </div>
           <label for="seniorAvatarInput" class="tap-btn absolute -bottom-1 -right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0E5A3E] text-xs text-white shadow" title="Photo">📷</label>
           <input id="seniorAvatarInput" type="file" accept="image/*" class="hidden" />
         </div>
-        <div class="min-w-0 flex-1 text-center sm:text-start">
+        <div class="min-w-0 flex-1 text-center">
           <p id="heroWelcomeLabel" class="font-serif-brand text-2xl font-bold leading-tight text-[#0E5A3E]">Bonjour,</p>
           <h2 id="seniorGreeting" class="font-serif-brand truncate text-3xl font-extrabold leading-tight text-[#0E5A3E]">Bienvenue</h2>
-          <div class="my-1.5 flex items-center justify-center sm:justify-start gap-2 text-[#7A8C7E]">
-            <span class="h-px w-8 bg-[#D8CEBE]"></span>
+          <div class="my-2 flex items-center justify-center gap-2 text-[#7A8C7E]">
+            <span class="h-px w-10 bg-[#D8CEBE]"></span>
             <span class="text-xs">🌿</span>
-            <span class="h-px w-8 bg-[#D8CEBE]"></span>
+            <span class="h-px w-10 bg-[#D8CEBE]"></span>
           </div>
-          <p id="heroMoodSub" class="text-xs font-bold text-[#495C50]">Comment vous sentez-vous aujourd'hui ?</p>
+          <p id="heroMoodSub" class="text-sm font-semibold text-[#3C5044]">Comment vous sentez-vous aujourd'hui ?</p>
+          <div class="mt-1 text-sm text-[#2F7D57]">♥</div>
         </div>
       </div>
-
-      <!-- Compact Presence & Status Strip -->
-      <div class="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-1.5 pt-2.5 border-t border-[#EFE8DA]">
-        <span id="presenceBadge" class="inline-flex items-center gap-1 rounded-full bg-[#E9F3EB] px-2.5 py-1 text-[11px] font-extrabold text-[#0E5A3E]">
-          💚 <span id="presenceText">Votre famille suit votre journée</span>
-        </span>
-        <span id="networkStatusPill" class="inline-flex items-center gap-1 rounded-full bg-[#EEF5EA] px-2.5 py-1 text-[11px] font-extrabold text-[#0E5A3E]">
-          <span id="networkStatusDot" class="h-2 w-2 rounded-full bg-emerald-600"></span>
-          <span id="safetyBadgeText">Connecté</span>
-        </span>
-        <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-[#F5EFE4] px-2.5 py-1 text-[11px] font-extrabold text-[#495C50]">
-          🔋 <span id="batteryText">--%</span>
-        </span>
-        <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-[#0E5A3E]/30 bg-[#E9F3EB] px-2.5 py-1 text-[11px] font-black text-[#0E5A3E]" style="min-height:26px;">
-          🔑 <span id="seniorCodePrefix" class="hidden">Code :</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
-        </button>
-      </div>
-      <p id="heroMedicalSummary" class="hidden mt-2 inline-flex flex-wrap items-center gap-1.5 rounded-xl bg-rose-50 border border-rose-200 px-2.5 py-1 text-xs font-extrabold text-rose-900"></p>
     </div>
 
-    <!-- Giant Glossy Emerald "I'm OK" Pill Button -->
-    <button id="imOkBtn" type="button" class="tap-btn glossy-green flex w-full flex-col items-center justify-center rounded-full px-6 py-4 text-white">
+    <!-- Giant Glossy Emerald "Je vais bien" Pill Button -->
+    <button id="imOkBtn" type="button" class="tap-btn glossy-green flex w-full flex-col items-center justify-center rounded-[32px] px-6 py-4 text-white">
       <div class="flex items-center gap-2.5">
         <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
-        <span id="imOkLabel" class="text-2xl font-black tracking-tight">Je vais bien</span>
+        <span id="imOkLabel" class="text-3xl font-black tracking-tight">Je vais bien</span>
       </div>
       <span id="lastCheckInText" class="mt-1 text-xs font-bold text-emerald-100">🕒 Dernier check-in : aujourd'hui</span>
     </button>
 
+    <!-- Subtle 1-Line Presence & Invite Code Strip -->
+    <div class="flex flex-wrap items-center justify-center gap-2 text-[11px] font-extrabold text-[#55695D]">
+      <span id="presenceBadge" class="inline-flex items-center gap-1 rounded-full bg-[#EBF3EA] px-2.5 py-1 text-[#0E5A3E]">
+        💚 <span id="presenceText">Votre famille suit votre journée</span>
+      </span>
+      <span id="networkStatusPill" class="inline-flex items-center gap-1 rounded-full bg-[#FFFDF8] border border-[#E6DCCB] px-2.5 py-1">
+        <span id="networkStatusDot" class="h-2 w-2 rounded-full bg-emerald-600"></span>
+        <span id="safetyBadgeText">Connecté</span>
+      </span>
+      <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-[#FFFDF8] border border-[#E6DCCB] px-2.5 py-1">
+        🔋 <span id="batteryText">--%</span>
+      </span>
+      <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-[#0E5A3E]/30 bg-[#EBF3EA] px-2.5 py-1 font-black text-[#0E5A3E]" style="min-height:24px;">
+        🔑 <span id="seniorCodePrefix" class="hidden">Code :</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
+      </button>
+    </div>
+    <p id="heroMedicalSummary" class="hidden text-center rounded-2xl bg-rose-50 border border-rose-200 px-3 py-1.5 text-xs font-extrabold text-rose-900"></p>
+
     <div id="checkInFeedback" class="hidden rounded-2xl border border-[#B8D8C2] bg-[#E9F5EC] px-4 py-3 text-center text-sm font-extrabold text-[#0E5A3E]"></div>
     <div id="syncQueueBanner" class="hidden rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-extrabold text-amber-950"></div>
 
-    <!-- Family Reassurance Card (Prominent latest voice/text note from Family/Nurse) -->
+    <!-- Family Reassurance Card -->
     <div id="familyReassuranceCard" class="hidden serenite-card rounded-3xl p-4 space-y-2 border-l-4 border-l-[#0E5A3E]">
       <div class="flex items-center justify-between gap-2">
         <p id="familyReassuranceSender" class="text-xs font-black text-[#0E5A3E]">💬 Message de votre famille</p>
@@ -221,55 +222,67 @@
       <div id="seniorPendingLinksList" class="space-y-2"></div>
     </div>
 
-    <!-- ONLY 4 Clean Pastel Tiles (2x2 Grid matching Sérénité Mockup) -->
+    <!-- ONLY 4 Clean Illustrated Pastel Tiles (2x2 Grid matching 1000061787.jpg) -->
     <div class="grid grid-cols-2 gap-3">
 
       <!-- Tile 1: Medications -->
-      <button id="tileMedsBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-[#D4E6CD] bg-[#EDF5E9] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="tileMedsTitle" class="text-lg font-black text-[#163024]">Médicaments</h3>
-            <p id="tileMedsSub" class="mt-0.5 text-sm font-extrabold text-[#0E5A3E]">0 / 0 doses</p>
-          </div>
-          <span class="text-2xl">💊</span>
+      <button id="tileMedsBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#D4E6CD] bg-gradient-to-b from-[#F4FAF0] to-[#E6F1E0] p-3.5 text-start shadow-sm">
+        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="14" y="6" width="16" height="6" rx="2" fill="#E2E8F0"/>
+          <rect x="11" y="12" width="22" height="28" rx="5" fill="#1E7E4E"/>
+          <rect x="15" y="18" width="14" height="14" rx="2" fill="#FFFFFF"/>
+          <path d="M22 21v8M18 25h8" stroke="#1E7E4E" stroke-width="2.5" stroke-linecap="round"/>
+          <ellipse cx="36" cy="37" rx="6" ry="3.5" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+        </svg>
+        <div class="min-w-0">
+          <h3 id="tileMedsTitle" class="text-base font-black text-[#163024] truncate">Médicaments</h3>
+          <p id="tileMedsSub" class="text-xs font-extrabold text-[#0E5A3E]">0 / 0 doses</p>
+          <span id="tileMedsHint" class="hidden"></span>
         </div>
-        <span id="tileMedsHint" class="mt-3 text-xs font-bold text-[#3D6A4E]">Voir la liste ›</span>
       </button>
 
       <!-- Tile 2: Emergency -->
-      <button id="openEmergencyBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-[#F3D0D0] bg-[#FCEAEA] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="tileEmergencyTitle" class="text-lg font-black text-rose-900">Urgence</h3>
-            <p id="tileEmergencySub" class="mt-0.5 text-sm font-bold text-rose-700">Appel rapide</p>
-          </div>
-          <span class="text-2xl">🚨</span>
+      <button id="openEmergencyBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#F3D0D0] bg-gradient-to-b from-[#FFF5F5] to-[#FBE4E4] p-3.5 text-start shadow-sm">
+        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M24 40s-14-8.6-14-18.5C10 15.8 14.4 12 19.5 12c2.8 0 4.5 1.5 4.5 1.5S25.7 12 28.5 12C33.6 12 38 15.8 38 21.5 38 31.4 24 40 24 40z" fill="#F48B94"/>
+          <path d="M13 24h5l2.5-5 3.5 10 2.5-5H35" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="35" cy="35" r="7" fill="#FFFFFF" stroke="#E11D48" stroke-width="1.5"/>
+          <path d="M33 32.5c.8 2 2.5 3.7 4.5 4.5" fill="none" stroke="#E11D48" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="min-w-0">
+          <h3 id="tileEmergencyTitle" class="text-base font-black text-rose-900 truncate">Urgence</h3>
+          <p id="tileEmergencySub" class="text-xs font-bold text-rose-700">Appel rapide</p>
+          <span id="emergencyBtnLabel" class="hidden"></span>
         </div>
-        <span id="emergencyBtnLabel" class="mt-3 text-xs font-bold text-rose-800">Fiche d'urgence ›</span>
       </button>
 
       <!-- Tile 3: Drink Water -->
-      <button id="tileWaterBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-[#CDE1F5] bg-[#E8F2FC] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="waterHeading" class="text-lg font-black text-sky-950">Boire de l'eau</h3>
-            <p id="waterCountBadge" class="mt-0.5 text-sm font-extrabold text-sky-800">0 / 8 verres</p>
-          </div>
-          <span class="text-2xl">💧</span>
+      <button id="tileWaterBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#CDE1F5] bg-gradient-to-b from-[#F3F9FF] to-[#E3EFFB] p-3.5 text-start shadow-sm">
+        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M13 10h18l-2.2 28a3 3 0 01-3 2.8h-7.6a3 3 0 01-3-2.8L13 10z" fill="#E0F2FE" stroke="#60A5FA" stroke-width="1.8"/>
+          <path d="M14.4 22h15.2l-1.5 16a2 2 0 01-2 1.8h-8.2a2 2 0 01-2-1.8L14.4 22z" fill="#7DD3FC"/>
+          <path d="M36 27s5 5.6 5 8.8a5 5 0 11-10 0c0-3.2 5-8.8 5-8.8z" fill="#38BDF8"/>
+        </svg>
+        <div class="min-w-0">
+          <h3 id="waterHeading" class="text-base font-black text-sky-950 truncate">Boire de l'eau</h3>
+          <p id="waterCountBadge" class="text-xs font-extrabold text-sky-800">0 / 8</p>
+          <span id="tileWaterHint" class="block text-[11px] font-bold text-sky-700">+ 1 verre</span>
         </div>
-        <span id="tileWaterHint" class="mt-3 text-xs font-bold text-sky-800">+ 1 verre</span>
       </button>
 
-      <!-- Tile 4: Direct Messages (Nurse & Family) -->
-      <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex flex-col justify-between rounded-3xl border border-[#C9E5E1] bg-[#E4F3F1] p-4 text-start shadow-sm">
-        <div class="flex w-full items-start justify-between gap-2">
-          <div>
-            <h3 id="directCareTitle" class="text-lg font-black text-[#163024]">Messages</h3>
-            <p id="directCareSub" class="mt-0.5 text-xs font-bold text-teal-900">Famille & Infirmier</p>
-          </div>
-          <span id="directCareBadge" class="text-2xl">💬</span>
+      <!-- Tile 4: Direct Messages -->
+      <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#C9E5E1] bg-gradient-to-b from-[#F1FAF9] to-[#E0F2EF] p-3.5 text-start shadow-sm">
+        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M8 14a6 6 0 016-6h18a6 6 0 016 6v12a6 6 0 01-6 6H18l-6 5v-5h-1a3 3 0 01-3-3V14z" fill="#4E9B94"/>
+          <circle cx="17" cy="20" r="2" fill="#FFFFFF"/><circle cx="23" cy="20" r="2" fill="#FFFFFF"/><circle cx="29" cy="20" r="2" fill="#FFFFFF"/>
+          <circle cx="35" cy="35" r="7" fill="#FFFFFF" stroke="#4E9B94" stroke-width="1.5"/>
+          <path d="M30.5 32.5l4.5 3 4.5-3M30.5 32.5v5h9v-5" fill="none" stroke="#4E9B94" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <div class="min-w-0">
+          <h3 id="directCareTitle" class="text-base font-black text-[#163024] truncate">Messages</h3>
+          <p id="directCareSub" class="text-xs font-bold text-teal-900 truncate">Famille & Infirmier</p>
+          <span id="directCareBadge" class="hidden"></span>
         </div>
-        <span class="mt-3 text-xs font-bold text-teal-900">Chat / Vocal ›</span>
       </button>
     </div>
 
@@ -784,7 +797,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v75',
+    VERSION: 'v76',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2496,7 +2509,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v75';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v76';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -2651,9 +2664,9 @@
     if ($('careLinkTitle')) $('careLinkTitle').textContent = isFr ? 'Lier un senior par son code (CG-...)' : 'Link a senior by code (CG-...)';
     if ($('careSendLinkBtn')) $('careSendLinkBtn').textContent = isFr ? 'Lier' : 'Link';
     if ($('seniorPendingLinksTitle')) $('seniorPendingLinksTitle').textContent = isFr ? 'Nouvelles demandes de liaison :' : 'New link requests:';
-    if ($('directCareTitle')) $('directCareTitle').textContent = isFr ? 'Messages Infirmier & Famille' : 'Nurse & Family Messages';
+    if ($('directCareTitle')) $('directCareTitle').textContent = 'Messages';
     if ($('directCareBadge')) $('directCareBadge').textContent = isFr ? 'Direct' : 'Direct';
-    if ($('directCareSub')) $('directCareSub').textContent = isFr ? "Demandez de l'aide ou de charger le téléphone" : 'Ask for help or phone charging';
+    if ($('directCareSub')) $('directCareSub').textContent = isFr ? 'Famille & Infirmier' : 'Family & Nurse';
     if ($('dcModalSub')) $('dcModalSub').textContent = isFr ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
     if ($('dcTextInput')) $('dcTextInput').placeholder = isFr ? 'Écrivez un message...' : 'Type a message...';
     if ($('dcSendTextBtn')) $('dcSendTextBtn').textContent = isFr ? 'Envoyer' : 'Send';
