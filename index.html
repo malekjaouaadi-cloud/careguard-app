@@ -150,58 +150,66 @@
   <!-- TAB 1: HOME DASHBOARD (Matched to Sérénité Mockup 1000061787) -->
   <section id="homeTabView" class="space-y-4">
 
-    <!-- Clean Editorial Hero Greeting Card -->
-    <div class="rounded-[28px] border border-[#E6DCCB] bg-gradient-to-b from-[#FFFDF9] to-[#FAF3E6] p-5 shadow-[0_8px_24px_-10px_rgba(35,50,38,0.12)]">
-      <div class="flex items-center gap-4">
-        <div class="relative shrink-0">
-          <div id="heroAvatar" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-[#EFE7D8] bg-[#0E5A3E] text-3xl font-black text-white shadow-sm">
-            C
-          </div>
-          <label for="seniorAvatarInput" class="tap-btn absolute -bottom-1 -right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0E5A3E] text-xs text-white shadow" title="Photo">📷</label>
-          <input id="seniorAvatarInput" type="file" accept="image/*" class="hidden" />
+    <!-- Editorial Hero Greeting Card (Matched to Mockup 1000061801) -->
+    <div class="relative overflow-hidden rounded-[28px] border border-[#E6DCCB] bg-gradient-to-br from-[#FFFDF9] via-[#FAF3E6] to-[#F2E8D6] p-5 shadow-[0_10px_28px_-12px_rgba(35,50,38,0.16)] min-h-[188px] flex flex-col justify-between">
+      <!-- Blended Portrait on the Right -->
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-[48%] overflow-hidden">
+        <div id="heroAvatar" class="flex h-full w-full items-center justify-center bg-[#DCE6DA] text-5xl font-black text-[#0E5A3E]">C</div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#FAF3E6] via-[#FAF3E6]/40 to-transparent"></div>
+      </div>
+
+      <!-- Camera Upload Button (top-right of portrait) -->
+      <label for="seniorAvatarInput" class="tap-btn absolute top-3 right-3 z-20 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0E5A3E]/90 text-sm text-white shadow-md backdrop-blur-sm" title="Photo">📷</label>
+      <input id="seniorAvatarInput" type="file" accept="image/*" class="hidden" />
+
+      <!-- Left Greeting & Brand -->
+      <div class="relative z-10 max-w-[66%] space-y-1.5 pr-2">
+        <div class="flex items-center gap-1.5">
+          <svg class="h-6 w-6 text-[#0E5A3E]" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M22 8.5A8.5 8.5 0 1 0 22 23.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M16 18c2.5-3.5 6.5-4.5 9.5-3.5-1 3.5-3.5 6-7.5 6" fill="#2F7D57"/>
+          </svg>
+          <span class="font-serif-brand text-base font-extrabold text-[#0E5A3E]">CareGuard</span>
         </div>
-        <div class="min-w-0 flex-1 text-center">
-          <p id="heroWelcomeLabel" class="font-serif-brand text-2xl font-bold leading-tight text-[#0E5A3E]">Bonjour,</p>
-          <h2 id="seniorGreeting" class="font-serif-brand truncate text-3xl font-extrabold leading-tight text-[#0E5A3E]">Bienvenue</h2>
-          <div class="my-2 flex items-center justify-center gap-2 text-[#7A8C7E]">
-            <span class="h-px w-10 bg-[#D8CEBE]"></span>
-            <span class="text-xs">🌿</span>
-            <span class="h-px w-10 bg-[#D8CEBE]"></span>
-          </div>
-          <p id="heroMoodSub" class="text-sm font-semibold text-[#3C5044]">Comment vous sentez-vous aujourd'hui ?</p>
-          <div class="mt-1 text-sm text-[#2F7D57]">♥</div>
+        <p id="heroWelcomeLabel" class="font-serif-brand text-2xl font-bold leading-none text-[#0E5A3E] pt-1">Bonjour,</p>
+        <h2 id="seniorGreeting" class="font-serif-brand truncate text-3xl font-extrabold leading-tight text-[#0E5A3E]">Bienvenue</h2>
+        <p id="heroMoodSub" class="hidden">Comment vous sentez-vous aujourd'hui ?</p>
+      </div>
+
+      <!-- Bottom Row Inside Hero: Frosted Medical Pill + Battery Pill -->
+      <div class="relative z-10 mt-3 flex items-center justify-between gap-2">
+        <div id="heroMedicalPillWrap" class="hidden min-w-0 flex-1 items-center gap-1.5 rounded-full border border-[#DFD5C5] bg-white/85 px-3 py-1.5 text-[11px] font-extrabold text-[#163024] shadow-sm backdrop-blur-sm">
+          <span class="shrink-0 text-[#0E5A3E]">🛡️</span>
+          <span id="heroMedicalSummary" class="truncate"></span>
         </div>
+        <span id="batteryBadge" class="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border border-[#CFE0CC] bg-white/90 px-3 py-1.5 text-xs font-black text-[#0E5A3E] shadow-sm backdrop-blur-sm">
+          🔋 <span id="batteryText">--%</span>
+        </span>
       </div>
     </div>
 
     <!-- Giant Glossy Emerald "Je vais bien" Pill Button -->
-    <button id="imOkBtn" type="button" class="tap-btn glossy-green flex w-full flex-col items-center justify-center rounded-[32px] px-6 py-4 text-white">
-      <div class="flex items-center gap-2.5">
-        <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
-        <span id="imOkLabel" class="text-3xl font-black tracking-tight">Je vais bien</span>
-      </div>
-      <span id="lastCheckInText" class="mt-1 text-xs font-bold text-emerald-100">🕒 Dernier check-in : aujourd'hui</span>
+    <button id="imOkBtn" type="button" class="tap-btn glossy-green flex w-full items-center justify-center gap-2.5 rounded-[32px] px-6 py-4 text-white">
+      <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span id="imOkLabel" class="text-3xl font-black tracking-tight">Je vais bien</span>
     </button>
 
-    <!-- Subtle 1-Line Presence & Invite Code Strip -->
+    <!-- Subtle 1-Line Last Check-in, Presence & Invite Code Strip -->
     <div class="flex flex-wrap items-center justify-center gap-2 text-[11px] font-extrabold text-[#55695D]">
-      <span id="presenceBadge" class="inline-flex items-center gap-1 rounded-full bg-[#EBF3EA] px-2.5 py-1 text-[#0E5A3E]">
+      <span id="lastCheckInText" class="inline-flex items-center gap-1">🕒 Dernier check-in : aujourd'hui</span>
+      <span id="presenceBadge" class="inline-flex items-center gap-1 rounded-full bg-[#EBF3EA] px-2.5 py-0.5 text-[#0E5A3E]">
         💚 <span id="presenceText">Votre famille suit votre journée</span>
       </span>
-      <span id="networkStatusPill" class="inline-flex items-center gap-1 rounded-full bg-[#FFFDF8] border border-[#E6DCCB] px-2.5 py-1">
+      <span id="networkStatusPill" class="inline-flex items-center gap-1 rounded-full bg-[#FFFDF8] border border-[#E6DCCB] px-2.5 py-0.5">
         <span id="networkStatusDot" class="h-2 w-2 rounded-full bg-emerald-600"></span>
         <span id="safetyBadgeText">Connecté</span>
       </span>
-      <span id="batteryBadge" class="inline-flex items-center gap-1 rounded-full bg-[#FFFDF8] border border-[#E6DCCB] px-2.5 py-1">
-        🔋 <span id="batteryText">--%</span>
-      </span>
-      <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-[#0E5A3E]/30 bg-[#EBF3EA] px-2.5 py-1 font-black text-[#0E5A3E]" style="min-height:24px;">
+      <button id="copySeniorCodeBtn" type="button" class="hidden inline-flex items-center gap-1 rounded-full border border-[#0E5A3E]/30 bg-[#EBF3EA] px-2.5 py-0.5 font-black text-[#0E5A3E]" style="min-height:24px;">
         🔑 <span id="seniorCodePrefix" class="hidden">Code :</span> <span id="seniorCodeBadgeText" dir="ltr">CG------</span>
       </button>
     </div>
-    <p id="heroMedicalSummary" class="hidden text-center rounded-2xl bg-rose-50 border border-rose-200 px-3 py-1.5 text-xs font-extrabold text-rose-900"></p>
 
     <div id="checkInFeedback" class="hidden rounded-2xl border border-[#B8D8C2] bg-[#E9F5EC] px-4 py-3 text-center text-sm font-extrabold text-[#0E5A3E]"></div>
     <div id="syncQueueBanner" class="hidden rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-extrabold text-amber-950"></div>
@@ -222,67 +230,70 @@
       <div id="seniorPendingLinksList" class="space-y-2"></div>
     </div>
 
-    <!-- ONLY 4 Clean Illustrated Pastel Tiles (2x2 Grid matching 1000061787.jpg) -->
-    <div class="grid grid-cols-2 gap-3">
+    <!-- 4 Large Square Illustrated Pastel Tiles (Matched to Mockup 1000061801) -->
+    <div class="grid grid-cols-2 gap-3.5">
 
-      <!-- Tile 1: Medications -->
-      <button id="tileMedsBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#D4E6CD] bg-gradient-to-b from-[#F4FAF0] to-[#E6F1E0] p-3.5 text-start shadow-sm">
-        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
-          <rect x="14" y="6" width="16" height="6" rx="2" fill="#E2E8F0"/>
-          <rect x="11" y="12" width="22" height="28" rx="5" fill="#1E7E4E"/>
-          <rect x="15" y="18" width="14" height="14" rx="2" fill="#FFFFFF"/>
-          <path d="M22 21v8M18 25h8" stroke="#1E7E4E" stroke-width="2.5" stroke-linecap="round"/>
-          <ellipse cx="36" cy="37" rx="6" ry="3.5" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+      <!-- Tile 1: Medications (Pill Bottle + Leaf + Capsules) -->
+      <button id="tileMedsBtn" type="button" class="tap-btn flex flex-col items-center justify-center rounded-[26px] border border-[#CFE4CC] bg-gradient-to-b from-[#F4FAF2] to-[#E5F2E2] px-3 py-4 text-center shadow-sm min-h-[154px]">
+        <svg class="h-16 w-16 mb-1.5 drop-shadow-sm" viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="19" y="7" width="20" height="7" rx="3" fill="#CBD5E1"/>
+          <rect x="17" y="13" width="24" height="36" rx="7" fill="#2D7A4D"/>
+          <rect x="21" y="21" width="16" height="18" rx="3" fill="#FFFFFF"/>
+          <path d="M29 34c-3-4-2-9 3-11 2 4 1 8-3 11z" fill="#2D7A4D"/>
+          <g transform="rotate(-25 46 47)">
+            <rect x="37" y="42" width="18" height="8" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1"/>
+            <path d="M46 42h5a4 4 0 010 8h-5z" fill="#2D7A4D"/>
+          </g>
         </svg>
-        <div class="min-w-0">
-          <h3 id="tileMedsTitle" class="text-base font-black text-[#163024] truncate">Médicaments</h3>
-          <p id="tileMedsSub" class="text-xs font-extrabold text-[#0E5A3E]">0 / 0 doses</p>
-          <span id="tileMedsHint" class="hidden"></span>
-        </div>
+        <h3 id="tileMedsTitle" class="text-lg font-black text-[#163024] leading-tight">Médicaments</h3>
+        <p id="tileMedsSub" class="mt-0.5 text-xs font-extrabold text-[#0E5A3E]">0 / 0 doses</p>
+        <span id="tileMedsHint" class="hidden"></span>
       </button>
 
-      <!-- Tile 2: Emergency -->
-      <button id="openEmergencyBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#F3D0D0] bg-gradient-to-b from-[#FFF5F5] to-[#FBE4E4] p-3.5 text-start shadow-sm">
-        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
-          <path d="M24 40s-14-8.6-14-18.5C10 15.8 14.4 12 19.5 12c2.8 0 4.5 1.5 4.5 1.5S25.7 12 28.5 12C33.6 12 38 15.8 38 21.5 38 31.4 24 40 24 40z" fill="#F48B94"/>
-          <path d="M13 24h5l2.5-5 3.5 10 2.5-5H35" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="35" cy="35" r="7" fill="#FFFFFF" stroke="#E11D48" stroke-width="1.5"/>
-          <path d="M33 32.5c.8 2 2.5 3.7 4.5 4.5" fill="none" stroke="#E11D48" stroke-width="2" stroke-linecap="round"/>
+      <!-- Tile 2: Emergency (Coral Circle + Phone + Cross) -->
+      <button id="openEmergencyBtn" type="button" class="tap-btn flex flex-col items-center justify-center rounded-[26px] border border-[#F3CECE] bg-gradient-to-b from-[#FFF5F5] to-[#FBE4E4] px-3 py-4 text-center shadow-sm min-h-[154px]">
+        <svg class="h-16 w-16 mb-1.5 drop-shadow-sm" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="cgEmGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FB7185"/>
+              <stop offset="100%" stop-color="#E11D48"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="24" fill="url(#cgEmGrad)"/>
+          <path d="M23.5 23c1-1 2.6-.7 3.4.5l2 3c.6.9.4 2.1-.4 2.8l-1.5 1.3a14 14 0 006.4 6.4l1.3-1.5c.7-.8 1.9-1 2.8-.4l3 2c1.2.8 1.5 2.4.5 3.4l-1.8 1.8c-1.5 1.5-3.8 2-5.9 1.2-5.5-2.2-11.6-8.3-13.8-13.8-.8-2.1-.3-4.4 1.2-5.9L23.5 23z" fill="#FFFFFF"/>
+          <path d="M40 19v8M36 23h8" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
         </svg>
-        <div class="min-w-0">
-          <h3 id="tileEmergencyTitle" class="text-base font-black text-rose-900 truncate">Urgence</h3>
-          <p id="tileEmergencySub" class="text-xs font-bold text-rose-700">Appel rapide</p>
-          <span id="emergencyBtnLabel" class="hidden"></span>
-        </div>
+        <h3 id="tileEmergencyTitle" class="text-lg font-black text-rose-900 leading-tight">Urgence</h3>
+        <p id="tileEmergencySub" class="mt-0.5 text-xs font-bold text-rose-700">Appel rapide</p>
+        <span id="emergencyBtnLabel" class="hidden"></span>
       </button>
 
-      <!-- Tile 3: Drink Water -->
-      <button id="tileWaterBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#CDE1F5] bg-gradient-to-b from-[#F3F9FF] to-[#E3EFFB] p-3.5 text-start shadow-sm">
-        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
-          <path d="M13 10h18l-2.2 28a3 3 0 01-3 2.8h-7.6a3 3 0 01-3-2.8L13 10z" fill="#E0F2FE" stroke="#60A5FA" stroke-width="1.8"/>
-          <path d="M14.4 22h15.2l-1.5 16a2 2 0 01-2 1.8h-8.2a2 2 0 01-2-1.8L14.4 22z" fill="#7DD3FC"/>
-          <path d="M36 27s5 5.6 5 8.8a5 5 0 11-10 0c0-3.2 5-8.8 5-8.8z" fill="#38BDF8"/>
+      <!-- Tile 3: Drink Water (Glossy Blue Drop + Ripples) -->
+      <button id="tileWaterBtn" type="button" class="tap-btn flex flex-col items-center justify-center rounded-[26px] border border-[#C9E0F5] bg-gradient-to-b from-[#F2F8FE] to-[#E1EFFB] px-3 py-4 text-center shadow-sm min-h-[154px]">
+        <svg class="h-16 w-16 mb-1.5 drop-shadow-sm" viewBox="0 0 64 64" aria-hidden="true">
+          <ellipse cx="32" cy="49" rx="22" ry="6" fill="none" stroke="#93C5FD" stroke-width="1.8"/>
+          <ellipse cx="32" cy="49" rx="14" ry="3.8" fill="none" stroke="#60A5FA" stroke-width="1.8"/>
+          <path d="M32 10C32 10 18 27 18 37a14 14 0 0028 0c0-10-14-27-14-27z" fill="#38BDF8" stroke="#0284C7" stroke-width="1.5"/>
+          <path d="M25 35c0-5 4-11 7-15-1 5 0 11 2 16a7 7 0 01-9-1z" fill="#BAE6FD" opacity="0.7"/>
         </svg>
-        <div class="min-w-0">
-          <h3 id="waterHeading" class="text-base font-black text-sky-950 truncate">Boire de l'eau</h3>
-          <p id="waterCountBadge" class="text-xs font-extrabold text-sky-800">0 / 8</p>
-          <span id="tileWaterHint" class="block text-[11px] font-bold text-sky-700">+ 1 verre</span>
-        </div>
+        <h3 id="waterHeading" class="text-lg font-black text-sky-950 leading-tight">Boire de l'eau</h3>
+        <p id="waterCountBadge" class="mt-0.5 text-xs font-extrabold text-sky-800">0 / 8</p>
+        <span id="tileWaterHint" class="text-[11px] font-bold text-sky-700">+ 1 verre</span>
       </button>
 
-      <!-- Tile 4: Direct Messages -->
-      <button id="openDirectCareMsgBtn" type="button" class="tap-btn flex items-center gap-3 rounded-[22px] border border-[#C9E5E1] bg-gradient-to-b from-[#F1FAF9] to-[#E0F2EF] p-3.5 text-start shadow-sm">
-        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
-          <path d="M8 14a6 6 0 016-6h18a6 6 0 016 6v12a6 6 0 01-6 6H18l-6 5v-5h-1a3 3 0 01-3-3V14z" fill="#4E9B94"/>
-          <circle cx="17" cy="20" r="2" fill="#FFFFFF"/><circle cx="23" cy="20" r="2" fill="#FFFFFF"/><circle cx="29" cy="20" r="2" fill="#FFFFFF"/>
-          <circle cx="35" cy="35" r="7" fill="#FFFFFF" stroke="#4E9B94" stroke-width="1.5"/>
-          <path d="M30.5 32.5l4.5 3 4.5-3M30.5 32.5v5h9v-5" fill="none" stroke="#4E9B94" stroke-width="1.5" stroke-linejoin="round"/>
+      <!-- Tile 4: Messages (Teal Overlapping Speech Bubbles + Unread Color Support) -->
+      <button id="openDirectCareMsgBtn" type="button" class="tap-btn relative flex flex-col items-center justify-center rounded-[26px] border border-[#C4E4E0] bg-gradient-to-b from-[#EFFAF8] to-[#DFF2F0] px-3 py-4 text-center shadow-sm min-h-[154px] transition-colors duration-300">
+        <span id="directCareUnreadDot" class="hidden absolute top-3 right-3 h-3.5 w-3.5 rounded-full bg-rose-600 ring-2 ring-white animate-pulse"></span>
+        <svg class="h-16 w-16 mb-1.5 drop-shadow-sm" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M22 18h24a8 8 0 018 8v12a8 8 0 01-8 8h-3l-5 5v-5H22a8 8 0 01-8-8V26a8 8 0 018-8z" fill="#7AC3BC" opacity="0.55"/>
+          <path d="M16 14h24a8 8 0 018 8v12a8 8 0 01-8 8H24l-6 5v-5h-2a8 8 0 01-8-8V22a8 8 0 018-8z" fill="#2A847D"/>
+          <circle cx="21" cy="28" r="2.6" fill="#FFFFFF"/>
+          <circle cx="28" cy="28" r="2.6" fill="#FFFFFF"/>
+          <circle cx="35" cy="28" r="2.6" fill="#FFFFFF"/>
         </svg>
-        <div class="min-w-0">
-          <h3 id="directCareTitle" class="text-base font-black text-[#163024] truncate">Messages</h3>
-          <p id="directCareSub" class="text-xs font-bold text-teal-900 truncate">Famille & Infirmier</p>
-          <span id="directCareBadge" class="hidden"></span>
-        </div>
+        <h3 id="directCareTitle" class="text-lg font-black text-[#163024] leading-tight">Messages</h3>
+        <p id="directCareSub" class="mt-0.5 text-xs font-bold text-teal-900 truncate max-w-full">Famille & Infirmier</p>
+        <span id="directCareBadge" class="hidden"></span>
       </button>
     </div>
 
@@ -547,6 +558,12 @@
       <button id="closeDirectCareBtn" type="button" class="rounded-xl px-3 py-1.5 text-xl font-black text-slate-600" style="min-height:40px;">✕</button>
     </div>
 
+    <!-- Separate Private Channels: Family vs Nurse -->
+    <div id="dcChannelTabs" class="mt-2.5 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+      <button id="dcChannelFamilyBtn" type="button" class="tap-btn rounded-xl bg-emerald-700 px-3 py-2 text-xs font-black text-white shadow-sm" style="min-height:38px;">💚 Famille (Privé)</button>
+      <button id="dcChannelNurseBtn" type="button" class="tap-btn rounded-xl px-3 py-2 text-xs font-black text-slate-700" style="min-height:38px;">🩺 Infirmier (Privé)</button>
+    </div>
+
     <div id="dcMessagesList" class="my-3 flex-1 space-y-2.5 overflow-y-auto rounded-2xl bg-slate-50 p-3 min-h-[200px]"></div>
 
     <!-- Quick Help Request Chips -->
@@ -797,7 +814,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v77',
+    VERSION: 'v78',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2137,12 +2154,16 @@
         sub: isFr ? 'Veuillez brancher le chargeur.' : 'Please plug in your charger now.'
       });
     }
+    const nowHHMMNotif = String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
     state.meds.filter((m) => !m.taken).forEach((m) => {
+      const hasT = /^\d{2}:\d{2}$/.test(m.time || '');
+      const isFuture = hasT && nowHHMMNotif < m.time;
       items.push({
-        cls: 'border-emerald-200 bg-emerald-50 text-slate-900',
-        title: (isFr ? '💊 Médicament dû : ' : '💊 Medication due: ') + (isFr ? m.nameAr : m.nameEn),
+        cls: isFuture ? 'border-slate-200 bg-slate-50 text-slate-700' : 'border-emerald-200 bg-emerald-50 text-slate-900',
+        title: (isFuture ? (isFr ? '⏰ À venir : ' : '⏰ Upcoming: ') : (isFr ? '💊 Médicament dû : ' : '💊 Medication due: ')) + (isFr ? m.nameAr : m.nameEn),
         sub: (isFr ? 'Heure : ' : 'Time: ') + m.time,
-        medId: m.id
+        medId: isFuture ? null : m.id,
+        waitTime: isFuture ? m.time : null
       });
     });
     if (state.appts.length) {
@@ -2175,12 +2196,20 @@
         btn.textContent = isFr ? 'Fait ✓' : 'Done ✓';
         btn.addEventListener('click', () => {
           const med = state.meds.find((x) => x.id === it.medId);
-          if (med) med.taken = true;
+          if (med) {
+            med.taken = true;
+            if (typeof syncMedLog === 'function') syncMedLog(med);
+          }
           saveState();
           applyLang();
           renderNotificationsModal();
         });
         card.appendChild(btn);
+      } else if (it.waitTime) {
+        const badge = document.createElement('span');
+        badge.className = 'shrink-0 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-extrabold text-slate-600';
+        badge.textContent = (isFr ? '⏳ À ' : '⏳ At ') + it.waitTime;
+        card.appendChild(badge);
       }
       body.appendChild(card);
     });
@@ -2434,6 +2463,8 @@
   }
 
   async function loadCommunityMessages() {
+    state.lastSeenCommunityMsgAt = Date.now(); saveState();
+    if (typeof checkUnreadCareMessagesForSenior === 'function') checkUnreadCareMessagesForSenior();
     if (!client) return;
     if (!currentUser) { renderChatMessages([]); showChatMsg(state.lang === 'fr' ? 'Connectez-vous avec Google pour participer.' : 'Sign in with Google first.', true); return; }
     try {
@@ -2509,7 +2540,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v77';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v78';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -2519,13 +2550,26 @@
     if ($('heroMedicalSummary')) {
       const mp = state.profile || {};
       const parts = [];
-      if (mp.bloodType) parts.push('🩸 ' + mp.bloodType);
-      if (mp.allergies) parts.push('⚠️ ' + (mp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : mp.allergies));
-      if (mp.conditions) parts.push('🩺 ' + ((mp.conditions === 'السكري، ضغط الدم' || mp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : mp.conditions));
+      if (mp.bloodType) parts.push(mp.bloodType);
+      if (mp.allergies) parts.push((isFr ? 'Allergies : ' : 'Allergies: ') + (mp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : mp.allergies));
+      if (mp.conditions) parts.push((mp.conditions === 'السكري، ضغط الدم' || mp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : mp.conditions);
       $('heroMedicalSummary').textContent = parts.join(' • ');
-      $('heroMedicalSummary').classList.toggle('hidden', parts.length === 0);
+      if ($('heroMedicalPillWrap')) {
+        $('heroMedicalPillWrap').classList.toggle('hidden', parts.length === 0);
+        $('heroMedicalPillWrap').classList.toggle('flex', parts.length > 0);
+      }
     }
-    $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'C').toUpperCase();
+    if ($('heroAvatar') && !$('heroAvatar').querySelector('img')) {
+      const uid = currentUser && currentUser.id;
+      const cachedAv = uid ? localStorage.getItem('cg_avatar_' + uid) : null;
+      if (cachedAv) {
+        const avImg = document.createElement('img');
+        avImg.src = cachedAv; avImg.alt = name || 'Senior'; avImg.className = 'h-full w-full object-cover';
+        $('heroAvatar').replaceChildren(avImg);
+      } else {
+        $('heroAvatar').textContent = (name ? name.trim().charAt(0) : 'C').toUpperCase();
+      }
+    }
     $('imOkLabel').textContent = isFr ? 'Je vais bien' : "I'm OK";
     if (state.lastServerCheckInIso) {
       const dtStr = new Date(state.lastServerCheckInIso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -3137,6 +3181,9 @@
         if (sp.family_relation) state.profile.familyRelation = sp.family_relation;
         if (sp.backup_phone) state.profile.backupPhone = sp.backup_phone;
         if (sp.family_email) state.profile.familyEmail = sp.family_email;
+        if (sp.avatar_url && currentUser && !sp.avatar_url.includes('/careguard-audio/avatars/')) {
+          try { localStorage.setItem('cg_avatar_' + currentUser.id, sp.avatar_url); } catch (_) {}
+        }
         if (sp.doctor_name) state.profile.doctorName = sp.doctor_name;
         if (sp.doctor_phone) state.profile.doctorPhone = sp.doctor_phone;
         if (sp.home_address) state.profile.address = sp.home_address;
@@ -3816,32 +3863,90 @@
   }
 
 
+  let activeDcChannel = 'family';
+
+  function setMessagesTileHighlight(hasUnread, previewText) {
+    const tile = $('openDirectCareMsgBtn');
+    const dot = $('directCareUnreadDot');
+    const sub = $('directCareSub');
+    const isFr = state.lang === 'fr';
+    if (tile) {
+      tile.className = hasUnread
+        ? 'tap-btn relative flex flex-col items-center justify-center rounded-[26px] border-2 border-amber-400 bg-gradient-to-b from-amber-50 to-orange-100 px-3 py-4 text-center shadow-md min-h-[154px] transition-colors duration-300'
+        : 'tap-btn relative flex flex-col items-center justify-center rounded-[26px] border border-[#C4E4E0] bg-gradient-to-b from-[#EFFAF8] to-[#DFF2F0] px-3 py-4 text-center shadow-sm min-h-[154px] transition-colors duration-300';
+    }
+    if (dot) dot.classList.toggle('hidden', !hasUnread);
+    if (sub) {
+      if (hasUnread && previewText) {
+        sub.textContent = previewText;
+        sub.className = 'mt-0.5 text-xs font-black text-rose-700 truncate max-w-full';
+      } else {
+        sub.textContent = isFr ? 'Famille & Infirmier' : 'Family & Nurse';
+        sub.className = 'mt-0.5 text-xs font-bold text-teal-900 truncate max-w-full';
+      }
+    }
+  }
+
+  function updateDcChannelTabsUI() {
+    const isFr = state.lang === 'fr';
+    const tabsWrap = $('dcChannelTabs');
+    const fBtn = $('dcChannelFamilyBtn');
+    const nBtn = $('dcChannelNurseBtn');
+    if (!tabsWrap || !fBtn || !nBtn) return;
+    const isCare = (userRole === 'nurse' || userRole === 'center' || userRole === 'family');
+    tabsWrap.classList.toggle('hidden', isCare);
+    fBtn.textContent = isFr ? '💚 Famille (Privé)' : '💚 Family (Private)';
+    nBtn.textContent = isFr ? '🩺 Infirmier (Privé)' : '🩺 Nurse (Private)';
+    fBtn.className = activeDcChannel === 'family'
+      ? 'tap-btn rounded-xl bg-emerald-700 px-3 py-2 text-xs font-black text-white shadow-sm'
+      : 'tap-btn rounded-xl px-3 py-2 text-xs font-black text-slate-700';
+    nBtn.className = activeDcChannel === 'nurse'
+      ? 'tap-btn rounded-xl bg-teal-700 px-3 py-2 text-xs font-black text-white shadow-sm'
+      : 'tap-btn rounded-xl px-3 py-2 text-xs font-black text-slate-700';
+  }
+
   async function checkUnreadCareMessagesForSenior() {
     if (userRole !== 'senior' || !client || !currentUser || !currentSeniorId || !navigator.onLine) return;
     try {
-      const { data } = await client
-        .from('care_direct_messages')
-        .select('id, sender_user_id, sender_name, message_text, created_at')
-        .eq('senior_id', currentSeniorId)
-        .neq('sender_user_id', currentUser.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      if (!data || !data[0]) return;
-      const msg = data[0];
-      const msgTs = msg.created_at ? new Date(msg.created_at).getTime() : 0;
-      if (msgTs > (state.lastSeenCareMsgAt || 0)) {
-        const preview = msg.message_text || (state.lang === 'fr' ? '🎤 Message vocal' : '🎤 Voice message');
-        if ($('directCareSub')) {
-          $('directCareSub').textContent = '💬 ' + (msg.sender_name || '') + ': ' + preview.slice(0, 45);
-          $('directCareSub').className = 'text-xs font-black text-rose-700 animate-pulse';
-        }
+      const isFr = state.lang === 'fr';
+      const [dmRes, commRes] = await Promise.all([
+        client.from('care_direct_messages')
+          .select('id, sender_user_id, sender_name, message_text, created_at')
+          .eq('senior_id', currentSeniorId)
+          .neq('sender_user_id', currentUser.id)
+          .order('created_at', { ascending: false })
+          .limit(1),
+        client.from('community_messages')
+          .select('id, user_id, author_name, message_text, created_at')
+          .neq('user_id', currentUser.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+      ]);
+      const dm = dmRes && dmRes.data && dmRes.data[0];
+      const cm = commRes && commRes.data && commRes.data[0];
+      const dmTs = dm && dm.created_at ? new Date(dm.created_at).getTime() : 0;
+      const cmTs = cm && cm.created_at ? new Date(cm.created_at).getTime() : 0;
+      const hasNewDm = dmTs > (state.lastSeenCareMsgAt || 0);
+      const hasNewComm = cmTs > (state.lastSeenCommunityMsgAt || 0);
+
+      if (hasNewDm) {
+        const preview = dm.message_text || (isFr ? '🎤 Message vocal' : '🎤 Voice message');
+        setMessagesTileHighlight(true, '💬 ' + (dm.sender_name || '') + ': ' + preview.slice(0, 32));
         const bell = $('headerBellCount');
         if (bell) bell.textContent = String(Math.max(1, Number(bell.textContent) || 0));
-        if (window.__lastChimedMsgId !== msg.id) {
-          window.__lastChimedMsgId = msg.id;
+        if (window.__lastChimedMsgId !== dm.id) {
+          window.__lastChimedMsgId = dm.id;
           playMessengerChime();
-          sendSwNotification('💬 ' + (msg.sender_name || 'CareGuard'), preview, 'dm-' + msg.id);
+          sendSwNotification('💬 ' + (dm.sender_name || 'CareGuard'), preview, 'dm-' + dm.id);
         }
+      } else if (hasNewComm) {
+        setMessagesTileHighlight(true, isFr ? ('🗣️ Salon : ' + (cm.author_name || 'Nouveau')) : ('🗣️ Chat: ' + (cm.author_name || 'New')));
+      } else {
+        setMessagesTileHighlight(false, '');
+      }
+
+      if ($('navChatBtn')) {
+        $('navChatBtn').classList.toggle('text-amber-700', hasNewComm);
       }
     } catch (_) {}
   }
@@ -3850,39 +3955,45 @@
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
     const isFr = state.lang === 'fr';
-    $('dcModalTitle').textContent = seniorName ? ((isFr ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (isFr ? 'Messages Infirmier, Famille & Soins' : 'Nurse, Family & Care Messages');
-    $('dcModalSub').textContent = isFr ? 'Messages vocaux et écrits directs et privés' : 'Private direct voice & text messages';
+    if (userRole === 'nurse' || userRole === 'center') activeDcChannel = 'nurse';
+    else if (userRole === 'family') activeDcChannel = 'family';
+    updateDcChannelTabsUI();
+    $('dcModalTitle').textContent = seniorName ? ((isFr ? 'Discussion avec : ' : 'Chat with: ') + seniorName) : (isFr ? 'Messages privés' : 'Private Messages');
+    $('dcModalSub').textContent = activeDcChannel === 'nurse'
+      ? (isFr ? '🩺 Canal privé : Senior ↔ Infirmier(ère)' : '🩺 Private channel: Senior ↔ Nurse')
+      : (isFr ? '💚 Canal privé : Senior ↔ Famille' : '💚 Private channel: Senior ↔ Family');
     renderDcQuickChips();
     $('directCareModal').classList.remove('hidden');
     if (userRole === 'senior') {
       state.lastSeenCareMsgAt = Date.now(); saveState();
-      if ($('directCareSub')) $('directCareSub').className = 'text-xs font-bold text-teal-900';
+      setMessagesTileHighlight(false, '');
     }
     loadDirectCareMessages();
-    if (!seniorName && client && currentUser && dcTargetSeniorId) {
-      try {
-        const { data: links } = await client.from('senior_care_links').select('role_type, requester_name').eq('senior_id', dcTargetSeniorId).eq('status', 'approved');
-        if (links && links.length) {
-          const order = { nurse: 0, family: 1, center: 2 };
-          links.sort((a, b) => (order[a.role_type] ?? 9) - (order[b.role_type] ?? 9));
-          const lbl = (r) => r.role_type === 'nurse' ? (isFr ? '🩺 Infirmier(ère)' : '🩺 Nurse') : (r.role_type === 'center' ? (isFr ? '🏥 Soins' : '🏥 Home Care') : (isFr ? '👨‍👩‍👧 Famille' : '👨‍👩‍👧 Family'));
-          $('dcModalSub').textContent = (isFr ? 'À : ' : 'To: ') + links.map((r) => `${lbl(r)}: ${r.requester_name}`).join(' • ');
-        }
-      } catch (_) {}
-    }
   }
 
   async function loadDirectCareMessages() {
     const box = $('dcMessagesList'); if (!box || !client || !currentUser || !dcTargetSeniorId) return;
     const isFr = state.lang === 'fr';
     try {
-      const { data, error } = await client
+      let res = await client
         .from('care_direct_messages')
-        .select('id, sender_user_id, sender_name, sender_role, message_text, audio_data, created_at')
+        .select('id, sender_user_id, sender_name, sender_role, channel, message_text, audio_data, created_at')
         .eq('senior_id', dcTargetSeniorId)
         .order('created_at', { ascending: true })
-        .limit(40);
-      if (error) throw error;
+        .limit(60);
+      if (res.error && String(res.error.message || '').includes('channel')) {
+        res = await client
+          .from('care_direct_messages')
+          .select('id, sender_user_id, sender_name, sender_role, message_text, audio_data, created_at')
+          .eq('senior_id', dcTargetSeniorId)
+          .order('created_at', { ascending: true })
+          .limit(60);
+      }
+      if (res.error) throw res.error;
+      const data = (res.data || []).filter((m) => {
+        const ch = m.channel || ((m.sender_role === 'nurse' || m.sender_role === 'center') ? 'nurse' : 'family');
+        return ch === activeDcChannel;
+      });
       box.replaceChildren();
       if (!data || !data.length) {
         const p = document.createElement('p'); p.className = 'py-6 text-center text-sm font-bold text-slate-500';
@@ -3917,14 +4028,20 @@
       $('dcStatusMsg').textContent = isFr ? "Connectez-vous d'abord." : 'Sign in first.';
       $('dcStatusMsg').classList.remove('hidden'); return false;
     }
-    const { error } = await client.from('care_direct_messages').insert({
+    const payload = {
       senior_id: dcTargetSeniorId,
       sender_user_id: currentUser.id,
       sender_name: getRealDisplayName(),
       sender_role: userRole || 'senior',
+      channel: activeDcChannel,
       message_text: text || null,
       audio_data: audioData ? await uploadVoiceToStorage(audioData, 'direct') : null
-    });
+    };
+    let { error } = await client.from('care_direct_messages').insert(payload);
+    if (error && String(error.message || '').includes('channel')) {
+      delete payload.channel;
+      ({ error } = await client.from('care_direct_messages').insert(payload));
+    }
     if (error) { $('dcStatusMsg').textContent = friendlyError(error); $('dcStatusMsg').classList.remove('hidden'); return false; }
     $('dcStatusMsg').classList.add('hidden');
     loadDirectCareMessages();
@@ -3932,6 +4049,8 @@
   }
 
   $('openDirectCareMsgBtn').addEventListener('click', () => openDirectCareModal(currentSeniorId, ''));
+  if ($('dcChannelFamilyBtn')) $('dcChannelFamilyBtn').addEventListener('click', () => { activeDcChannel = 'family'; updateDcChannelTabsUI(); openDirectCareModal(dcTargetSeniorId, ''); });
+  if ($('dcChannelNurseBtn')) $('dcChannelNurseBtn').addEventListener('click', () => { activeDcChannel = 'nurse'; updateDcChannelTabsUI(); openDirectCareModal(dcTargetSeniorId, ''); });
   $('closeDirectCareBtn').addEventListener('click', () => $('directCareModal').classList.add('hidden'));
   $('dcSendTextBtn').addEventListener('click', async () => { const t = $('dcTextInput').value.trim(); if (!t) return; if (await sendDirectCareMessage(t, null)) $('dcTextInput').value = ''; });
   $('dcRecordBtn').addEventListener('click', async () => {
