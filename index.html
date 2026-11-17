@@ -898,7 +898,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v86',
+    VERSION: 'v87',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2721,7 +2721,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v86';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v87';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4795,11 +4795,23 @@
         const msg = `🚨 SOS URGENCE — ${CG.getRealDisplayName()} • 📍 ${mapUrl} • 🩺 ${medSummary}`;
         if (client && user && sid) {
           try {
-            await client.from('alerts').insert({ senior_id: sid, alert_type: 'sos_emergency', message: msg });
+            const { error: alErr } = await client.from('alerts').insert({ senior_id: sid, alert_type: 'sos_emergency', message: msg });
+            if (alErr) throw alErr;
             if (lat && lng) {
               try { await client.from('senior_profiles').update({ last_lat: lat, last_lng: lng, last_loc_at: new Date().toISOString() }).eq('id', sid); } catch (_) {}
             }
-            if (statusEl) statusEl.textContent = isFr ? '✅ SOS envoyé à votre famille et infirmier !' : '✅ SOS sent to your family & nurse!';
+            // Send directly to both Family & Nurse private message channels so 🔴 Chat lights up immediately
+            await Promise.allSettled([
+              client.from('care_direct_messages').insert({ senior_id: sid, sender_user_id: user.id, sender_name: CG.getRealDisplayName(), sender_role: 'senior', channel: 'family', message_text: msg }),
+              client.from('care_direct_messages').insert({ senior_id: sid, sender_user_id: user.id, sender_name: CG.getRealDisplayName(), sender_role: 'senior', channel: 'nurse', message_text: msg })
+            ]);
+            // Trigger immediate Push + Email delivery via notify-alerts-ts (no 15-min wait)
+            fetch('https://jobzviplbwfdoyrdrblt.supabase.co/functions/v1/notify-alerts-ts', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: '{}'
+            }).catch(() => {});
+            if (statusEl) statusEl.textContent = isFr ? '✅ SOS + position envoyés à votre famille et infirmier !' : '✅ SOS + location sent to family & nurse!';
           } catch (e) {
             if (statusEl) statusEl.textContent = (isFr ? 'Erreur SOS : ' : 'SOS Error: ') + (e.message || '');
           }
