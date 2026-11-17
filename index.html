@@ -360,32 +360,35 @@
     </div>
   </section>
 
-  <!-- CARE PORTAL VIEW (Family, Nurse, Home Care Center — Clean 3-Tab Layout) -->
-  <section id="carePortalView" class="hidden space-y-4">
-    <div class="serenite-card flex flex-wrap items-center justify-between gap-3 rounded-3xl p-4">
-      <div class="flex items-center gap-3">
+  <!-- CARE PORTAL VIEW (Editorial Family & Nurse Dashboard matched to 1000061806) -->
+  <section id="carePortalView" class="hidden space-y-4 pb-20">
+    <div class="flex items-start justify-between gap-3 px-1">
+      <div>
+        <h2 id="carePortalTitle" class="font-serif-brand text-3xl font-extrabold leading-tight text-[#0E5A3E]">Family Dashboard</h2>
+        <p id="carePortalSub" class="text-sm font-semibold text-[#5C6F63]">Suivi de votre proche</p>
+      </div>
+      <div class="flex items-center gap-1.5 pt-1">
         <div class="relative shrink-0">
-          <div id="careSelfAvatar" class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-[#E8DFCE] bg-[#0E5A3E] text-xl font-black text-white">C</div>
-          <label for="careAvatarInput" class="tap-btn absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-white bg-[#0E5A3E] text-[10px] text-white shadow" title="Photo">📷</label>
+          <div id="careSelfAvatar" class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#E6DCCB] bg-[#0E5A3E] text-sm font-black text-white">C</div>
+          <label for="careAvatarInput" class="tap-btn absolute -bottom-1 -right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border border-white bg-[#0E5A3E] text-[9px] text-white shadow" title="Photo">📷</label>
           <input id="careAvatarInput" type="file" accept="image/*" class="hidden" />
         </div>
-        <div>
-          <h2 id="carePortalTitle" class="font-serif-brand text-2xl font-extrabold text-[#0E5A3E]">Tableau de suivi</h2>
-          <p id="carePortalSub" class="text-xs font-bold text-[#5C6F63]"></p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="careEnablePushBtn" type="button" class="tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-900" style="min-height:38px;">🔔 Push</button>
-        <button id="careRefreshBtn" type="button" class="tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900" style="min-height:38px;">🔄 Actualiser</button>
-        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800" style="min-height:38px;">🚪 Quitter</button>
+        <button id="careEnablePushBtn" type="button" class="tap-btn rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-extrabold text-rose-900" style="min-height:34px;">🔔 Push</button>
+        <button id="careRefreshBtn" type="button" class="tap-btn rounded-full border border-[#D8CEBE] bg-white px-2.5 py-1.5 text-xs font-extrabold text-[#0E5A3E]" style="min-height:34px;">🔄</button>
+        <button id="careSignOutBtn" type="button" class="hidden tap-btn rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-extrabold text-rose-800" style="min-height:34px;">🚪</button>
       </div>
     </div>
 
-    <!-- Clean 3-Tab Navigation Bar -->
-    <div class="grid grid-cols-3 gap-2 rounded-2xl border border-teal-200 bg-white p-1.5 shadow-sm">
-      <button id="careTabPatientsBtn" type="button" class="tap-btn rounded-xl bg-teal-700 px-3 py-2.5 text-xs font-black text-white">👥 Patients</button>
-      <button id="careTabAlertsBtn" type="button" class="tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700">🚨 Alertes (0)</button>
-      <button id="careTabLinkBtn" type="button" class="tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700">🔗 Lier & Compte</button>
+    <!-- Editorial Summary Pill -->
+    <div id="careEditorialPill" class="flex items-center justify-center gap-3 rounded-full border border-[#EAE0CF] bg-[#F5EFE3] px-4 py-2 text-xs font-extrabold text-[#163024]">
+      <span id="careSummaryText">🟢 0 patient</span>
+    </div>
+
+    <!-- Clean 3-Tab Navigation Bar (synced with Care Bottom Nav) -->
+    <div class="grid grid-cols-3 gap-2 rounded-2xl border border-[#E6DCCB] bg-white p-1.5 shadow-sm">
+      <button id="careTabPatientsBtn" type="button" class="tap-btn rounded-xl bg-[#0E5A3E] px-3 py-2 text-xs font-black text-white">🏠 Dashboard</button>
+      <button id="careTabAlertsBtn" type="button" class="tap-btn rounded-xl bg-[#FAF6EE] px-3 py-2 text-xs font-black text-[#3C5044]">🕒 Activity (0)</button>
+      <button id="careTabLinkBtn" type="button" class="tap-btn rounded-xl bg-[#FAF6EE] px-3 py-2 text-xs font-black text-[#3C5044]">👥 Care Team</button>
     </div>
 
     <!-- TAB 1: PATIENTS -->
@@ -528,6 +531,28 @@
     <button id="navSettingsBtn" type="button" class="flex flex-col items-center justify-center py-2 text-slate-600 font-bold" style="min-height:58px;">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       <span id="navSettingsLabel" class="mt-0.5 text-xs">Paramètres</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Care Portal 4-Tab Bottom Navigation (Family & Nurse Dashboard matched to 1000061806) -->
+<nav id="careBottomNav" class="hidden fixed bottom-0 inset-x-0 z-30 border-t border-[#E6DCCB] bg-[#FFFDF9]/95 backdrop-blur shadow-lg">
+  <div class="mx-auto grid max-w-xl grid-cols-4">
+    <button id="careNavDashBtn" type="button" class="flex flex-col items-center justify-center py-2 text-[#0E5A3E] font-black" style="min-height:58px;">
+      <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span id="careNavDashLabel" class="mt-0.5 text-xs">Dashboard</span>
+    </button>
+    <button id="careNavActBtn" type="button" class="flex flex-col items-center justify-center py-2 text-[#5C6F63] font-bold" style="min-height:58px;">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+      <span id="careNavActLabel" class="mt-0.5 text-xs">Activity</span>
+    </button>
+    <button id="careNavTeamBtn" type="button" class="flex flex-col items-center justify-center py-2 text-[#5C6F63] font-bold" style="min-height:58px;">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span id="careNavTeamLabel" class="mt-0.5 text-xs">Care Team</span>
+    </button>
+    <button id="careNavSetBtn" type="button" class="flex flex-col items-center justify-center py-2 text-[#5C6F63] font-bold" style="min-height:58px;">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span id="careNavSetLabel" class="mt-0.5 text-xs">Settings</span>
     </button>
   </div>
 </nav>
@@ -702,6 +727,14 @@
         <input id="profConditionsInput" type="text" placeholder="Autre maladie chronique (optionnel)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold" />
       </div>
       <input id="profMedicalNotesInput" autocomplete="off" type="text" placeholder="Notes médicales" class="w-full rounded-2xl border-2 border-slate-300 px-4 py-2.5 text-lg" />
+      <div class="rounded-2xl border-2 border-emerald-200 bg-emerald-50/60 p-3 space-y-2">
+        <p id="profHomeGpsTitle" class="text-sm font-black text-emerald-950">📍 Zone de sécurité du domicile (GPS)</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="setHomeGpsBtn" type="button" class="tap-btn rounded-xl bg-[#0E5A3E] px-3.5 py-2 text-xs font-black text-white">📍 Définir ma position maison</button>
+          <a id="homeGpsMapLink" href="#" target="_blank" rel="noopener" class="hidden rounded-xl border border-emerald-300 bg-white px-3 py-2 text-xs font-extrabold text-[#0E5A3E]">🗺️ Google Maps</a>
+        </div>
+        <p id="homeGpsStatus" class="text-xs font-bold text-emerald-800"></p>
+      </div>
     </div>
     <button id="saveProfileBtn" type="button" class="tap-btn mt-4 w-full rounded-2xl bg-emerald-700 px-5 py-3.5 text-xl font-black text-white">Enregistrer</button>
     <p id="profileSaveFeedback" class="hidden mt-2 text-center text-sm font-extrabold text-emerald-800"></p>
@@ -755,7 +788,11 @@
       <button id="closeEmergencyBtn" type="button" class="rounded-2xl px-4 py-2 text-xl font-black text-slate-600">✕</button>
     </div>
     <div id="emBody" class="mt-4 space-y-2 text-base text-slate-900"></div>
-    <a id="emCallLink" href="tel:112" class="tap-btn mt-5 flex w-full items-center justify-center rounded-2xl bg-rose-700 px-5 py-4 text-xl font-black text-white">
+    <button id="emSendSosBtn" type="button" class="tap-btn mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-rose-600 to-rose-800 px-5 py-4 text-lg font-black text-white shadow-lg">
+      <span>🚨</span><span id="emSendSosLabel">Envoyer SOS avec ma position</span>
+    </button>
+    <p id="emSosStatus" class="hidden mt-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-center text-xs font-extrabold text-rose-900"></p>
+    <a id="emCallLink" href="tel:112" class="tap-btn mt-3 flex w-full items-center justify-center rounded-2xl border-2 border-rose-600 bg-white px-5 py-3.5 text-lg font-black text-rose-800">
       <span id="emCallLabel">Appel rapide d'urgence</span>
     </a>
   </div>
@@ -814,7 +851,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v78',
+    VERSION: 'v80',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -871,14 +908,21 @@
     if ($('carePanelAlerts')) $('carePanelAlerts').classList.toggle('hidden', tab !== 'alerts');
     if ($('carePanelLink')) $('carePanelLink').classList.toggle('hidden', tab !== 'link');
 
-    const activeCls = 'tap-btn rounded-xl bg-teal-700 px-3 py-2.5 text-xs font-black text-white shadow-sm';
-    const idleCls = 'tap-btn rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700';
+    const activeCls = 'tap-btn rounded-xl bg-[#0E5A3E] px-3 py-2 text-xs font-black text-white shadow-sm';
+    const idleCls = 'tap-btn rounded-xl bg-[#FAF6EE] px-3 py-2 text-xs font-black text-[#3C5044]';
     if ($('careTabPatientsBtn')) $('careTabPatientsBtn').className = tab === 'patients' ? activeCls : idleCls;
     if ($('careTabAlertsBtn')) $('careTabAlertsBtn').className = tab === 'alerts' ? activeCls : idleCls;
     if ($('careTabLinkBtn')) $('careTabLinkBtn').className = tab === 'link' ? activeCls : idleCls;
 
-    if ($('careTabPatientsBtn')) $('careTabPatientsBtn').textContent = isFr ? '👥 Patients' : '👥 Patients';
-    if ($('careTabLinkBtn')) $('careTabLinkBtn').textContent = isFr ? '🔗 Lier & Compte' : '🔗 Link & Account';
+    if ($('careTabPatientsBtn')) $('careTabPatientsBtn').textContent = isFr ? '🏠 Tableau' : '🏠 Dashboard';
+    if ($('careTabLinkBtn')) $('careTabLinkBtn').textContent = isFr ? '👥 Équipe' : '👥 Care Team';
+
+    const navMap = { patients: 'careNavDashBtn', alerts: 'careNavActBtn', link: 'careNavTeamBtn' };
+    ['careNavDashBtn', 'careNavActBtn', 'careNavTeamBtn', 'careNavSetBtn'].forEach((id) => {
+      if ($(id)) $(id).className = navMap[tab] === id
+        ? 'flex flex-col items-center justify-center py-2 text-[#0E5A3E] font-black'
+        : 'flex flex-col items-center justify-center py-2 text-[#5C6F63] font-bold';
+    });
   }
 
   function initCarePortalControls() {
@@ -893,6 +937,13 @@
     if ($('careTabLinkBtn') && !$('careTabLinkBtn').dataset.cgBound) {
       $('careTabLinkBtn').dataset.cgBound = '1';
       $('careTabLinkBtn').addEventListener('click', () => switchCareTab('link'));
+    }
+    if ($('careNavDashBtn') && !$('careNavDashBtn').dataset.cgBound) {
+      $('careNavDashBtn').dataset.cgBound = '1';
+      $('careNavDashBtn').addEventListener('click', () => switchCareTab('patients'));
+      $('careNavActBtn').addEventListener('click', () => switchCareTab('alerts'));
+      $('careNavTeamBtn').addEventListener('click', () => switchCareTab('link'));
+      $('careNavSetBtn').addEventListener('click', () => switchCareTab('link'));
     }
 
     const sendBtn = $('careSendLinkBtn');
@@ -1093,74 +1144,78 @@
 
       const { sp, lastChk, batPct, batVal, medList, takenSet, takenCnt, waterToday, apptList, openAlerts, lastDm } = item;
       const card = document.createElement('div');
-      card.className = 'rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-3';
-      const top = document.createElement('div');
-      top.className = 'flex flex-wrap items-start justify-between gap-2';
-      const info = document.createElement('div');
-      const peaceBanner = document.createElement('div');
-      peaceBanner.className = openAlerts.length
-        ? 'rounded-2xl bg-amber-50 border border-amber-200 px-3 py-1.5 text-xs font-black text-amber-900'
-        : 'rounded-2xl bg-[#E9F5EC] border border-[#C7E3CE] px-3 py-1.5 text-xs font-black text-[#0E5A3E]';
-      peaceBanner.textContent = openAlerts.length
-        ? (isFr ? '🟠 Attention requise' : '🟠 Attention needed')
-        : (isFr ? "🟢 Tout va bien aujourd'hui" : '🟢 Everything looks good today');
-      card.appendChild(peaceBanner);
+      card.className = 'rounded-[28px] border border-[#E6DCCB] bg-[#FFFDF9] p-5 shadow-[0_8px_24px_-10px_rgba(35,50,38,0.12)] space-y-4';
 
       const headerFlex = document.createElement('div');
-      headerFlex.className = 'flex items-center gap-3';
+      headerFlex.className = 'flex items-center gap-4';
       const av = document.createElement('div');
-      av.className = 'flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#E8DFCE] bg-[#0E5A3E] text-lg font-black text-white';
+      av.className = 'flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-[#EFE7D8] bg-[#0E5A3E] text-2xl font-black text-white shadow-sm';
       if (sp.avatar_url) {
         const img = document.createElement('img'); img.src = sp.avatar_url; img.alt = sp.display_name || 'Senior'; img.className = 'h-full w-full object-cover';
         av.appendChild(img);
       } else {
         av.textContent = ((sp.display_name || 'S').trim().charAt(0) || 'S').toUpperCase();
       }
-      const nameRow = document.createElement('div');
-      nameRow.className = 'flex flex-wrap items-center gap-2';
-      const nm = document.createElement('p'); nm.className = 'font-serif-brand text-xl font-extrabold text-[#163024]'; nm.textContent = sp.display_name || 'Senior';
-      nameRow.appendChild(nm);
+      const nameCol = document.createElement('div');
+      nameCol.className = 'min-w-0 flex-1 space-y-1.5';
+      const nm = document.createElement('p'); nm.className = 'font-serif-brand truncate text-2xl font-extrabold text-[#163024]'; nm.textContent = sp.display_name || 'Senior';
+      nameCol.appendChild(nm);
       if (sp.registration_number) {
         const codeTag = document.createElement('span');
-        codeTag.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-extrabold text-slate-600';
-        codeTag.textContent = '🔑 ' + sp.registration_number;
-        nameRow.appendChild(codeTag);
+        codeTag.className = 'inline-flex items-center gap-1 rounded-full border border-[#DDE5DC] bg-[#F4F7F3] px-3 py-1 text-xs font-extrabold text-[#3C5044]';
+        codeTag.textContent = (isFr ? '🏷️ Code : ' : '🏷️ Invitation code: ') + sp.registration_number;
+        nameCol.appendChild(codeTag);
       }
-      headerFlex.append(av, nameRow);
-      info.appendChild(headerFlex);
-      const addr = document.createElement('p'); addr.className = 'text-xs font-bold text-slate-600';
-      addr.textContent = (sp.home_address || (isFr ? 'À domicile' : 'At Home')) + (sp.senior_phone ? ' • ' + sp.senior_phone : '');
-      info.appendChild(addr);
+      headerFlex.append(av, nameCol);
+      card.appendChild(headerFlex);
 
-      const mParts = [];
-      if (sp.blood_type) mParts.push('🩸 ' + sp.blood_type);
-      if (sp.allergies) mParts.push('⚠️ ' + (sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : sp.allergies));
-      if (sp.conditions) mParts.push('🩺 ' + ((sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, Hypertension' : 'Diabetes, Hypertension') : sp.conditions));
-      if (mParts.length) {
-        const mLine = document.createElement('p');
-        mLine.className = 'mt-1 text-xs font-extrabold text-rose-800';
-        mLine.textContent = mParts.join(' • ');
-        info.appendChild(mLine);
-      }
+      const medPills = document.createElement('div');
+      medPills.className = 'grid grid-cols-3 gap-2 text-center';
+      const addMedCol = (badgeCls, icon, label, val) => {
+        const col = document.createElement('div'); col.className = 'space-y-1 min-w-0';
+        const b = document.createElement('div'); b.className = 'rounded-full px-2 py-1 text-[11px] font-black truncate ' + badgeCls;
+        b.textContent = icon + ' ' + label;
+        const v = document.createElement('p'); v.className = 'text-[11px] font-bold text-[#3C5044] leading-tight line-clamp-2';
+        v.textContent = val || '-';
+        col.append(b, v);
+        medPills.appendChild(col);
+      };
+      const allergyVal = sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : (sp.allergies || '-');
+      const condVal = (sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, HTA' : 'Diabetes, HTA') : (sp.conditions || '-');
+      addMedCol('bg-rose-50 text-rose-900 border border-rose-200', '🩸', isFr ? 'Groupe' : 'Blood', sp.blood_type || '-');
+      addMedCol('bg-amber-50 text-amber-900 border border-amber-200', '✳️', isFr ? 'Allergies' : 'Allergies', allergyVal);
+      addMedCol('bg-emerald-50 text-emerald-900 border border-emerald-200', '💚', isFr ? 'Suivi' : 'Conditions', condVal);
+      card.appendChild(medPills);
 
-      const pills = document.createElement('div'); pills.className = 'flex flex-wrap gap-1.5 text-xs font-extrabold';
-      const p1 = document.createElement('span'); p1.className = 'rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-900'; p1.textContent = '✓ ' + lastChk;
-      const p2 = document.createElement('span'); p2.className = (batVal !== null && batVal <= 30) ? 'rounded-full bg-rose-100 px-2.5 py-1 text-rose-900' : 'rounded-full bg-slate-100 px-2.5 py-1 text-slate-800'; p2.textContent = '🔋 ' + batPct;
-      const p3 = document.createElement('span'); p3.className = 'rounded-full bg-sky-100 px-2.5 py-1 text-sky-900'; p3.textContent = `💊 ${takenCnt}/${medList.length}`;
-      const p4 = document.createElement('span'); p4.className = 'rounded-full bg-cyan-100 px-2.5 py-1 text-cyan-900'; p4.textContent = `💧 ${waterToday}/8`;
-      pills.append(p1, p2, p3, p4);
-      top.append(info, pills);
-      card.appendChild(top);
+      const metrics = document.createElement('div');
+      metrics.className = 'grid grid-cols-4 gap-1.5';
+      const addMetric = (icon, lbl, val, isAlert) => {
+        const box = document.createElement('div');
+        box.className = 'rounded-2xl border px-2 py-2 text-center ' + (isAlert ? 'border-rose-200 bg-rose-50/70' : 'border-[#EAE0CF] bg-[#FAF6EE]');
+        const l = document.createElement('p'); l.className = 'text-[10px] font-bold text-[#5C6F63] truncate'; l.textContent = icon + ' ' + lbl;
+        const v = document.createElement('p'); v.className = 'text-xs font-black text-[#163024] truncate mt-0.5'; v.textContent = val;
+        box.append(l, v);
+        metrics.appendChild(box);
+      };
+      addMetric('🕒', isFr ? 'Confirm.' : 'Check-in', lastChk, false);
+      addMetric('🔋', isFr ? 'Batterie' : 'Battery', batPct, batVal !== null && batVal <= 30);
+      addMetric('💊', isFr ? 'Méds' : 'Meds', `${takenCnt}/${medList.length}`, false);
+      addMetric('💧', isFr ? 'Eau' : 'Water', `${waterToday}/8`, false);
+      card.appendChild(metrics);
 
-      // Compact single-line alert summary button (keeps patient card clean; full alerts live in Alerts tab)
       if (openAlerts.length) {
         const uniqueAlerts = new Set(openAlerts.map((a) => a.message || a.alert_type || 'Alert')).size;
         const alSummaryBtn = document.createElement('button');
         alSummaryBtn.type = 'button';
-        alSummaryBtn.className = 'flex w-full items-center justify-between rounded-2xl border border-rose-300 bg-rose-50 px-3.5 py-2 text-xs font-black text-rose-900';
-        alSummaryBtn.textContent = isFr ? `🚨 ${uniqueAlerts} alerte(s) active(s) — Voir dans Alertes ›` : `🚨 ${uniqueAlerts} active alert(s) — View in Alerts ›`;
+        alSummaryBtn.className = 'flex w-full items-center justify-between rounded-2xl border border-[#F3CECE] bg-[#FDECEC] px-4 py-2.5 text-sm font-black text-rose-800';
+        alSummaryBtn.innerHTML = '<span>🛡️ ' + (isFr ? `${uniqueAlerts} alerte(s) active(s)` : `${uniqueAlerts} active alert(s)`) + '</span><span>' + (isFr ? 'Voir ›' : 'View ›') + '</span>';
         alSummaryBtn.addEventListener('click', () => switchCareTab('alerts'));
         card.appendChild(alSummaryBtn);
+      } else {
+        const peaceBanner = document.createElement('div');
+        peaceBanner.className = 'rounded-2xl bg-[#E9F5EC] border border-[#C7E3CE] px-3.5 py-2 text-xs font-black text-[#0E5A3E] text-center';
+        peaceBanner.textContent = isFr ? "🟢 Tout va bien aujourd'hui" : '🟢 Everything looks good today';
+        card.appendChild(peaceBanner);
       }
 
       // Collapsible details
@@ -1222,20 +1277,11 @@
       }
 
       const acts = document.createElement('div');
-      acts.className = 'flex flex-wrap gap-2';
-      const toggleBtn = document.createElement('button');
-      toggleBtn.type = 'button';
-      toggleBtn.className = 'tap-btn rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-extrabold text-teal-900';
-      toggleBtn.textContent = isFr ? '▾ Détails' : '▾ Details';
-      toggleBtn.addEventListener('click', () => {
-        const hidden = detailsWrap.classList.toggle('hidden');
-        toggleBtn.textContent = hidden ? (isFr ? '▾ Détails' : '▾ Details') : (isFr ? '▴ Masquer' : '▴ Hide');
-      });
-      acts.appendChild(toggleBtn);
+      acts.className = 'grid grid-cols-3 gap-2';
 
       const fullBtn = document.createElement('button');
       fullBtn.type = 'button';
-      fullBtn.className = 'tap-btn rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-900';
+      fullBtn.className = 'tap-btn rounded-2xl bg-[#0E5A3E] px-3 py-2.5 text-xs font-black text-white shadow-sm';
       fullBtn.textContent = isFr ? '📋 État complet' : '📋 Full Status';
       fullBtn.addEventListener('click', () => CG.openCareFullStatusModal({ sp, lastChk, batPct, batVal, medList, takenSet, waterToday, apptList, openAlerts }));
       acts.appendChild(fullBtn);
@@ -1244,22 +1290,34 @@
       if (spTelHref) {
         const callA = document.createElement('a');
         callA.href = spTelHref;
-        callA.className = 'tap-btn rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-extrabold text-emerald-900';
+        callA.className = 'tap-btn flex items-center justify-center rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
         callA.textContent = isFr ? '📞 Appeler' : '📞 Call';
         acts.appendChild(callA);
+      } else {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'tap-btn rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
+        toggleBtn.textContent = isFr ? '▾ Détails' : '▾ Details';
+        toggleBtn.addEventListener('click', () => {
+          const hidden = detailsWrap.classList.toggle('hidden');
+          toggleBtn.textContent = hidden ? (isFr ? '▾ Détails' : '▾ Details') : (isFr ? '▴ Masquer' : '▴ Hide');
+        });
+        acts.appendChild(toggleBtn);
       }
+
       if (['family', 'nurse', 'center'].includes(userRole)) {
         const msgBtn = document.createElement('button');
         msgBtn.type = 'button';
-        msgBtn.className = 'tap-btn rounded-xl bg-teal-700 px-3.5 py-2 text-xs font-extrabold text-white';
-        msgBtn.textContent = '🎤 Chat';
+        msgBtn.className = 'tap-btn rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
+        msgBtn.textContent = '💬 Chat';
         msgBtn.addEventListener('click', () => CG.openDirectCareModal(sp.id, sp.display_name));
         acts.appendChild(msgBtn);
       }
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'tap-btn rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-800';
-      removeBtn.textContent = isFr ? '🗑️ Retirer' : '🗑️ Remove';
+      removeBtn.className = 'mt-1 text-center text-[11px] font-bold text-rose-700 underline';
+      removeBtn.textContent = isFr ? '🗑️ Retirer ce patient' : '🗑️ Remove patient';
       removeBtn.addEventListener('click', async () => {
         const msg = isFr
           ? `Retirer ${sp.display_name || 'ce patient'} de votre liste de suivi ?`
@@ -1532,7 +1590,19 @@
   $('tileAiBtn').addEventListener('click', () => switchTab('settings'));
   $('openChatPageBtn').addEventListener('click', () => switchTab('chat'));
   $('backFromChatBtn').addEventListener('click', () => switchTab('home'));
-  $('headerBellBtn').addEventListener('click', () => { renderNotificationsModal(); $('notificationsModal').classList.remove('hidden'); });
+  $('headerBellBtn').addEventListener('click', async () => {
+    renderNotificationsModal();
+    $('notificationsModal').classList.remove('hidden');
+    if (client && currentUser && currentSeniorId && navigator.onLine) {
+      try {
+        let res = await client.from('care_direct_messages').select('sender_user_id, sender_name, sender_role, channel, message_text, created_at').eq('senior_id', currentSeniorId).order('created_at', { ascending: false }).limit(8);
+        if (res.error && String(res.error.message || '').includes('channel')) {
+          res = await client.from('care_direct_messages').select('sender_user_id, sender_name, sender_role, message_text, created_at').eq('senior_id', currentSeniorId).order('created_at', { ascending: false }).limit(8);
+        }
+        if (res.data) { state.recentNotifMessages = res.data; saveState(); renderNotificationsModal(); }
+      } catch (_) {}
+    }
+  });
   $('closeNotifModalBtn').addEventListener('click', () => $('notificationsModal').classList.add('hidden'));
 
   function getUnlockedWaterInfo() {
@@ -2174,6 +2244,24 @@
         sub: a.date + ' • ' + a.time
       });
     }
+    const recentDms = Array.isArray(state.recentNotifMessages) ? state.recentNotifMessages : [];
+    recentDms.slice(0, 6).forEach((dm) => {
+      const ch = dm.channel || ((dm.sender_role === 'nurse' || dm.sender_role === 'center') ? 'nurse' : 'family');
+      if ((userRole === 'nurse' || userRole === 'center') && ch !== 'nurse') return;
+      if (userRole === 'family' && ch !== 'family') return;
+      const isMine = currentUser && dm.sender_user_id === currentUser.id;
+      const chLabel = ch === 'nurse' ? (isFr ? 'Infirmier' : 'Nurse') : (isFr ? 'Famille' : 'Family');
+      const tStr = dm.created_at ? new Date(dm.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      items.push({
+        cls: 'border-teal-200 bg-teal-50 text-slate-900',
+        title: isMine
+          ? (isFr ? `📤 Envoyé (${chLabel})` : `📤 Sent to ${chLabel}`)
+          : (`💬 ${dm.sender_name || chLabel}`),
+        sub: (dm.message_text || (isFr ? '🎤 Message vocal' : '🎤 Voice message')) + (tStr ? ` • ${tStr}` : ''),
+        openChannel: ch
+      });
+    });
+
     items.push({
       cls: 'border-sky-200 bg-sky-50 text-slate-900',
       title: isFr ? `💧 Eau : ${state.waterCount} / 8 verres` : `💧 Water Intake: ${state.waterCount} / 8 glasses`,
@@ -2210,6 +2298,15 @@
         badge.className = 'shrink-0 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-extrabold text-slate-600';
         badge.textContent = (isFr ? '⏳ À ' : '⏳ At ') + it.waitTime;
         card.appendChild(badge);
+      } else if (it.openChannel) {
+        card.classList.add('cursor-pointer');
+        card.addEventListener('click', () => {
+          $('notificationsModal').classList.add('hidden');
+          if (typeof openDirectCareModal === 'function') {
+            activeDcChannel = it.openChannel;
+            openDirectCareModal(currentSeniorId, '');
+          }
+        });
       }
       body.appendChild(card);
     });
@@ -2540,7 +2637,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v78';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v80';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3359,6 +3456,7 @@
     $('roleGateCard').classList.toggle('hidden', hasRole);
     const isSenior = userRole === 'senior';
     $('bottomNav').classList.toggle('hidden', !isSenior || activeTab === 'chat');
+    if ($('careBottomNav')) $('careBottomNav').classList.toggle('hidden', !isCare);
     if (!hasRole) {
       $('homeTabView').classList.add('hidden');
       $('medsTabView').classList.add('hidden');
@@ -3804,6 +3902,60 @@
     });
     body.appendChild(medProf);
 
+    const notesSec = makeSec(isFr ? '📝 Notes de suivi partagées (Famille & Infirmier)' : '📝 Shared Care Notes (Family & Nurse Only)', 'border-amber-200 bg-amber-50/60');
+    const notesList = document.createElement('div');
+    notesList.className = 'space-y-1.5 max-h-40 overflow-y-auto';
+    const noteRow = document.createElement('div');
+    noteRow.className = 'flex gap-1.5 pt-1';
+    const noteInput = document.createElement('input');
+    noteInput.type = 'text';
+    noteInput.placeholder = isFr ? 'Ex: Fatigué aujourd’hui, besoin d’aide...' : 'e.g. Tired today, needs bathing help...';
+    noteInput.className = 'w-full rounded-xl border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold';
+    const noteBtn = document.createElement('button');
+    noteBtn.type = 'button';
+    noteBtn.className = 'shrink-0 rounded-xl bg-[#0E5A3E] px-3 py-1.5 text-xs font-black text-white';
+    noteBtn.textContent = isFr ? 'Ajouter' : 'Add';
+    noteRow.append(noteInput, noteBtn);
+    notesSec.append(notesList, noteRow);
+    body.appendChild(notesSec);
+
+    async function loadCareNotesForSenior() {
+      const cacheKey = 'cg_care_notes_' + sp.id;
+      let rows = [];
+      try {
+        if (client && currentUser) {
+          const { data, error } = await client.from('care_notes').select('author_name, author_role, note_text, created_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(15);
+          if (!error && data) rows = data;
+          else rows = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+        }
+      } catch (_) { rows = JSON.parse(localStorage.getItem(cacheKey) || '[]'); }
+      notesList.replaceChildren();
+      if (!rows.length) {
+        const emp = document.createElement('p'); emp.className = 'text-[11px] font-bold text-slate-500';
+        emp.textContent = isFr ? 'Aucune note partagée pour le moment.' : 'No shared care notes yet.';
+        notesList.appendChild(emp); return;
+      }
+      rows.forEach((n) => {
+        const item = document.createElement('div'); item.className = 'rounded-xl border border-amber-200 bg-white px-2.5 py-1.5 text-xs';
+        const ic = n.author_role === 'nurse' ? '🩺' : '💚';
+        const dt = n.created_at ? new Date(n.created_at).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        const hd = document.createElement('p'); hd.className = 'font-black text-[#163024]'; hd.textContent = `${ic} ${n.author_name || 'Care'} • ${dt}`;
+        const tx = document.createElement('p'); tx.className = 'font-bold text-slate-700'; tx.textContent = n.note_text || '';
+        item.append(hd, tx); notesList.appendChild(item);
+      });
+    }
+    noteBtn.addEventListener('click', async () => {
+      const txt = noteInput.value.trim(); if (!txt || !currentUser) return;
+      noteInput.value = '';
+      const entry = { senior_id: sp.id, author_user_id: currentUser.id, author_name: getRealDisplayName(), author_role: userRole || 'family', note_text: txt, created_at: new Date().toISOString() };
+      const cacheKey = 'cg_care_notes_' + sp.id;
+      const cur = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+      localStorage.setItem(cacheKey, JSON.stringify([entry, ...cur].slice(0, 20)));
+      try { if (client) await client.from('care_notes').insert(entry); } catch (_) {}
+      loadCareNotesForSenior();
+    });
+    loadCareNotesForSenior();
+
     // Medications Today
     const medSec = makeSec(isFr ? '💊 Détail des médicaments' : '💊 Medication Details', 'border-sky-200 bg-sky-50/40');
     if (!medList.length) {
@@ -4044,6 +4196,11 @@
     }
     if (error) { $('dcStatusMsg').textContent = friendlyError(error); $('dcStatusMsg').classList.remove('hidden'); return false; }
     $('dcStatusMsg').classList.add('hidden');
+    state.recentNotifMessages = [
+      { sender_user_id: currentUser.id, sender_name: getRealDisplayName(), sender_role: userRole || 'senior', channel: activeDcChannel, message_text: text || null, created_at: new Date().toISOString() },
+      ...(Array.isArray(state.recentNotifMessages) ? state.recentNotifMessages : [])
+    ].slice(0, 10);
+    saveState();
     loadDirectCareMessages();
     return true;
   }
@@ -4505,6 +4662,97 @@
 
   CG.loadSereniteExtras = loadSerenitePresenceAndReassurance;
   setTimeout(loadSerenitePresenceAndReassurance, 1200);
+
+  if ($('emSendSosBtn')) {
+    $('emSendSosBtn').addEventListener('click', () => {
+      const st = CG.getState(), isFr = st.lang === 'fr';
+      const statusEl = $('emSosStatus');
+      const client = CG.getClient(), user = CG.getCurrentUser(), sid = CG.getSeniorId ? CG.getSeniorId() : null;
+      if (statusEl) { statusEl.textContent = isFr ? '📡 Localisation & envoi SOS...' : '📡 Getting location & sending SOS...'; statusEl.classList.remove('hidden'); }
+
+      const sendAlert = async (lat, lng) => {
+        const p = st.profile || {};
+        const medSummary = [p.bloodType, p.allergies, p.conditions].filter(Boolean).join(' | ') || '-';
+        const mapUrl = (lat && lng) ? `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}` : (p.address || 'No GPS');
+        const msg = `🚨 SOS URGENCE — ${CG.getRealDisplayName()} • 📍 ${mapUrl} • 🩺 ${medSummary}`;
+        if (client && user && sid) {
+          try {
+            await client.from('alerts').insert({ senior_id: sid, alert_type: 'sos_emergency', message: msg });
+            if (lat && lng) {
+              try { await client.from('senior_profiles').update({ last_lat: lat, last_lng: lng, last_loc_at: new Date().toISOString() }).eq('id', sid); } catch (_) {}
+            }
+            if (statusEl) statusEl.textContent = isFr ? '✅ SOS envoyé à votre famille et infirmier !' : '✅ SOS sent to your family & nurse!';
+          } catch (e) {
+            if (statusEl) statusEl.textContent = (isFr ? 'Erreur SOS : ' : 'SOS Error: ') + (e.message || '');
+          }
+        }
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => sendAlert(pos.coords.latitude, pos.coords.longitude),
+          () => sendAlert(null, null),
+          { enableHighAccuracy: true, timeout: 6000 }
+        );
+      } else {
+        sendAlert(null, null);
+      }
+    });
+  }
+
+  if ($('setHomeGpsBtn')) {
+    $('setHomeGpsBtn').addEventListener('click', () => {
+      const isFr = CG.getState().lang === 'fr';
+      const stEl = $('homeGpsStatus'), linkEl = $('homeGpsMapLink');
+      if (!navigator.geolocation) { if (stEl) stEl.textContent = isFr ? 'GPS non supporté.' : 'GPS not supported.'; return; }
+      if (stEl) stEl.textContent = isFr ? '📡 Détection de votre position...' : '📡 Detecting home coordinates...';
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        try { localStorage.setItem('cg_home_gps', JSON.stringify({ lat, lng, radius: 250 })); } catch (_) {}
+        const client = CG.getClient(), sid = CG.getSeniorId ? CG.getSeniorId() : null;
+        if (client && sid) {
+          try { await client.from('senior_profiles').update({ home_lat: lat, home_lng: lng, safe_radius_m: 250 }).eq('id', sid); } catch (_) {}
+        }
+        if (stEl) stEl.textContent = `✅ ${lat.toFixed(5)}, ${lng.toFixed(5)} (250m)`;
+        if (linkEl) { linkEl.href = `https://maps.google.com/?q=${lat},${lng}`; linkEl.classList.remove('hidden'); }
+      }, () => {
+        if (stEl) stEl.textContent = isFr ? 'Autorisez le GPS dans le navigateur.' : 'Please allow location permission.';
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    });
+  }
+
+  function haversineMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function checkHomeGeofence() {
+    if (CG.getUserRole() !== 'senior' || !navigator.geolocation || !navigator.onLine) return;
+    const raw = localStorage.getItem('cg_home_gps');
+    if (!raw) return;
+    let home = null; try { home = JSON.parse(raw); } catch (_) { return; }
+    if (!home || !home.lat || !home.lng) return;
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      const dist = Math.round(haversineMeters(home.lat, home.lng, lat, lng));
+      const client = CG.getClient(), sid = CG.getSeniorId ? CG.getSeniorId() : null;
+      if (client && sid) {
+        try { await client.from('senior_profiles').update({ last_lat: lat, last_lng: lng, last_loc_at: new Date().toISOString() }).eq('id', sid); } catch (_) {}
+        const lastAlertTs = Number(localStorage.getItem('cg_geofence_alert_ts') || 0);
+        if (dist > (home.radius || 250) && (Date.now() - lastAlertTs > 60 * 60 * 1000)) {
+          localStorage.setItem('cg_geofence_alert_ts', String(Date.now()));
+          const mapUrl = `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
+          await client.from('alerts').insert({
+            senior_id: sid,
+            alert_type: 'geofence_exit',
+            message: `📍 ${CG.getRealDisplayName()} left home zone (${dist}m away) — ${mapUrl}`
+          });
+        }
+      }
+    }, () => {}, { timeout: 6000 });
+  }
+  setInterval(checkHomeGeofence, 120000);
 })();
 </script>
 </body>
