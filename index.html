@@ -387,7 +387,29 @@
       <button id="nurseGraceOpenBtn" type="button" class="shrink-0 rounded-xl bg-[#0E5A3E] px-3 py-1.5 text-[11px] font-black text-white">Profile ›</button>
     </div>
 
-    <!-- Editorial Summary Pill -->
+    <!-- Nurse 2-Card KPI Summary (Matched to 1000061832) -->
+    <div id="nurseKpiGrid" class="hidden grid-cols-2 gap-3">
+      <div class="flex items-center gap-3 rounded-[22px] border border-[#D4E2CF] bg-gradient-to-b from-[#F5FAF2] to-[#EBF3E7] px-3.5 py-3 shadow-sm">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#C7D9C1] bg-white text-[#0E5A3E]">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <div>
+          <p id="nurseKpiPatientsVal" class="font-serif-brand text-2xl font-extrabold leading-none text-[#0E5A3E]">0</p>
+          <p id="nurseKpiPatientsLbl" class="mt-0.5 text-xs font-bold text-[#3C5044]">Patient</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 rounded-[22px] border border-[#F2D1D1] bg-gradient-to-b from-[#FFF6F6] to-[#FDEAEA] px-3.5 py-3 shadow-sm">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#F1C4C4] bg-white text-rose-700">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h2l1.5-2.5L13 14.5l1.5-2.5H16"/></svg>
+        </div>
+        <div>
+          <p id="nurseKpiAlertVal" class="font-serif-brand text-2xl font-extrabold leading-none text-rose-800">0</p>
+          <p id="nurseKpiAlertLbl" class="mt-0.5 text-xs font-bold text-rose-700">Needs Attention</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Family Editorial Summary Pill -->
     <div id="careEditorialPill" class="flex items-center justify-center gap-3 rounded-full border border-[#EAE0CF] bg-[#F5EFE3] px-4 py-2 text-xs font-extrabold text-[#163024]">
       <span id="careEditorialSummaryText">🟢 0 patient</span>
     </div>
@@ -898,7 +920,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v89',
+    VERSION: 'v90',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1149,6 +1171,16 @@
       const sumTxt = isFr
         ? `🟢 ${approvedCount} patient(s)${alertPatients ? ` • 🔴 ${alertPatients} à vérifier` : ''}`
         : `🟢 ${approvedCount} patient(s)${alertPatients ? ` • 🔴 ${alertPatients} needs attention` : ''}`;
+      const isNurseRole = (userRole === 'nurse' || userRole === 'center');
+      if ($('nurseKpiGrid')) {
+        $('nurseKpiGrid').classList.toggle('hidden', !isNurseRole);
+        $('nurseKpiGrid').classList.toggle('grid', isNurseRole);
+      }
+      if ($('careEditorialPill')) $('careEditorialPill').classList.toggle('hidden', isNurseRole);
+      if ($('nurseKpiPatientsVal')) $('nurseKpiPatientsVal').textContent = String(approvedCount);
+      if ($('nurseKpiPatientsLbl')) $('nurseKpiPatientsLbl').textContent = isFr ? (approvedCount > 1 ? 'Patients' : 'Patient') : (approvedCount > 1 ? 'Patients' : 'Patient');
+      if ($('nurseKpiAlertVal')) $('nurseKpiAlertVal').textContent = String(alertPatients);
+      if ($('nurseKpiAlertLbl')) $('nurseKpiAlertLbl').textContent = isFr ? 'À surveiller' : 'Needs Attention';
       if ($('careEditorialSummaryText')) $('careEditorialSummaryText').textContent = sumTxt;
       if ($('careSummaryText')) {
         $('careSummaryText').textContent = isFr
@@ -1240,38 +1272,85 @@
       headerFlex.append(av, nameCol);
       card.appendChild(headerFlex);
 
-      const medPills = document.createElement('div');
-      medPills.className = 'grid grid-cols-3 gap-2 text-center';
-      const addMedCol = (badgeCls, icon, label, val) => {
-        const col = document.createElement('div'); col.className = 'space-y-1 min-w-0';
-        const b = document.createElement('div'); b.className = 'rounded-full px-2 py-1 text-[11px] font-black truncate ' + badgeCls;
-        b.textContent = icon + ' ' + label;
-        const v = document.createElement('p'); v.className = 'text-[11px] font-bold text-[#3C5044] leading-tight line-clamp-2';
-        v.textContent = val || '-';
-        col.append(b, v);
-        medPills.appendChild(col);
-      };
       const allergyVal = sp.allergies === 'البنسلين' ? (isFr ? 'Pénicilline' : 'Penicillin') : (sp.allergies || '-');
       const condVal = (sp.conditions === 'السكري، ضغط الدم' || sp.conditions === 'السكري, ضغط الدم') ? (isFr ? 'Diabète, HTA' : 'Diabetes, HTA') : (sp.conditions || '-');
-      addMedCol('bg-rose-50 text-rose-900 border border-rose-200', '🩸', isFr ? 'Groupe' : 'Blood', sp.blood_type || '-');
-      addMedCol('bg-amber-50 text-amber-900 border border-amber-200', '✳️', isFr ? 'Allergies' : 'Allergies', allergyVal);
-      addMedCol('bg-emerald-50 text-emerald-900 border border-emerald-200', '💚', isFr ? 'Suivi' : 'Conditions', condVal);
-      card.appendChild(medPills);
+      const isNurseCard = (userRole === 'nurse' || userRole === 'center');
+
+      if (isNurseCard) {
+        // Nurse Follow-Up 3 Horizontal Clinical Rows (Matched to 1000061832)
+        const clinRows = document.createElement('div');
+        clinRows.className = 'space-y-1.5';
+        const addClinRow = (icon, label, rawVal, asChips) => {
+          const r = document.createElement('div');
+          r.className = 'flex items-center justify-between gap-2 rounded-2xl border border-[#EAE0CF] bg-[#FAF6EE]/80 px-3 py-2';
+          const left = document.createElement('span'); left.className = 'shrink-0 text-xs font-extrabold text-[#3C5044]'; left.textContent = icon + ' ' + label;
+          r.appendChild(left);
+          if (asChips && rawVal && rawVal !== '-') {
+            const chipWrap = document.createElement('div'); chipWrap.className = 'flex flex-wrap justify-end gap-1';
+            String(rawVal).split(/[,•]/).map((s) => s.trim()).filter(Boolean).slice(0, 3).forEach((tok) => {
+              const ch = document.createElement('span');
+              ch.className = 'rounded-full border border-[#DFD5C5] bg-white px-2 py-0.5 text-[10px] font-extrabold text-[#163024]';
+              ch.textContent = tok;
+              chipWrap.appendChild(ch);
+            });
+            r.appendChild(chipWrap);
+          } else {
+            const right = document.createElement('span'); right.className = 'text-xs font-black text-[#163024]'; right.textContent = rawVal || '-';
+            r.appendChild(right);
+          }
+          clinRows.appendChild(r);
+        };
+        addClinRow('🩸', isFr ? 'Groupe sanguin' : 'Blood type', sp.blood_type || '-', false);
+        addClinRow('⚠️', isFr ? 'Allergies' : 'Allergies', allergyVal, true);
+        addClinRow('♡', isFr ? 'Pathologies' : 'Conditions', condVal, true);
+        card.appendChild(clinRows);
+
+        const stHdr = document.createElement('p');
+        stHdr.className = 'font-serif-brand text-base font-extrabold text-[#0E5A3E] pt-1';
+        stHdr.textContent = (isFr ? 'Statut' : 'Status') + ' •';
+        card.appendChild(stHdr);
+      } else {
+        const medPills = document.createElement('div');
+        medPills.className = 'grid grid-cols-3 gap-2 text-center';
+        const addMedCol = (badgeCls, icon, label, val) => {
+          const col = document.createElement('div'); col.className = 'space-y-1 min-w-0';
+          const b = document.createElement('div'); b.className = 'rounded-full px-2 py-1 text-[11px] font-black truncate ' + badgeCls;
+          b.textContent = icon + ' ' + label;
+          const v = document.createElement('p'); v.className = 'text-[11px] font-bold text-[#3C5044] leading-tight line-clamp-2';
+          v.textContent = val || '-';
+          col.append(b, v);
+          medPills.appendChild(col);
+        };
+        addMedCol('bg-rose-50 text-rose-900 border border-rose-200', '🩸', isFr ? 'Groupe' : 'Blood', sp.blood_type || '-');
+        addMedCol('bg-amber-50 text-amber-900 border border-amber-200', '✳️', isFr ? 'Allergies' : 'Allergies', allergyVal);
+        addMedCol('bg-emerald-50 text-emerald-900 border border-emerald-200', '💚', isFr ? 'Suivi' : 'Conditions', condVal);
+        card.appendChild(medPills);
+      }
 
       const metrics = document.createElement('div');
       metrics.className = 'grid grid-cols-4 gap-1.5';
-      const addMetric = (icon, lbl, val, isAlert) => {
+      const addMetric = (icon, lbl, val, isAlert, barPct) => {
         const box = document.createElement('div');
         box.className = 'rounded-2xl border px-2 py-2 text-center ' + (isAlert ? 'border-rose-200 bg-rose-50/70' : 'border-[#EAE0CF] bg-[#FAF6EE]');
         const l = document.createElement('p'); l.className = 'text-[10px] font-bold text-[#5C6F63] truncate'; l.textContent = icon + ' ' + lbl;
         const v = document.createElement('p'); v.className = 'text-xs font-black text-[#163024] truncate mt-0.5'; v.textContent = val;
         box.append(l, v);
+        if (isNurseCard && typeof barPct === 'number') {
+          const track = document.createElement('div');
+          track.className = 'mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[#DFD5C5]';
+          const fill = document.createElement('div');
+          fill.className = 'h-full rounded-full ' + (isAlert ? 'bg-rose-600' : 'bg-[#2D7A4D]');
+          fill.style.width = Math.max(0, Math.min(100, barPct)) + '%';
+          track.appendChild(fill);
+          box.appendChild(track);
+        }
         metrics.appendChild(box);
       };
-      addMetric('🕒', isFr ? 'Confirm.' : 'Check-in', lastChk, false);
-      addMetric('🔋', isFr ? 'Batterie' : 'Battery', batPct, batVal !== null && batVal <= 30);
-      addMetric('💊', isFr ? 'Méds' : 'Meds', `${takenCnt}/${medList.length}`, false);
-      addMetric('💧', isFr ? 'Eau' : 'Water', `${waterToday}/8`, false);
+      const medPct = medList.length ? Math.round((takenCnt / medList.length) * 100) : 0;
+      addMetric('🕒', isFr ? 'Confirm.' : 'Check-in', lastChk, false, null);
+      addMetric('🔋', isFr ? 'Batterie' : 'Battery', batPct, batVal !== null && batVal <= 30, batVal !== null ? batVal : 0);
+      addMetric('💊', isFr ? 'Méds' : 'Meds', `${takenCnt}/${medList.length}`, false, medPct);
+      addMetric('💧', isFr ? 'Eau' : 'Water', `${waterToday}/8`, false, null);
       card.appendChild(metrics);
 
       if (openAlerts.length) {
@@ -2741,7 +2820,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v89';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v90';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
