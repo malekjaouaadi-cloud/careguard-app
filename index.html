@@ -921,7 +921,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v93',
+    VERSION: 'v94',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2557,24 +2557,24 @@
     });
   }
 
-  // Gemini AI (via Supabase Edge Function `gemini-proxy` with clear error reporting & local key fallback)
+  // Gemini AI (via Supabase SDK `functions.invoke` with full error extraction & local key fallback)
   async function callGeminiText(prompt, imageBase64, mimeType) {
     if (!client || !currentUser || !navigator.onLine) return null;
     try {
-      const { data: sess } = await client.auth.getSession();
-      const token = (sess && sess.session && sess.session.access_token) ? sess.session.access_token : SUPABASE_ANON_KEY;
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/gemini-proxy`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ prompt, imageBase64: imageBase64 || null, mimeType: mimeType || 'image/jpeg' })
+      const { data, error } = await client.functions.invoke('gemini-proxy', {
+        body: { prompt, imageBase64: imageBase64 || null, mimeType: mimeType || 'image/jpeg' }
       });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || json.message || `HTTP ${res.status}`);
-      if (json && typeof json.text === 'string') return json.text;
+      if (error) {
+        let detail = error.message || 'AI error';
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const ej = await error.context.json();
+            if (ej && (ej.error || ej.message)) detail = ej.error || ej.message;
+          }
+        } catch (_) {}
+        throw new Error(detail);
+      }
+      if (data && typeof data.text === 'string') return data.text;
     } catch (proxyErr) {
       const localKey = localStorage.getItem('careguard_local_gemini_key') || '';
       if (!localKey) throw proxyErr;
@@ -2854,7 +2854,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v93';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v94';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
