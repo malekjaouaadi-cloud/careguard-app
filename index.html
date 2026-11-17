@@ -797,7 +797,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v76',
+    VERSION: 'v77',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2509,7 +2509,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v76';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v77';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4225,39 +4225,81 @@
     }
   }
 
+  function showAvatarToast(msg, isErr) {
+    const el = $('imOkFeedback');
+    if (el) {
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      el.className = 'mt-2.5 rounded-2xl border px-4 py-2.5 text-center text-sm font-extrabold ' + (isErr ? 'border-rose-300 bg-rose-50 text-rose-800' : 'border-emerald-300 bg-emerald-50 text-emerald-800');
+    }
+    if (isErr) alert(msg);
+  }
+
   async function compressAvatarDataUrl(file) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
+    return new Promise((resolve, reject) => {
+      const objUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
           const canvas = document.createElement('canvas');
-          const size = 256;
+          const size = 200;
           canvas.width = size; canvas.height = size;
           const ctx = canvas.getContext('2d');
           const minSide = Math.min(img.width, img.height);
           const sx = (img.width - minSide) / 2, sy = (img.height - minSide) / 2;
           ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-          resolve(canvas.toDataURL('image/jpeg', 0.8));
-        };
-        img.src = String(reader.result || '');
+          const out = canvas.toDataURL('image/jpeg', 0.75);
+          URL.revokeObjectURL(objUrl);
+          resolve(out);
+        } catch (err) {
+          URL.revokeObjectURL(objUrl);
+          reject(err);
+        }
       };
-      reader.readAsDataURL(file);
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Cannot read image'));
+        reader.readAsDataURL(file);
+      };
+      img.src = objUrl;
     });
   }
 
   async function handleAvatarUpload(file, isSenior) {
+    const isFr = CG.getState().lang === 'fr';
+    if (!file) return;
+    let dataUrl = '';
+    try {
+      dataUrl = await compressAvatarDataUrl(file);
+    } catch (_) {
+      showAvatarToast(isFr ? 'Impossible de lire cette image.' : 'Unable to read this image.', true);
+      return;
+    }
+    if (!dataUrl) return;
+
+    // Immediate UI preview + local cache
+    if (isSenior) setAvatarEl($('heroAvatar'), dataUrl, CG.getRealDisplayName());
+    else setAvatarEl($('careSelfAvatar'), dataUrl, CG.getRealDisplayName());
+
     const client = CG.getClient(), user = CG.getCurrentUser();
-    if (!file || !client || !user) return;
-    const dataUrl = await compressAvatarDataUrl(file);
-    const publicUrl = CG.uploadVoiceToStorage ? await CG.uploadVoiceToStorage(dataUrl, 'avatars') : dataUrl;
-    const finalUrl = publicUrl || dataUrl;
-    try { await client.from('profiles').update({ avatar_url: finalUrl }).eq('id', user.id); } catch (_) {}
+    if (!client || !user) return;
+    try { localStorage.setItem('cg_avatar_' + user.id, dataUrl); } catch (_) {}
+
+    let saveErr = null;
+    const pRes = await client.from('profiles').update({ avatar_url: dataUrl }).eq('id', user.id);
+    if (pRes && pRes.error) saveErr = pRes.error;
+
     if (isSenior && CG.getSeniorId && CG.getSeniorId()) {
-      try { await client.from('senior_profiles').update({ avatar_url: finalUrl }).eq('id', CG.getSeniorId()); } catch (_) {}
-      setAvatarEl($('heroAvatar'), finalUrl, CG.getRealDisplayName());
-    } else {
-      setAvatarEl($('careSelfAvatar'), finalUrl, CG.getRealDisplayName());
+      const sRes = await client.from('senior_profiles').update({ avatar_url: dataUrl }).eq('id', CG.getSeniorId());
+      if (sRes && sRes.error) saveErr = sRes.error;
+    }
+
+    if (saveErr) {
+      showAvatarToast((isFr ? 'Erreur sauvegarde photo : ' : 'Photo save error: ') + (saveErr.message || 'SQL avatar_url?'), true);
+    } else if (isSenior) {
+      showAvatarToast(isFr ? '✓ Photo enregistrée !' : '✓ Photo saved!', false);
     }
   }
 
@@ -4266,15 +4308,23 @@
     if (!client || !user) return;
     const isFr = CG.getState().lang === 'fr';
     try {
+      const cached = localStorage.getItem('cg_avatar_' + user.id);
+      if (cached) {
+        setAvatarEl($('heroAvatar'), cached, CG.getRealDisplayName());
+        setAvatarEl($('careSelfAvatar'), cached, CG.getRealDisplayName());
+      }
       const { data: prof } = await client.from('profiles').select('avatar_url, display_name').eq('id', user.id).maybeSingle();
-      if (prof && prof.avatar_url) {
+      if (prof && prof.avatar_url && !prof.avatar_url.includes('/careguard-audio/avatars/')) {
         setAvatarEl($('heroAvatar'), prof.avatar_url, prof.display_name || CG.getRealDisplayName());
         setAvatarEl($('careSelfAvatar'), prof.avatar_url, prof.display_name || CG.getRealDisplayName());
+        try { localStorage.setItem('cg_avatar_' + user.id, prof.avatar_url); } catch (_) {}
       }
       const sid = CG.getSeniorId ? CG.getSeniorId() : null;
       if (CG.getUserRole() === 'senior' && sid) {
         const { data: sp } = await client.from('senior_profiles').select('avatar_url, display_name').eq('id', sid).maybeSingle();
-        if (sp && sp.avatar_url) setAvatarEl($('heroAvatar'), sp.avatar_url, sp.display_name);
+        if (sp && sp.avatar_url && !sp.avatar_url.includes('/careguard-audio/avatars/')) {
+          setAvatarEl($('heroAvatar'), sp.avatar_url, sp.display_name);
+        }
 
         // Load latest reassurance message from Family / Nurse
         const { data: msgs } = await client
@@ -4304,12 +4354,14 @@
     $('seniorAvatarInput').addEventListener('change', (e) => {
       const f = e.target.files && e.target.files[0];
       if (f) handleAvatarUpload(f, true);
+      e.target.value = '';
     });
   }
   if ($('careAvatarInput')) {
     $('careAvatarInput').addEventListener('change', (e) => {
       const f = e.target.files && e.target.files[0];
       if (f) handleAvatarUpload(f, false);
+      e.target.value = '';
     });
   }
   if ($('headerProfileBtn')) {
