@@ -921,7 +921,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v94',
+    VERSION: 'v95',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2854,7 +2854,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v94';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v95';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3126,7 +3126,7 @@
     if (!currentUser) { st.textContent = state.lang === 'fr' ? 'Connectez-vous avec Google pour lire l\'ordonnance.' : 'Sign in with Google to scan prescription.'; return; }
     st.textContent = state.lang === 'fr' ? 'Lecture...' : 'Reading...';
     try {
-      const compressed = await compressImageDataUrl(pendingImageDataUrl, 1280);
+      const compressed = await compressImageDataUrl(pendingImageDataUrl, 900);
       const b64 = compressed.split(',')[1] || '', mime = (compressed.match(/^data:([^;]+);/) || [])[1] || 'image/jpeg';
       const ans = await callGeminiText('List each medication and dose on a separate line formatted exactly as: Name Dose | HH:MM (use 08:00 if time is not shown, no bullets or extra text).', b64, mime);
       if (ans) {
