@@ -898,7 +898,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v83',
+    VERSION: 'v85',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1319,10 +1319,16 @@
       detailsWrap.appendChild(apptSec);
       card.appendChild(detailsWrap);
 
+      const dmTs = lastDm && lastDm.created_at ? new Date(lastDm.created_at).getTime() : 0;
+      const seenCareDmTs = Number(localStorage.getItem('cg_care_seen_dm_' + sp.id) || 0);
+      const isUnreadOnServer = ('read_at' in (lastDm || {})) ? !lastDm.read_at : (dmTs > seenCareDmTs);
+      const hasUnreadCareDm = !!(lastDm && isUnreadOnServer && (!currentUser || lastDm.sender_user_id !== currentUser.id));
       if (lastDm) {
         const tm = lastDm.created_at ? new Date(lastDm.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
         const dmBar = document.createElement('div');
-        dmBar.className = 'rounded-xl border border-teal-200 bg-teal-50/70 px-3 py-2 text-xs font-bold text-teal-950';
+        dmBar.className = hasUnreadCareDm
+          ? 'rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-black text-rose-900'
+          : 'rounded-xl border border-teal-200 bg-teal-50/70 px-3 py-2 text-xs font-bold text-teal-950';
         dmBar.textContent = `💬 ${lastDm.sender_name || ''} (${tm}): ` + (lastDm.message_text || (isFr ? '🎤 Message vocal' : '🎤 Voice message'));
         card.appendChild(dmBar);
       }
@@ -1359,9 +1365,16 @@
       if (['family', 'nurse', 'center'].includes(userRole)) {
         const msgBtn = document.createElement('button');
         msgBtn.type = 'button';
-        msgBtn.className = 'tap-btn rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
-        msgBtn.textContent = '💬 Chat';
-        msgBtn.addEventListener('click', () => CG.openDirectCareModal(sp.id, sp.display_name));
+        msgBtn.className = hasUnreadCareDm
+          ? 'tap-btn rounded-2xl border border-rose-600 bg-rose-600 px-3 py-2.5 text-xs font-black text-white shadow-sm animate-pulse'
+          : 'tap-btn rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
+        msgBtn.textContent = hasUnreadCareDm ? '🔴 Chat' : '💬 Chat';
+        msgBtn.addEventListener('click', () => {
+          localStorage.setItem('cg_care_seen_dm_' + sp.id, String(Date.now()));
+          msgBtn.className = 'tap-btn rounded-2xl border border-[#D8CEBE] bg-white px-3 py-2.5 text-xs font-black text-[#163024]';
+          msgBtn.textContent = '💬 Chat';
+          CG.openDirectCareModal(sp.id, sp.display_name);
+        });
         acts.appendChild(msgBtn);
       }
 
@@ -1424,7 +1437,7 @@
           client.from('medication_logs').select('medication_id, status').eq('senior_id', sp.id).gte('logged_at', todayStart),
           client.from('appointments').select('id, title, appointment_at, attended').eq('senior_id', sp.id).order('appointment_at', { ascending: true }).limit(5),
           client.from('alerts').select('id, alert_type, severity, message, created_at').eq('senior_id', sp.id).eq('status', 'open').order('created_at', { ascending: false }).limit(20),
-          client.from('care_direct_messages').select('sender_name, message_text, audio_data, created_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(1)
+          client.from('care_direct_messages').select('sender_user_id, sender_name, message_text, audio_data, created_at, read_at').eq('senior_id', sp.id).order('created_at', { ascending: false }).limit(1)
         ]);
         const lastChk = chk && chk[0] ? new Date(chk[0].checked_in_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (isFr ? 'Aucun' : 'None');
         const batVal = (bat && bat.length) ? bat[bat.length - 1].battery_percent : null;
@@ -2688,7 +2701,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v83';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v85';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4076,7 +4089,7 @@
     const isFr = state.lang === 'fr';
     if (tile) {
       tile.className = hasUnread
-        ? 'tap-btn relative flex flex-col items-center justify-center rounded-[26px] border-2 border-amber-400 bg-gradient-to-b from-amber-50 to-orange-100 px-3 py-4 text-center shadow-md min-h-[154px] transition-colors duration-300'
+        ? 'tap-btn relative flex flex-col items-center justify-center rounded-[26px] border-2 border-rose-500 bg-gradient-to-b from-rose-100 to-rose-200 px-3 py-4 text-center shadow-md min-h-[154px] transition-colors duration-300'
         : 'tap-btn relative flex flex-col items-center justify-center rounded-[26px] border border-[#C4E4E0] bg-gradient-to-b from-[#EFFAF8] to-[#DFF2F0] px-3 py-4 text-center shadow-sm min-h-[154px] transition-colors duration-300';
     }
     if (dot) dot.classList.toggle('hidden', !hasUnread);
@@ -4115,7 +4128,7 @@
       const isFr = state.lang === 'fr';
       const [dmRes, commRes] = await Promise.all([
         client.from('care_direct_messages')
-          .select('id, sender_user_id, sender_name, message_text, created_at')
+          .select('id, sender_user_id, sender_name, message_text, created_at, read_at')
           .eq('senior_id', currentSeniorId)
           .neq('sender_user_id', currentUser.id)
           .order('created_at', { ascending: false })
@@ -4130,7 +4143,7 @@
       const cm = commRes && commRes.data && commRes.data[0];
       const dmTs = dm && dm.created_at ? new Date(dm.created_at).getTime() : 0;
       const cmTs = cm && cm.created_at ? new Date(cm.created_at).getTime() : 0;
-      const hasNewDm = dmTs > (state.lastSeenCareMsgAt || 0);
+      const hasNewDm = !!(dm && (('read_at' in dm) ? !dm.read_at : (dmTs > (state.lastSeenCareMsgAt || 0))));
       const hasNewComm = cmTs > (state.lastSeenCommunityMsgAt || 0);
 
       if (hasNewDm) {
@@ -4155,6 +4168,7 @@
     } catch (_) {}
   }
   setInterval(checkUnreadCareMessagesForSenior, 20000);
+  setTimeout(checkUnreadCareMessagesForSenior, 1800);
 
   async function openDirectCareModal(seniorId, seniorName) {
     dcTargetSeniorId = seniorId || currentSeniorId;
@@ -4171,6 +4185,16 @@
     if (userRole === 'senior') {
       state.lastSeenCareMsgAt = Date.now(); saveState();
       setMessagesTileHighlight(false, '');
+    }
+    if (client && currentUser && dcTargetSeniorId) {
+      try {
+        await client.from('care_direct_messages')
+          .update({ read_at: new Date().toISOString() })
+          .eq('senior_id', dcTargetSeniorId)
+          .eq('channel', activeDcChannel)
+          .neq('sender_user_id', currentUser.id)
+          .is('read_at', null);
+      } catch (_) {}
     }
     loadDirectCareMessages();
   }
