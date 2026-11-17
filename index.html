@@ -898,7 +898,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v87',
+    VERSION: 'v89',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1046,6 +1046,26 @@
     }
   }
 
+  function appendTextWithMapsBtn(container, text, isFr) {
+    const raw = String(text || '');
+    const m = raw.match(/https:\/\/maps\.google\.com\/\?q=[^\s•]+/);
+    if (!m) {
+      container.textContent = raw;
+      return;
+    }
+    const url = m[0];
+    const clean = raw.replace(url, '').replace(/📍\s*•?/, '').replace(/\s*•\s*•\s*/g, ' • ').trim();
+    const span = document.createElement('span');
+    span.textContent = clean;
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = 'mt-1.5 inline-flex items-center gap-1 rounded-xl border border-emerald-300 bg-white px-2.5 py-1 text-[11px] font-black text-[#0E5A3E] shadow-sm';
+    a.textContent = isFr ? '📍 Ouvrir sur Google Maps ›' : '📍 Open in Google Maps ›';
+    container.append(span, document.createElement('br'), a);
+  }
+
   function renderCareAlertsTab() {
     const feed = $('careAlertsFeed');
     if (!feed) return;
@@ -1095,7 +1115,7 @@
         const row = document.createElement('div');
         row.className = 'flex items-center justify-between gap-2 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-950';
         const txt = document.createElement('span');
-        txt.textContent = g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : '');
+        appendTextWithMapsBtn(txt, g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : ''), isFr);
         const ackBtn = document.createElement('button');
         ackBtn.type = 'button';
         ackBtn.className = 'shrink-0 rounded-xl bg-rose-700 px-2.5 py-1 text-[11px] font-extrabold text-white';
@@ -2721,7 +2741,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v87';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v89';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4264,7 +4284,23 @@
         dtSpan.textContent = m.created_at ? new Date(m.created_at).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
         top.append(nmSpan, dtSpan);
         c.appendChild(top);
-        if (m.message_text) { const p = document.createElement('p'); p.className = 'text-base font-bold text-slate-900'; p.textContent = m.message_text; c.appendChild(p); }
+        if (m.message_text) {
+          const p = document.createElement('p');
+          p.className = 'text-base font-bold text-slate-900';
+          const mapM = String(m.message_text).match(/https:\/\/maps\.google\.com\/\?q=[^\s•]+/);
+          if (mapM) {
+            const url = mapM[0];
+            p.textContent = String(m.message_text).replace(url, '').replace(/📍\s*•?/, '').trim();
+            const mapA = document.createElement('a');
+            mapA.href = url; mapA.target = '_blank'; mapA.rel = 'noopener noreferrer';
+            mapA.className = 'mt-1.5 inline-flex items-center gap-1 rounded-xl border border-emerald-300 bg-white px-3 py-1.5 text-xs font-black text-[#0E5A3E] shadow-sm';
+            mapA.textContent = isFr ? '📍 Ouvrir sur Google Maps ›' : '📍 Open in Google Maps ›';
+            c.append(p, mapA);
+          } else {
+            p.textContent = m.message_text;
+            c.appendChild(p);
+          }
+        }
         if (m.audio_data) { const a = document.createElement('audio'); a.controls = true; a.src = m.audio_data; a.className = 'w-full'; c.appendChild(a); }
         box.appendChild(c);
       });
@@ -4860,17 +4896,18 @@
   function checkHomeGeofence() {
     if (CG.getUserRole() !== 'senior' || !navigator.geolocation || !navigator.onLine) return;
     const raw = localStorage.getItem('cg_home_gps');
-    if (!raw) return;
-    let home = null; try { home = JSON.parse(raw); } catch (_) { return; }
-    if (!home || !home.lat || !home.lng) return;
+    const conds = String((CG.getState().profile && CG.getState().profile.conditions) || '').toLowerCase();
+    const isMemoryCare = /alzheimer|cognit|dément|dement|memory|زهايمر/.test(conds);
+    if (!raw && !isMemoryCare) return;
+    let home = null; try { home = raw ? JSON.parse(raw) : null; } catch (_) { home = null; }
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude, lng = pos.coords.longitude;
-      const dist = Math.round(haversineMeters(home.lat, home.lng, lat, lng));
+      const dist = (home && home.lat && home.lng) ? Math.round(haversineMeters(home.lat, home.lng, lat, lng)) : 0;
       const client = CG.getClient(), sid = CG.getSeniorId ? CG.getSeniorId() : null;
       if (client && sid) {
         try { await client.from('senior_profiles').update({ last_lat: lat, last_lng: lng, last_loc_at: new Date().toISOString() }).eq('id', sid); } catch (_) {}
         const lastAlertTs = Number(localStorage.getItem('cg_geofence_alert_ts') || 0);
-        if (dist > (home.radius || 250) && (Date.now() - lastAlertTs > 60 * 60 * 1000)) {
+        if (home && home.lat && dist > (home.radius || 250) && (Date.now() - lastAlertTs > 60 * 60 * 1000)) {
           localStorage.setItem('cg_geofence_alert_ts', String(Date.now()));
           const mapUrl = `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
           await client.from('alerts').insert({
@@ -4880,9 +4917,30 @@
           });
         }
       }
-    }, () => {}, { timeout: 6000 });
+    }, async (err) => {
+      if (err && (err.code === 1 || err.code === 2)) {
+        const lastOff = Number(localStorage.getItem('cg_gps_off_alert_ts') || 0);
+        if (Date.now() - lastOff > 2 * 60 * 60 * 1000) {
+          const client = CG.getClient(), sid = CG.getSeniorId ? CG.getSeniorId() : null;
+          if (client && sid) {
+            localStorage.setItem('cg_gps_off_alert_ts', String(Date.now()));
+            try {
+              await client.from('alerts').insert({
+                senior_id: sid,
+                alert_type: 'gps_disabled',
+                message: `📍 GPS / Location is disabled on ${CG.getRealDisplayName()}'s phone`
+              });
+              fetch('https://jobzviplbwfdoyrdrblt.supabase.co/functions/v1/notify-alerts-ts', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
+              }).catch(() => {});
+            } catch (_) {}
+          }
+        }
+      }
+    }, { timeout: 6000 });
   }
   setInterval(checkHomeGeofence, 120000);
+  setTimeout(checkHomeGeofence, 4000);
 
   // Nurse / Caregiver Profile & 3-Day Verification Logic
   let uploadedNurseDocPath = '';
