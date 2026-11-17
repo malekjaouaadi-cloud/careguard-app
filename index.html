@@ -381,6 +381,12 @@
       </div>
     </div>
 
+    <!-- 3-Day Nurse Verification Grace Banner -->
+    <div id="nurseGraceBanner" class="hidden flex items-center justify-between gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-950">
+      <span id="nurseGraceText">⏳ 3 days left to complete your Nurse Profile & License.</span>
+      <button id="nurseGraceOpenBtn" type="button" class="shrink-0 rounded-xl bg-[#0E5A3E] px-3 py-1.5 text-[11px] font-black text-white">Profile ›</button>
+    </div>
+
     <!-- Editorial Summary Pill -->
     <div id="careEditorialPill" class="flex items-center justify-center gap-3 rounded-full border border-[#EAE0CF] bg-[#F5EFE3] px-4 py-2 text-xs font-extrabold text-[#163024]">
       <span id="careEditorialSummaryText">🟢 0 patient</span>
@@ -412,6 +418,45 @@
 
     <!-- TAB 3: LINK & ACCOUNT -->
     <div id="carePanelLink" class="hidden space-y-3">
+      <!-- Nurse / Caregiver Professional Profile Card (3-Day Verification) -->
+      <div id="nurseProfileCard" class="hidden rounded-[26px] border border-[#DFD5C5] bg-[#FFFDF9] p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h3 id="npCardTitle" class="font-serif-brand text-xl font-extrabold text-[#0E5A3E]">🩺 Nurse Profile & License</h3>
+            <p id="npCardSub" class="text-xs font-bold text-[#5C6F63]">Complete within 3 days to stay active & verified</p>
+          </div>
+          <span id="npStatusBadge" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black text-amber-900">⏳ Pending</span>
+        </div>
+        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <input id="npFullName" type="text" placeholder="Full Legal Name" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <select id="npCredential" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold">
+            <option value="RN">RN — Registered Nurse</option>
+            <option value="LPN">LPN / RPN — Practical Nurse</option>
+            <option value="CNA">CNA / PSW / PAB — Nursing Assistant</option>
+            <option value="HCA">Home Care Aide</option>
+          </select>
+          <select id="npCountry" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold">
+            <option value="CA">🇨🇦 Canada</option>
+            <option value="US">🇺🇸 United States</option>
+          </select>
+          <input id="npRegion" type="text" placeholder="State / Province (e.g. QC, ON, NY)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npCityZip" type="text" placeholder="City & Postal / ZIP Code" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npRadius" type="number" min="1" max="200" value="25" placeholder="Service radius (km / mi)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npLicenseNum" type="text" placeholder="License / Registry Number" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npLicenseExp" type="date" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+        </div>
+        <div class="rounded-2xl border border-dashed border-[#C7D8CE] bg-[#F4F9F5] p-3 space-y-1.5">
+          <p id="npDocLabel" class="text-xs font-black text-[#0E5A3E]">📄 Upload Diploma, License, ID & Background Check</p>
+          <input id="npDocInput" type="file" accept="image/*,.pdf" class="w-full text-xs font-bold text-slate-700" />
+          <p id="npDocStatus" class="text-[11px] font-bold text-[#3C5044]"></p>
+        </div>
+        <label class="flex items-center gap-2 text-xs font-bold text-[#163024]">
+          <input id="npDirectoryOptIn" type="checkbox" class="h-4 w-4 accent-[#0E5A3E]" />
+          <span id="npDirectoryLabel">Show me in "Find Nearest Nurse" directory once verified</span>
+        </label>
+        <button id="saveNurseProfileBtn" type="button" class="tap-btn w-full rounded-2xl bg-[#0E5A3E] px-4 py-3 text-sm font-black text-white shadow-sm">Save Nurse Profile</button>
+        <p id="npSaveStatus" class="hidden text-center text-xs font-extrabold"></p>
+      </div>
       <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
         <p id="careLinkTitle" class="text-base font-black text-slate-900">Lier un senior par son code (CG-...)</p>
         <div class="flex gap-2">
@@ -853,7 +898,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v82',
+    VERSION: 'v83',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2643,7 +2688,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v82';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v83';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4766,6 +4811,139 @@
     }, () => {}, { timeout: 6000 });
   }
   setInterval(checkHomeGeofence, 120000);
+
+  // Nurse / Caregiver Profile & 3-Day Verification Logic
+  let uploadedNurseDocPath = '';
+
+  async function loadNurseProfileCard() {
+    const role = CG.getUserRole ? CG.getUserRole() : '';
+    const isNurse = (role === 'nurse' || role === 'center');
+    if ($('nurseProfileCard')) $('nurseProfileCard').classList.toggle('hidden', !isNurse);
+    if ($('nurseGraceBanner')) $('nurseGraceBanner').classList.toggle('hidden', !isNurse);
+    if (!isNurse) return;
+
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    const isFr = CG.getState().lang === 'fr';
+    if ($('npCardTitle')) $('npCardTitle').textContent = isFr ? '🩺 Profil Infirmier & Licence' : '🩺 Nurse Profile & License';
+    if ($('npCardSub')) $('npCardSub').textContent = isFr ? 'À compléter sous 3 jours pour rester vérifié' : 'Complete within 3 days to stay active & verified';
+    if ($('saveNurseProfileBtn')) $('saveNurseProfileBtn').textContent = isFr ? 'Enregistrer le profil' : 'Save Nurse Profile';
+    if ($('npDirectoryLabel')) $('npDirectoryLabel').textContent = isFr ? 'Apparaître dans « Trouver un infirmier proche » après validation' : 'Show me in "Find Nearest Nurse" directory once verified';
+
+    let np = null;
+    try { np = JSON.parse(localStorage.getItem('cg_nurse_profile_' + (user ? user.id : 'local')) || 'null'); } catch (_) {}
+    if (client && user) {
+      try {
+        const { data, error } = await client.from('nurse_profiles').select('*').eq('user_id', user.id).maybeSingle();
+        if (!error && data) {
+          np = data;
+          localStorage.setItem('cg_nurse_profile_' + user.id, JSON.stringify(data));
+        }
+      } catch (_) {}
+    }
+
+    if (np) {
+      if ($('npFullName')) $('npFullName').value = np.full_name || CG.getRealDisplayName() || '';
+      if ($('npCredential') && np.credential) $('npCredential').value = np.credential;
+      if ($('npCountry') && np.country) $('npCountry').value = np.country;
+      if ($('npRegion')) $('npRegion').value = np.region || '';
+      if ($('npCityZip')) $('npCityZip').value = np.city_zip || '';
+      if ($('npRadius') && np.service_radius_km) $('npRadius').value = np.service_radius_km;
+      if ($('npLicenseNum')) $('npLicenseNum').value = np.license_number || '';
+      if ($('npLicenseExp')) $('npLicenseExp').value = np.license_expiry || '';
+      if ($('npDirectoryOptIn')) $('npDirectoryOptIn').checked = !!np.directory_opt_in;
+      if (np.doc_path) {
+        uploadedNurseDocPath = np.doc_path;
+        if ($('npDocStatus')) $('npDocStatus').textContent = (isFr ? '✓ Document joint : ' : '✓ Document uploaded: ') + np.doc_path.split('/').pop();
+      }
+      const st = np.verification_status || 'pending';
+      if ($('npStatusBadge')) {
+        $('npStatusBadge').textContent = st === 'verified' ? (isFr ? '🟢 Vérifié' : '🟢 Verified') : (isFr ? '⏳ En attente' : '⏳ Pending');
+        $('npStatusBadge').className = st === 'verified' ? 'rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-900' : 'rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black text-amber-900';
+      }
+      if ($('nurseGraceBanner')) {
+        if (st === 'verified') {
+          $('nurseGraceBanner').classList.add('hidden');
+        } else {
+          const deadline = np.onboarding_deadline_at ? new Date(np.onboarding_deadline_at).getTime() : (Date.now() + 3 * 86400000);
+          const daysLeft = Math.max(0, Math.ceil((deadline - Date.now()) / 86400000));
+          if ($('nurseGraceText')) {
+            $('nurseGraceText').textContent = np.license_number
+              ? (isFr ? '📋 Dossier soumis — vérification en cours.' : '📋 Credentials submitted — review in progress.')
+              : (isFr ? `⏳ Il vous reste ${daysLeft} jour(s) pour compléter votre profil infirmier.` : `⏳ ${daysLeft} day(s) left to complete your Nurse Profile & License.`);
+          }
+        }
+      }
+    } else if ($('npFullName') && !$('npFullName').value) {
+      $('npFullName').value = CG.getRealDisplayName() || '';
+    }
+  }
+
+  if ($('nurseGraceOpenBtn')) {
+    $('nurseGraceOpenBtn').addEventListener('click', () => {
+      if ($('careTabLinkBtn')) $('careTabLinkBtn').click();
+    });
+  }
+
+  if ($('npDocInput')) {
+    $('npDocInput').addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0];
+      const client = CG.getClient(), user = CG.getCurrentUser();
+      const isFr = CG.getState().lang === 'fr';
+      if (!f || !client || !user) return;
+      if ($('npDocStatus')) $('npDocStatus').textContent = isFr ? 'Envoi du document...' : 'Uploading document...';
+      const cleanName = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${user.id}/${Date.now()}_${cleanName}`;
+      const { error } = await client.storage.from('nurse-docs').upload(path, f, { upsert: true });
+      if (error) {
+        if ($('npDocStatus')) $('npDocStatus').textContent = (isFr ? 'Erreur envoi : ' : 'Upload error: ') + error.message;
+      } else {
+        uploadedNurseDocPath = path;
+        if ($('npDocStatus')) $('npDocStatus').textContent = (isFr ? '✓ Document envoyé : ' : '✓ Uploaded: ') + cleanName;
+      }
+    });
+  }
+
+  if ($('saveNurseProfileBtn')) {
+    $('saveNurseProfileBtn').addEventListener('click', async () => {
+      const client = CG.getClient(), user = CG.getCurrentUser();
+      const isFr = CG.getState().lang === 'fr';
+      const stEl = $('npSaveStatus');
+      if (!user) return;
+      const payload = {
+        user_id: user.id,
+        full_name: ($('npFullName').value || '').trim(),
+        credential: $('npCredential').value,
+        country: $('npCountry').value,
+        region: ($('npRegion').value || '').trim(),
+        city_zip: ($('npCityZip').value || '').trim(),
+        service_radius_km: Number($('npRadius').value || 25),
+        license_number: ($('npLicenseNum').value || '').trim(),
+        license_expiry: $('npLicenseExp').value || null,
+        doc_path: uploadedNurseDocPath || null,
+        directory_opt_in: !!$('npDirectoryOptIn').checked,
+        onboarding_deadline_at: new Date(Date.now() + 3 * 86400000).toISOString()
+      };
+      try { localStorage.setItem('cg_nurse_profile_' + user.id, JSON.stringify(payload)); } catch (_) {}
+      let errMsg = '';
+      if (client) {
+        const { error } = await client.from('nurse_profiles').upsert(payload, { onConflict: 'user_id' });
+        if (error) errMsg = error.message;
+      }
+      if (stEl) {
+        stEl.classList.remove('hidden');
+        stEl.className = errMsg ? 'text-center text-xs font-extrabold text-rose-800' : 'text-center text-xs font-extrabold text-emerald-800';
+        stEl.textContent = errMsg ? ('⚠️ ' + errMsg) : (isFr ? '✓ Profil infirmier enregistré !' : '✓ Nurse profile saved!');
+      }
+      loadNurseProfileCard();
+    });
+  }
+
+  const origLoadExtras = CG.loadSereniteExtras;
+  CG.loadSereniteExtras = function () {
+    if (origLoadExtras) origLoadExtras();
+    loadNurseProfileCard();
+  };
+  setTimeout(loadNurseProfileCard, 1300);
 })();
 </script>
 </body>
