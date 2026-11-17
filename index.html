@@ -423,11 +423,12 @@
 
     <!-- TAB 1: PATIENTS -->
     <div id="carePanelPatients" class="space-y-3">
-      <div id="careSummaryBar" class="hidden flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-teal-200 bg-teal-50/70 p-3">
-        <span id="careSummaryText" class="text-xs font-black text-teal-950"></span>
-        <div class="flex flex-1 items-center gap-2 min-w-[200px]">
-          <input id="careFilterInput" type="search" placeholder="🔍 Nom ou code CG-..." class="w-full rounded-xl border border-teal-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-900" />
-          <button id="careAlertsOnlyBtn" type="button" class="tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-extrabold text-rose-900">🚨 Alertes</button>
+      <div id="careSummaryBar" class="hidden flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#DFD5C5] bg-[#FFFDF9] p-3 shadow-sm">
+        <span id="careSummaryText" class="text-xs font-black text-[#163024]"></span>
+        <div class="flex flex-1 items-center gap-1.5 min-w-[210px]">
+          <input id="careFilterInput" autocomplete="off" type="search" placeholder="🔍 Nom ou code CG-..." class="w-full rounded-xl border border-[#D8CEBE] bg-[#FAF6EE] px-3 py-1.5 text-xs font-bold text-slate-900" />
+          <button id="careAlertsOnlyBtn" type="button" class="tap-btn shrink-0 rounded-xl border border-rose-300 bg-rose-50 px-2.5 py-1.5 text-xs font-extrabold text-rose-900">🚨</button>
+          <button id="careAddPatientQuickBtn" type="button" class="tap-btn shrink-0 rounded-xl bg-[#0E5A3E] px-3 py-1.5 text-xs font-black text-white shadow-sm">+ Patient</button>
         </div>
       </div>
       <div id="careLinkedList" class="space-y-3"></div>
@@ -920,7 +921,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v90',
+    VERSION: 'v91',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1064,6 +1065,14 @@
       alertsToggle.addEventListener('click', () => {
         careAlertsOnly = !careAlertsOnly;
         renderCareCards();
+      });
+    }
+    const addPatBtn = $('careAddPatientQuickBtn');
+    if (addPatBtn && !addPatBtn.dataset.cgBound) {
+      addPatBtn.dataset.cgBound = '1';
+      addPatBtn.addEventListener('click', () => {
+        switchCareTab('link');
+        if ($('careCodeInput')) { $('careCodeInput').focus(); $('careCodeInput').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       });
     }
   }
@@ -2820,7 +2829,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v90';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v91';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3737,29 +3746,7 @@
     } catch (_) { card.classList.add('hidden'); }
   }
 
-  // Send Link Request by CG-... Code (Family, Nurse, Home Care)
-  $('careSendLinkBtn').addEventListener('click', async () => {
-    const st = $('careLinkStatus'); st.classList.remove('hidden');
-    const isFr = state.lang === 'fr';
-    if (!client || !currentUser) { st.className = 'text-xs font-extrabold text-rose-800'; st.textContent = isFr ? 'Veuillez vous connecter avec Google.' : 'Please sign in first.'; return; }
-    const code = $('careCodeInput').value.trim().toUpperCase();
-    if (!code) return;
-    try {
-      const { data, error } = await client.rpc('request_link_by_code', {
-        p_code: code,
-        p_role: userRole || 'family',
-        p_name: getRealDisplayName()
-      });
-      if (error) throw error;
-      st.className = 'text-xs font-extrabold text-emerald-800';
-      st.textContent = isFr ? "✓ Demande envoyée — en attente de l'accord du senior." : '✓ Request sent — waiting for senior approval.';
-      $('careCodeInput').value = '';
-      loadCarePortalData();
-    } catch (e) {
-      st.className = 'text-xs font-extrabold text-rose-800';
-      st.textContent = friendlyError(e);
-    }
-  });
+  // Link request handled by initCarePortalControls (single listener)
 
   let careLoadSeq = 0;
   async function loadCarePortalData() {
