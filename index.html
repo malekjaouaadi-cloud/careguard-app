@@ -898,7 +898,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v85',
+    VERSION: 'v86',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1584,6 +1584,7 @@
     getCurrentUser: () => currentUser,
     getUserRole: () => userRole,
     getState: () => state,
+    saveStateOnly: () => saveStateOnly(),
     getRealDisplayName: () => getRealDisplayName(),
     getSeniorId: () => currentSeniorId,
     openCareFullStatusModal: (ctx) => openCareFullStatusModal(ctx),
@@ -1608,7 +1609,26 @@
     } catch (_) {}
     return JSON.parse(JSON.stringify(defaultState));
   }
-  function saveState() { try { localStorage.setItem(getStorageKey(), JSON.stringify(state)); } catch (_) {} }
+  let uiPrefsSyncTimer = null;
+  function saveStateOnly() { try { localStorage.setItem(getStorageKey(), JSON.stringify(state)); } catch (_) {} }
+  function saveState() {
+    saveStateOnly();
+    if (client && currentUser && navigator.onLine) {
+      clearTimeout(uiPrefsSyncTimer);
+      uiPrefsSyncTimer = setTimeout(() => {
+        client.from('profiles').update({
+          ui_prefs: {
+            lang: state.lang,
+            chatNickname: state.chatNickname || '',
+            chatUseNickname: !!state.chatUseNickname,
+            blockedUserIds: state.blockedUserIds || [],
+            shareBirthday: !!state.shareBirthday,
+            lastSeenCommunityMsgAt: state.lastSeenCommunityMsgAt || 0
+          }
+        }).eq('id', currentUser.id).then(() => {}).catch(() => {});
+      }, 1500);
+    }
+  }
 
   // Bottom Navigation & View Switching
   function switchTab(tab) {
@@ -2701,7 +2721,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v85';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v86';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3327,7 +3347,7 @@
     try {
       const todayStart = getLocalDayStartIso();
       const [spRes, chkRes, medsRes, logsRes, apptsRes] = await Promise.all([
-        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, family_email, avatar_url, water_count, water_date').eq('id', currentSeniorId).single(),
+        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, family_email, avatar_url, water_count, water_date, home_lat, home_lng, safe_radius_m').eq('id', currentSeniorId).single(),
         client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
         client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
         client.from('medication_logs').select('medication_id, status').eq('senior_id', currentSeniorId).gte('logged_at', todayStart),
@@ -3342,6 +3362,11 @@
         if (sp.family_relation) state.profile.familyRelation = sp.family_relation;
         if (sp.backup_phone) state.profile.backupPhone = sp.backup_phone;
         if (sp.family_email) state.profile.familyEmail = sp.family_email;
+        if (sp.home_lat && sp.home_lng) {
+          try { localStorage.setItem('cg_home_gps', JSON.stringify({ lat: sp.home_lat, lng: sp.home_lng, radius: sp.safe_radius_m || 250 })); } catch (_) {}
+          if ($('homeGpsStatus')) $('homeGpsStatus').textContent = `✅ ${Number(sp.home_lat).toFixed(5)}, ${Number(sp.home_lng).toFixed(5)} (${sp.safe_radius_m || 250}m)`;
+          if ($('homeGpsMapLink')) { $('homeGpsMapLink').href = `https://maps.google.com/?q=${sp.home_lat},${sp.home_lng}`; $('homeGpsMapLink').classList.remove('hidden'); }
+        }
         if (sp.avatar_url && currentUser && !sp.avatar_url.includes('/careguard-audio/avatars/')) {
           try { localStorage.setItem('cg_avatar_' + currentUser.id, sp.avatar_url); } catch (_) {}
         }
@@ -4671,7 +4696,18 @@
         setAvatarEl($('heroAvatar'), cached, CG.getRealDisplayName());
         setAvatarEl($('careSelfAvatar'), cached, CG.getRealDisplayName());
       }
-      const { data: prof } = await client.from('profiles').select('avatar_url, display_name').eq('id', user.id).maybeSingle();
+      const { data: prof } = await client.from('profiles').select('avatar_url, display_name, ui_prefs').eq('id', user.id).maybeSingle();
+      if (prof && prof.ui_prefs && typeof prof.ui_prefs === 'object') {
+        const st = CG.getState(), up = prof.ui_prefs;
+        let changed = false;
+        if (up.lang && up.lang !== st.lang) { st.lang = up.lang; changed = true; }
+        if (typeof up.chatNickname === 'string' && up.chatNickname !== st.chatNickname) { st.chatNickname = up.chatNickname; changed = true; }
+        if (typeof up.chatUseNickname === 'boolean' && up.chatUseNickname !== st.chatUseNickname) { st.chatUseNickname = up.chatUseNickname; changed = true; }
+        if (Array.isArray(up.blockedUserIds)) { st.blockedUserIds = up.blockedUserIds; changed = true; }
+        if (typeof up.shareBirthday === 'boolean') { st.shareBirthday = up.shareBirthday; changed = true; }
+        if (up.lastSeenCommunityMsgAt && up.lastSeenCommunityMsgAt > (st.lastSeenCommunityMsgAt || 0)) { st.lastSeenCommunityMsgAt = up.lastSeenCommunityMsgAt; changed = true; }
+        if (changed && CG.saveStateOnly) CG.saveStateOnly();
+      }
       if (prof && prof.avatar_url && !prof.avatar_url.includes('/careguard-audio/avatars/')) {
         setAvatarEl($('heroAvatar'), prof.avatar_url, prof.display_name || CG.getRealDisplayName());
         setAvatarEl($('careSelfAvatar'), prof.avatar_url, prof.display_name || CG.getRealDisplayName());
