@@ -381,7 +381,7 @@
 
     <!-- Editorial Summary Pill -->
     <div id="careEditorialPill" class="flex items-center justify-center gap-3 rounded-full border border-[#EAE0CF] bg-[#F5EFE3] px-4 py-2 text-xs font-extrabold text-[#163024]">
-      <span id="careSummaryText">🟢 0 patient</span>
+      <span id="careEditorialSummaryText">🟢 0 patient</span>
     </div>
 
     <!-- Clean 3-Tab Navigation Bar (synced with Care Bottom Nav) -->
@@ -851,7 +851,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v80',
+    VERSION: 'v81',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1079,6 +1079,10 @@
     if (sumBar) {
       const approvedCount = cachedCardsData.filter((d) => d.kind === 'approved').length;
       const alertPatients = cachedCardsData.filter((d) => d.kind === 'approved' && d.openAlerts.length > 0).length;
+      const sumTxt = isFr
+        ? `🟢 ${approved.length} patient(s)${alertsCnt ? ` • 🔴 ${alertsCnt} à vérifier` : ''}`
+        : `🟢 ${approved.length} patient(s)${alertsCnt ? ` • 🔴 ${alertsCnt} needs attention` : ''}`;
+      if ($('careEditorialSummaryText')) $('careEditorialSummaryText').textContent = sumTxt;
       if ($('careSummaryText')) {
         $('careSummaryText').textContent = isFr
           ? `👥 ${approvedCount} patient(s) • 🚨 ${alertPatients} avec alertes`
@@ -2637,7 +2641,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v80';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v81';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3455,6 +3459,7 @@
     const hasRole = ['senior', 'family', 'nurse', 'center'].includes(userRole);
     $('roleGateCard').classList.toggle('hidden', hasRole);
     const isSenior = userRole === 'senior';
+    const isCare = ['family', 'nurse', 'center'].includes(userRole);
     $('bottomNav').classList.toggle('hidden', !isSenior || activeTab === 'chat');
     if ($('careBottomNav')) $('careBottomNav').classList.toggle('hidden', !isCare);
     if (!hasRole) {
@@ -4228,7 +4233,13 @@
       };
       dcMediaRecorder.start();
       setTimeout(() => { if (dcIsRecording && dcMediaRecorder && dcMediaRecorder.state === 'recording') dcMediaRecorder.stop(); }, 30000);
-    } catch (_) {}
+    } catch (_) {
+      const isFr = state.lang === 'fr';
+      if ($('dcStatusMsg')) {
+        $('dcStatusMsg').textContent = isFr ? 'Autorisez le microphone pour enregistrer un message vocal.' : 'Please allow microphone access to record a voice message.';
+        $('dcStatusMsg').classList.remove('hidden');
+      }
+    }
   });
   $('dcSendVoiceBtn').addEventListener('click', async () => { if (!dcPendingVoice) return; if (await sendDirectCareMessage(null, dcPendingVoice)) { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); } });
   $('dcDiscardVoiceBtn').addEventListener('click', () => { dcPendingVoice = ''; $('dcVoicePreviewBox').classList.add('hidden'); });
