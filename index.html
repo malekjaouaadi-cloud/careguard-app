@@ -948,7 +948,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v99',
+    VERSION: 'v101',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -1171,7 +1171,10 @@
 
       grouped.forEach((g) => {
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between gap-2 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-950';
+        const isDailyOk = String(g.msg || '').includes('Daily Summary') && !String(g.msg || '').includes('Not yet') && !String(g.msg || '').includes('Water 0/');
+        row.className = isDailyOk
+          ? 'flex items-center justify-between gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-extrabold text-emerald-950'
+          : 'flex items-center justify-between gap-2 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-950';
         const txt = document.createElement('span');
         appendTextWithMapsBtn(txt, g.msg + (g.ids.length > 1 ? ` (×${g.ids.length})` : ''), isFr);
         const ackBtn = document.createElement('button');
@@ -1400,8 +1403,19 @@
       } else {
         const peaceBanner = document.createElement('div');
         peaceBanner.className = 'rounded-2xl bg-[#E9F5EC] border border-[#C7E3CE] px-3.5 py-2 text-xs font-black text-[#0E5A3E] text-center';
-        peaceBanner.textContent = isFr ? "🟢 Tout va bien aujourd'hui" : '🟢 Everything looks good today';
+        peaceBanner.textContent = (isFr ? "🟢 En sécurité • Dernier check-in : " : '🟢 Safe • Last check-in: ') + lastChk;
         card.appendChild(peaceBanner);
+      }
+      if (userRole === 'family') {
+        const reassBtn = document.createElement('button');
+        reassBtn.type = 'button';
+        reassBtn.className = 'tap-btn flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-2.5 text-xs font-black text-[#0E5A3E] shadow-sm';
+        reassBtn.textContent = isFr ? '💚 Envoyer un mot de réconfort' : '💚 Send Quick Reassurance';
+        reassBtn.addEventListener('click', () => {
+          localStorage.setItem('cg_care_seen_dm_' + sp.id, String(Date.now()));
+          CG.openDirectCareModal(sp.id, sp.display_name);
+        });
+        card.appendChild(reassBtn);
       }
 
       // Collapsible details
@@ -2881,7 +2895,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v99';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v101';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -4232,7 +4246,7 @@
     const isFr = state.lang === 'fr';
     const chips = userRole === 'senior'
       ? (isFr ? ['Merci de passer m\'aider', 'Besoin d\'aide pour charger le téléphone', 'Je souhaite modifier mon traitement', 'Je me sens un peu fatigué(e)'] : ['Please come help me', 'Need help charging phone', 'I want to adjust my medication', 'Feeling a bit unwell'])
-      : (isFr ? ['Je passerai vous voir bientôt', 'Pensez à charger le téléphone et boire de l\'eau', 'Avez-vous pris vos médicaments ?'] : ['Visiting you soon', 'Remember to charge phone & drink water', 'Did you take your meds?']);
+      : (isFr ? ['💚 Nous pensons à toi, comment vas-tu ?', '💊 N\'oublie pas ton médicament', '❤️ Nous t\'aimons, repose-toi bien', 'Je passerai vous voir bientôt'] : ['💚 Thinking of you, how are you today?', '💊 Don\'t forget your afternoon meds', '❤️ Love you, get some rest', 'Visiting you soon']);
     chips.forEach((txt) => {
       const b = document.createElement('button'); b.type = 'button'; b.style.minHeight = '32px';
       b.className = 'rounded-full border border-teal-300 bg-teal-50 px-3 py-1 text-xs font-extrabold text-teal-950';
@@ -5059,6 +5073,32 @@
   }
   setInterval(checkHomeGeofence, 120000);
   setTimeout(checkHomeGeofence, 4000);
+
+  function checkSenior4hReminder() {
+    if (CG.getUserRole() !== 'senior') return;
+    const hr = new Date().getHours();
+    if (hr < 8 || hr >= 22) return;
+    const st = CG.getState(), isFr = st.lang === 'fr';
+    const iso = st.lastServerCheckInIso || st.lastCheckInIso;
+    if (!iso) return;
+    const hrs = (Date.now() - new Date(iso).getTime()) / 3600000;
+    const lastRem = Number(localStorage.getItem('cg_4h_remind_ts') || 0);
+    if (hrs >= 4 && (Date.now() - lastRem > 2 * 3600000)) {
+      localStorage.setItem('cg_4h_remind_ts', String(Date.now()));
+      const fb = $('checkInFeedback');
+      const txt = isFr
+        ? '💚 Petit rappel : appuyez sur « Je vais bien » pour rassurer votre famille.'
+        : '💚 Gentle reminder: tap "I\'m OK" to let your family know you are safe.';
+      if (fb) {
+        fb.textContent = txt;
+        fb.classList.remove('hidden');
+        fb.className = 'rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-center text-sm font-extrabold text-[#0E5A3E]';
+      }
+      if (window.CG && typeof CG.playMessengerChime === 'function') CG.playMessengerChime();
+    }
+  }
+  setInterval(checkSenior4hReminder, 300000);
+  setTimeout(checkSenior4hReminder, 3500);
 
   // Nurse / Caregiver Profile & 3-Day Verification Logic
   let uploadedNurseDocPath = '';
