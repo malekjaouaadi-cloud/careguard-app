@@ -467,12 +467,20 @@
           <input id="npRadius" type="number" min="1" max="200" value="25" placeholder="Service radius (km / mi)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npLicenseNum" type="text" placeholder="License / Registry Number" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npLicenseExp" type="date" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
-          <input id="npPhone" type="tel" placeholder="Phone Number" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npPhone" type="tel" dir="ltr" placeholder="US/CA Phone: +1 (514) 555-0199" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npYearsExp" type="number" min="0" max="60" placeholder="Years of Experience" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npHourlyRate" type="number" min="10" max="500" placeholder="Hourly Rate ($/hr)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
-          <input id="npLanguages" type="text" placeholder="Languages (e.g. EN, FR, AR)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
         </div>
-        <input id="npSpecialties" type="text" placeholder="Specialties (e.g. Alzheimer, Wound Care, Post-Op, Injections)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+        <div class="rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] p-3 space-y-2">
+          <p id="npLangTitle" class="text-xs font-black text-[#0E5A3E]">🗣️ Languages Spoken (select one or more):</p>
+          <div id="npLanguageChips" class="flex flex-wrap gap-1.5"></div>
+          <input id="npLanguages" type="text" placeholder="Other language (optional)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-1.5 text-xs font-bold" />
+        </div>
+        <div class="rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] p-3 space-y-2">
+          <p id="npSpecTitle" class="text-xs font-black text-[#0E5A3E]">🩺 Nurse Specialties (select one or more):</p>
+          <div id="npSpecialtyChips" class="flex flex-wrap gap-1.5"></div>
+          <input id="npSpecialties" type="text" placeholder="Other specialty (optional)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-1.5 text-xs font-bold" />
+        </div>
         <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] px-3 py-2">
           <button id="npSetGpsBtn" type="button" class="tap-btn rounded-xl border border-[#0E5A3E] bg-white px-3 py-1.5 text-xs font-black text-[#0E5A3E]">📍 Set Work Area GPS</button>
           <span id="npGpsStatus" class="text-[11px] font-bold text-[#3C5044]"></span>
@@ -934,7 +942,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v96',
+    VERSION: 'v97',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2867,7 +2875,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v96';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v97';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -5048,6 +5056,57 @@
 
   // Nurse / Caregiver Profile & 3-Day Verification Logic
   let uploadedNurseDocPath = '';
+  const NP_LANG_OPTS = ['English', 'Français', 'Español', 'العربية', 'Mandarin'];
+  const NP_SPEC_OPTS = ['Alzheimer / Dementia', 'Medication Mgmt', 'Wound Care', 'Post-Op', 'Mobility & Bathing', 'Diabetes / Vitals', 'Palliative Care'];
+
+  function renderNurseChips(containerId, opts, savedStr) {
+    const box = $(containerId);
+    if (!box) return '';
+    const saved = String(savedStr || '').split(',').map((s) => s.trim()).filter(Boolean);
+    const known = new Set(opts);
+    const extras = saved.filter((s) => !known.has(s));
+    box.replaceChildren();
+    opts.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.val = opt;
+      const active = saved.includes(opt);
+      btn.className = active
+        ? 'rounded-full border border-[#0E5A3E] bg-[#0E5A3E] px-2.5 py-1 text-[11px] font-black text-white'
+        : 'rounded-full border border-[#D8CEBE] bg-white px-2.5 py-1 text-[11px] font-bold text-[#3C5044]';
+      btn.textContent = (active ? '✓ ' : '') + opt;
+      btn.addEventListener('click', () => {
+        const isAct = btn.classList.contains('bg-[#0E5A3E]');
+        btn.className = !isAct
+          ? 'rounded-full border border-[#0E5A3E] bg-[#0E5A3E] px-2.5 py-1 text-[11px] font-black text-white'
+          : 'rounded-full border border-[#D8CEBE] bg-white px-2.5 py-1 text-[11px] font-bold text-[#3C5044]';
+        btn.textContent = (!isAct ? '✓ ' : '') + opt;
+      });
+      box.appendChild(btn);
+    });
+    return extras.join(', ');
+  }
+
+  function collectNurseChips(containerId, extraInputId) {
+    const box = $(containerId);
+    const picked = [];
+    if (box) {
+      box.querySelectorAll('button').forEach((b) => {
+        if (b.classList.contains('bg-[#0E5A3E]') && b.dataset.val) picked.push(b.dataset.val);
+      });
+    }
+    const extra = ($(extraInputId) ? $(extraInputId).value : '').trim();
+    if (extra) picked.push(extra);
+    return picked.join(', ');
+  }
+
+  function normalizeUsCaPhone(raw) {
+    const digits = String(raw || '').replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length === 10 && /^[2-9]\d{9}$/.test(digits)) return '+1' + digits;
+    if (digits.length === 11 && digits.startsWith('1') && /^1[2-9]\d{9}$/.test(digits)) return '+' + digits;
+    return null;
+  }
 
   async function loadNurseProfileCard() {
     const role = CG.getUserRole ? CG.getUserRole() : '';
@@ -5087,8 +5146,8 @@
       if ($('npPhone')) $('npPhone').value = np.phone || '';
       if ($('npYearsExp') && np.years_exp != null) $('npYearsExp').value = np.years_exp;
       if ($('npHourlyRate') && np.hourly_rate != null) $('npHourlyRate').value = np.hourly_rate;
-      if ($('npLanguages')) $('npLanguages').value = np.languages || '';
-      if ($('npSpecialties')) $('npSpecialties').value = np.specialties || '';
+      if ($('npLanguages')) $('npLanguages').value = renderNurseChips('npLanguageChips', NP_LANG_OPTS, np.languages || '');
+      if ($('npSpecialties')) $('npSpecialties').value = renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, np.specialties || '');
       if ($('npAvailableNow')) $('npAvailableNow').checked = !!np.is_available_now;
       if (np.base_lat && np.base_lng && $('npGpsStatus')) {
         $('npGpsStatus').textContent = `✓ ${Number(np.base_lat).toFixed(3)}, ${Number(np.base_lng).toFixed(3)}`;
@@ -5118,8 +5177,10 @@
           }
         }
       }
-    } else if ($('npFullName') && !$('npFullName').value) {
-      $('npFullName').value = CG.getRealDisplayName() || '';
+    } else {
+      if ($('npFullName') && !$('npFullName').value) $('npFullName').value = CG.getRealDisplayName() || '';
+      renderNurseChips('npLanguageChips', NP_LANG_OPTS, '');
+      renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, '');
     }
   }
 
@@ -5172,6 +5233,17 @@
       const isFr = CG.getState().lang === 'fr';
       const stEl = $('npSaveStatus');
       if (!user) return;
+      const rawPhone = ($('npPhone').value || '').trim();
+      const normPhone = normalizeUsCaPhone(rawPhone);
+      if (rawPhone && !normPhone) {
+        if (stEl) {
+          stEl.classList.remove('hidden');
+          stEl.className = 'text-center text-xs font-extrabold text-rose-800';
+          stEl.textContent = isFr ? '⚠️ Numéro US / Canada requis (+1 XXX-XXX-XXXX).' : '⚠️ US / Canada phone number required (+1 XXX-XXX-XXXX).';
+        }
+        return;
+      }
+      if (normPhone && $('npPhone')) $('npPhone').value = normPhone;
       const payload = {
         user_id: user.id,
         full_name: ($('npFullName').value || '').trim(),
@@ -5182,11 +5254,11 @@
         service_radius_km: Number($('npRadius').value || 25),
         license_number: ($('npLicenseNum').value || '').trim(),
         license_expiry: $('npLicenseExp').value || null,
-        phone: ($('npPhone').value || '').trim() || null,
+        phone: normPhone || null,
         years_exp: $('npYearsExp').value ? Number($('npYearsExp').value) : null,
         hourly_rate: $('npHourlyRate').value ? Number($('npHourlyRate').value) : null,
-        languages: ($('npLanguages').value || '').trim() || null,
-        specialties: ($('npSpecialties').value || '').trim() || null,
+        languages: collectNurseChips('npLanguageChips', 'npLanguages') || null,
+        specialties: collectNurseChips('npSpecialtyChips', 'npSpecialties') || null,
         is_available_now: !!$('npAvailableNow').checked,
         base_lat: $('npGpsStatus').dataset.lat ? Number($('npGpsStatus').dataset.lat) : null,
         base_lng: $('npGpsStatus').dataset.lng ? Number($('npGpsStatus').dataset.lng) : null,
