@@ -467,6 +467,19 @@
           <input id="npRadius" type="number" min="1" max="200" value="25" placeholder="Service radius (km / mi)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npLicenseNum" type="text" placeholder="License / Registry Number" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
           <input id="npLicenseExp" type="date" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npPhone" type="tel" placeholder="Phone Number" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npYearsExp" type="number" min="0" max="60" placeholder="Years of Experience" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npHourlyRate" type="number" min="10" max="500" placeholder="Hourly Rate ($/hr)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+          <input id="npLanguages" type="text" placeholder="Languages (e.g. EN, FR, AR)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+        </div>
+        <input id="npSpecialties" type="text" placeholder="Specialties (e.g. Alzheimer, Wound Care, Post-Op, Injections)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] px-3 py-2">
+          <button id="npSetGpsBtn" type="button" class="tap-btn rounded-xl border border-[#0E5A3E] bg-white px-3 py-1.5 text-xs font-black text-[#0E5A3E]">📍 Set Work Area GPS</button>
+          <span id="npGpsStatus" class="text-[11px] font-bold text-[#3C5044]"></span>
+          <label class="flex items-center gap-1.5 text-xs font-black text-[#0E5A3E]">
+            <input id="npAvailableNow" type="checkbox" class="h-4 w-4 accent-[#0E5A3E]" />
+            <span id="npAvailableLabel">🟢 Available Now</span>
+          </label>
         </div>
         <div class="rounded-2xl border border-dashed border-[#C7D8CE] bg-[#F4F9F5] p-3 space-y-1.5">
           <p id="npDocLabel" class="text-xs font-black text-[#0E5A3E]">📄 Upload Diploma, License, ID & Background Check</p>
@@ -921,7 +934,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v95',
+    VERSION: 'v96',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2854,7 +2867,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v95';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v96';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -5071,6 +5084,17 @@
       if ($('npRadius') && np.service_radius_km) $('npRadius').value = np.service_radius_km;
       if ($('npLicenseNum')) $('npLicenseNum').value = np.license_number || '';
       if ($('npLicenseExp')) $('npLicenseExp').value = np.license_expiry || '';
+      if ($('npPhone')) $('npPhone').value = np.phone || '';
+      if ($('npYearsExp') && np.years_exp != null) $('npYearsExp').value = np.years_exp;
+      if ($('npHourlyRate') && np.hourly_rate != null) $('npHourlyRate').value = np.hourly_rate;
+      if ($('npLanguages')) $('npLanguages').value = np.languages || '';
+      if ($('npSpecialties')) $('npSpecialties').value = np.specialties || '';
+      if ($('npAvailableNow')) $('npAvailableNow').checked = !!np.is_available_now;
+      if (np.base_lat && np.base_lng && $('npGpsStatus')) {
+        $('npGpsStatus').textContent = `✓ ${Number(np.base_lat).toFixed(3)}, ${Number(np.base_lng).toFixed(3)}`;
+        $('npGpsStatus').dataset.lat = String(np.base_lat);
+        $('npGpsStatus').dataset.lng = String(np.base_lng);
+      }
       if ($('npDirectoryOptIn')) $('npDirectoryOptIn').checked = !!np.directory_opt_in;
       if (np.doc_path) {
         uploadedNurseDocPath = np.doc_path;
@@ -5124,6 +5148,24 @@
     });
   }
 
+  if ($('npSetGpsBtn')) {
+    $('npSetGpsBtn').addEventListener('click', () => {
+      const isFr = CG.getState().lang === 'fr';
+      const stEl = $('npGpsStatus');
+      if (!navigator.geolocation) { if (stEl) stEl.textContent = 'No GPS'; return; }
+      if (stEl) stEl.textContent = isFr ? '📡 Détection...' : '📡 Detecting...';
+      navigator.geolocation.getCurrentPosition((pos) => {
+        if (stEl) {
+          stEl.dataset.lat = String(pos.coords.latitude);
+          stEl.dataset.lng = String(pos.coords.longitude);
+          stEl.textContent = `✓ ${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}`;
+        }
+      }, () => {
+        if (stEl) stEl.textContent = isFr ? 'GPS refusé' : 'GPS denied';
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    });
+  }
+
   if ($('saveNurseProfileBtn')) {
     $('saveNurseProfileBtn').addEventListener('click', async () => {
       const client = CG.getClient(), user = CG.getCurrentUser();
@@ -5140,6 +5182,14 @@
         service_radius_km: Number($('npRadius').value || 25),
         license_number: ($('npLicenseNum').value || '').trim(),
         license_expiry: $('npLicenseExp').value || null,
+        phone: ($('npPhone').value || '').trim() || null,
+        years_exp: $('npYearsExp').value ? Number($('npYearsExp').value) : null,
+        hourly_rate: $('npHourlyRate').value ? Number($('npHourlyRate').value) : null,
+        languages: ($('npLanguages').value || '').trim() || null,
+        specialties: ($('npSpecialties').value || '').trim() || null,
+        is_available_now: !!$('npAvailableNow').checked,
+        base_lat: $('npGpsStatus').dataset.lat ? Number($('npGpsStatus').dataset.lat) : null,
+        base_lng: $('npGpsStatus').dataset.lng ? Number($('npGpsStatus').dataset.lng) : null,
         doc_path: uploadedNurseDocPath || null,
         directory_opt_in: !!$('npDirectoryOptIn').checked,
         onboarding_deadline_at: new Date(Date.now() + 3 * 86400000).toISOString()
