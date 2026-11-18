@@ -472,12 +472,18 @@
           <input id="npHourlyRate" type="number" min="10" max="500" placeholder="Hourly Rate ($/hr)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-2 text-sm font-bold" />
         </div>
         <div class="rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] p-3 space-y-2">
-          <p id="npLangTitle" class="text-xs font-black text-[#0E5A3E]">🗣️ Languages Spoken (select one or more):</p>
+          <div class="flex items-center justify-between gap-2">
+            <p id="npLangTitle" class="text-xs font-black text-[#0E5A3E]">🗣️ Languages Spoken:</p>
+            <button id="npLangEditBtn" type="button" class="hidden rounded-full border border-[#D8CEBE] bg-white px-2.5 py-0.5 text-[10px] font-black text-[#0E5A3E]">✎ Edit</button>
+          </div>
           <div id="npLanguageChips" class="flex flex-wrap gap-1.5"></div>
           <input id="npLanguages" type="text" placeholder="Other language (optional)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-1.5 text-xs font-bold" />
         </div>
         <div class="rounded-2xl border border-[#D8CEBE] bg-[#FAF6EE] p-3 space-y-2">
-          <p id="npSpecTitle" class="text-xs font-black text-[#0E5A3E]">🩺 Nurse Specialties (select one or more):</p>
+          <div class="flex items-center justify-between gap-2">
+            <p id="npSpecTitle" class="text-xs font-black text-[#0E5A3E]">🩺 Nurse Specialties:</p>
+            <button id="npSpecEditBtn" type="button" class="hidden rounded-full border border-[#D8CEBE] bg-white px-2.5 py-0.5 text-[10px] font-black text-[#0E5A3E]">✎ Edit</button>
+          </div>
           <div id="npSpecialtyChips" class="flex flex-wrap gap-1.5"></div>
           <input id="npSpecialties" type="text" placeholder="Other specialty (optional)" class="w-full rounded-xl border border-[#D8CEBE] bg-white px-3 py-1.5 text-xs font-bold" />
         </div>
@@ -942,7 +948,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v97',
+    VERSION: 'v98',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2875,7 +2881,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v97';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v98';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -5059,7 +5065,18 @@
   const NP_LANG_OPTS = ['English', 'Français', 'Español', 'العربية', 'Mandarin'];
   const NP_SPEC_OPTS = ['Alzheimer / Dementia', 'Medication Mgmt', 'Wound Care', 'Post-Op', 'Mobility & Bathing', 'Diabetes / Vitals', 'Palliative Care'];
 
-  function renderNurseChips(containerId, opts, savedStr) {
+  function setNurseChipsCollapsed(containerId, extraInputId, editBtnId, collapsed) {
+    const box = $(containerId), inp = $(extraInputId), editBtn = $(editBtnId);
+    if (!box) return;
+    box.querySelectorAll('button').forEach((b) => {
+      const isAct = b.classList.contains('bg-[#0E5A3E]');
+      b.classList.toggle('hidden', collapsed && !isAct);
+    });
+    if (inp) inp.classList.toggle('hidden', collapsed);
+    if (editBtn) editBtn.classList.toggle('hidden', !collapsed);
+  }
+
+  function renderNurseChips(containerId, opts, savedStr, extraInputId, editBtnId) {
     const box = $(containerId);
     if (!box) return '';
     const saved = String(savedStr || '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -5084,7 +5101,18 @@
       });
       box.appendChild(btn);
     });
-    return extras.join(', ');
+    extras.forEach((ex) => {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.dataset.val = ex;
+      btn.className = 'rounded-full border border-[#0E5A3E] bg-[#0E5A3E] px-2.5 py-1 text-[11px] font-black text-white';
+      btn.textContent = '✓ ' + ex;
+      btn.addEventListener('click', () => btn.remove());
+      box.appendChild(btn);
+    });
+    if (extraInputId && editBtnId) {
+      setNurseChipsCollapsed(containerId, extraInputId, editBtnId, saved.length > 0);
+    }
+    return '';
   }
 
   function collectNurseChips(containerId, extraInputId) {
@@ -5146,8 +5174,8 @@
       if ($('npPhone')) $('npPhone').value = np.phone || '';
       if ($('npYearsExp') && np.years_exp != null) $('npYearsExp').value = np.years_exp;
       if ($('npHourlyRate') && np.hourly_rate != null) $('npHourlyRate').value = np.hourly_rate;
-      if ($('npLanguages')) $('npLanguages').value = renderNurseChips('npLanguageChips', NP_LANG_OPTS, np.languages || '');
-      if ($('npSpecialties')) $('npSpecialties').value = renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, np.specialties || '');
+      if ($('npLanguages')) $('npLanguages').value = renderNurseChips('npLanguageChips', NP_LANG_OPTS, np.languages || '', 'npLanguages', 'npLangEditBtn');
+      if ($('npSpecialties')) $('npSpecialties').value = renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, np.specialties || '', 'npSpecialties', 'npSpecEditBtn');
       if ($('npAvailableNow')) $('npAvailableNow').checked = !!np.is_available_now;
       if (np.base_lat && np.base_lng && $('npGpsStatus')) {
         $('npGpsStatus').textContent = `✓ ${Number(np.base_lat).toFixed(3)}, ${Number(np.base_lng).toFixed(3)}`;
@@ -5179,8 +5207,8 @@
       }
     } else {
       if ($('npFullName') && !$('npFullName').value) $('npFullName').value = CG.getRealDisplayName() || '';
-      renderNurseChips('npLanguageChips', NP_LANG_OPTS, '');
-      renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, '');
+      renderNurseChips('npLanguageChips', NP_LANG_OPTS, '', 'npLanguages', 'npLangEditBtn');
+      renderNurseChips('npSpecialtyChips', NP_SPEC_OPTS, '', 'npSpecialties', 'npSpecEditBtn');
     }
   }
 
@@ -5208,6 +5236,9 @@
       }
     });
   }
+
+  if ($('npLangEditBtn')) $('npLangEditBtn').addEventListener('click', () => setNurseChipsCollapsed('npLanguageChips', 'npLanguages', 'npLangEditBtn', false));
+  if ($('npSpecEditBtn')) $('npSpecEditBtn').addEventListener('click', () => setNurseChipsCollapsed('npSpecialtyChips', 'npSpecialties', 'npSpecEditBtn', false));
 
   if ($('npSetGpsBtn')) {
     $('npSetGpsBtn').addEventListener('click', () => {
