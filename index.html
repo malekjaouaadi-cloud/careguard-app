@@ -315,6 +315,10 @@
       <button id="openUploadMedBtn" type="button" class="tap-btn rounded-2xl bg-emerald-700 px-4 py-2.5 text-base font-extrabold text-white">+ Ajouter / Photo</button>
     </div>
     <div id="medsList" class="space-y-3"></div>
+    <div id="rxArchiveBox" class="hidden serenite-card rounded-3xl p-4 space-y-2">
+      <p id="rxArchiveTitle" class="text-sm font-black text-[#0E5A3E]">📸 Ordonnances archivées</p>
+      <div id="rxArchiveGallery" class="flex gap-2 overflow-x-auto pb-1"></div>
+    </div>
   </section>
 
   <!-- TAB 3: APPOINTMENTS VIEW -->
@@ -352,6 +356,7 @@
         <button id="testWaterAlertBtn" type="button" class="tap-btn rounded-2xl border-2 border-sky-300 bg-sky-50 px-4 py-3 text-base font-extrabold text-sky-900">💧 Écouter le rappel d'eau</button>
         <button id="voiceBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-emerald-900">🔊 Écouter le rappel vocal</button>
         <button id="openRingtoneModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">🔔 Sonnerie</button>
+        <button id="openFindNurseSeniorBtn" type="button" class="tap-btn rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-base font-extrabold text-[#0E5A3E]">🩺 Trouver un infirmier</button>
         <button id="switchRoleBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-900">🔄 Changer de rôle</button>
         <button id="openPlansModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-base font-extrabold text-amber-950">⭐ Abonnement : Gratuit</button>
         <button id="openLegalModalBtn" type="button" class="tap-btn rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3 text-base font-extrabold text-slate-800">⚖️ Confidentialité & Conditions</button>
@@ -507,6 +512,18 @@
         <button id="saveNurseProfileBtn" type="button" class="tap-btn w-full rounded-2xl bg-[#0E5A3E] px-4 py-3 text-sm font-black text-white shadow-sm">Save Nurse Profile</button>
         <p id="npSaveStatus" class="hidden text-center text-xs font-extrabold"></p>
       </div>
+      <!-- Incoming Nurse Visit Requests (Nurse / Center only) -->
+      <div id="nurseVisitReqBox" class="hidden rounded-3xl border-2 border-emerald-300 bg-emerald-50/70 p-4 space-y-2.5 shadow-sm">
+        <p id="nurseVisitReqTitle" class="text-sm font-black text-[#0E5A3E]">🩺 Demandes de visite reçues</p>
+        <div id="nurseVisitReqList" class="space-y-2"></div>
+      </div>
+
+      <!-- Find Nearest Nurse Launcher (Family / Care) -->
+      <button id="openFindNurseCareBtn" type="button" class="tap-btn flex w-full items-center justify-between rounded-3xl border border-[#C7DFCE] bg-[#EFF7F1] px-4 py-3.5 text-sm font-black text-[#0E5A3E] shadow-sm">
+        <span id="openFindNurseCareLbl">🩺 Trouver un infirmier vérifié proche</span>
+        <span>›</span>
+      </button>
+
       <div class="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm space-y-2.5">
         <p id="careLinkTitle" class="text-base font-black text-slate-900">Lier un senior par son code (CG-...)</p>
         <div class="flex gap-2">
@@ -948,7 +965,7 @@
 (function () {
   'use strict';
   window.CG_CONFIG = {
-    VERSION: 'v101',
+    VERSION: 'v103',
     SUPABASE_URL: 'https://jobzviplbwfdoyrdrblt.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_Q8uQO_x9qrTEbohCi99Gpw__A2lo-Gi',
     STORAGE_KEY: 'careguard_senior_state_v2',
@@ -2895,7 +2912,7 @@
     document.documentElement.lang = isFr ? 'fr' : 'en';
     document.documentElement.dir = 'ltr';
     $('appTitle').textContent = isFr ? 'CareGuard' : 'CareGuard';
-    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v101';
+    $('appSubtitle').textContent = (isFr ? 'Votre santé et sérénité' : 'Your Health & Peace of Mind') + ' • v103';
     $('langToggleText').textContent = isFr ? 'EN' : 'FR';
     $('heroWelcomeLabel').textContent = isFr ? 'Bonjour,' : 'Hello,';
     if ($('heroMoodSub')) $('heroMoodSub').textContent = isFr ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?';
@@ -3206,7 +3223,43 @@
       }
     } catch (err) { st.textContent = err.message || 'Error'; }
   });
+  async function archivePendingRxPhoto() {
+    if (!pendingImageDataUrl || !client || !currentUser || !currentSeniorId) return;
+    try {
+      const compressed = await compressImageDataUrl(pendingImageDataUrl, 900);
+      const b64 = (compressed.split(',')[1] || '');
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const path = `rx/${currentUser.id}/${Date.now()}.jpg`;
+      const { error } = await client.storage.from('careguard-audio').upload(path, new Blob([bytes], { type: 'image/jpeg' }), { contentType: 'image/jpeg', upsert: false });
+      if (error) return;
+      const { data: signed } = await client.storage.from('careguard-audio').createSignedUrl(path, 60 * 60 * 24 * 365);
+      const url = (signed && signed.signedUrl) ? signed.signedUrl : '';
+      if (!url) return;
+      const list = [{ url, created_at: new Date().toISOString() }, ...(Array.isArray(state.rxPhotos) ? state.rxPhotos : [])].slice(0, 12);
+      state.rxPhotos = list; saveStateOnly(); renderRxArchive();
+      await client.from('senior_profiles').update({ rx_photos: list }).eq('id', currentSeniorId);
+    } catch (_) {}
+  }
+
+  function renderRxArchive() {
+    const box = $('rxArchiveBox'), gal = $('rxArchiveGallery');
+    if (!box || !gal) return;
+    const list = Array.isArray(state.rxPhotos) ? state.rxPhotos : [];
+    box.classList.toggle('hidden', !list.length);
+    if ($('rxArchiveTitle')) $('rxArchiveTitle').textContent = state.lang === 'fr' ? '📸 Ordonnances archivées' : '📸 Archived Prescriptions';
+    gal.replaceChildren();
+    list.forEach((it) => {
+      const a = document.createElement('a'); a.href = it.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      const img = document.createElement('img'); img.src = it.url; img.alt = 'Rx';
+      img.className = 'h-20 w-20 shrink-0 rounded-2xl border border-[#DFD5C5] object-cover shadow-sm';
+      a.appendChild(img); gal.appendChild(a);
+    });
+  }
+
   $('saveNewMedBtn').addEventListener('click', async () => {
+    if (pendingImageDataUrl) await archivePendingRxPhoto();
     if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (_) {} }
     const checkedItems = Array.from(document.querySelectorAll('.rx-item-cb:checked')).map((cb) => ({ name: cb.dataset.name, time: cb.dataset.time || '08:00', freq: Number(cb.dataset.freq || 1) })).filter((x) => x.name);
     const rawItems = checkedItems.length ? checkedItems : ($('newMedNameInput').value.trim() ? [{ name: $('newMedNameInput').value.trim(), time: $('newMedTimeInput').value || '08:00', freq: Number(($('newMedFreqSelect') && $('newMedFreqSelect').value) || 1) }] : []);
@@ -3521,7 +3574,7 @@
     try {
       const todayStart = getLocalDayStartIso();
       const [spRes, chkRes, medsRes, logsRes, apptsRes] = await Promise.all([
-        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, family_email, avatar_url, water_count, water_date, home_lat, home_lng, safe_radius_m').eq('id', currentSeniorId).single(),
+        client.from('senior_profiles').select('display_name, date_of_birth, senior_phone, emergency_phone, family_relation, backup_phone, doctor_name, doctor_phone, home_address, blood_type, allergies, conditions, medical_notes, family_email, avatar_url, water_count, water_date, home_lat, home_lng, safe_radius_m, rx_photos').eq('id', currentSeniorId).single(),
         client.from('safety_checkins').select('checked_in_at').eq('senior_id', currentSeniorId).order('checked_in_at', { ascending: false }).limit(1),
         client.from('medications').select('id, name, dosage').eq('senior_id', currentSeniorId).order('created_at', { ascending: true }),
         client.from('medication_logs').select('medication_id, status').eq('senior_id', currentSeniorId).gte('logged_at', todayStart),
@@ -3536,6 +3589,7 @@
         if (sp.family_relation) state.profile.familyRelation = sp.family_relation;
         if (sp.backup_phone) state.profile.backupPhone = sp.backup_phone;
         if (sp.family_email) state.profile.familyEmail = sp.family_email;
+        if (Array.isArray(sp.rx_photos)) { state.rxPhotos = sp.rx_photos; saveStateOnly(); if (typeof renderRxArchive === 'function') renderRxArchive(); }
         if (sp.home_lat && sp.home_lng) {
           try { localStorage.setItem('cg_home_gps', JSON.stringify({ lat: sp.home_lat, lng: sp.home_lng, radius: sp.safe_radius_m || 250 })); } catch (_) {}
           if ($('homeGpsStatus')) $('homeGpsStatus').textContent = `✅ ${Number(sp.home_lat).toFixed(5)}, ${Number(sp.home_lng).toFixed(5)} (${sp.safe_radius_m || 250}m)`;
@@ -4195,6 +4249,19 @@
       localStorage.setItem(cacheKey, JSON.stringify([entry, ...cur].slice(0, 20)));
       try { if (client) await client.from('care_notes').insert(entry); } catch (_) {}
       loadCareNotesForSenior();
+
+    if (Array.isArray(sp.rx_photos) && sp.rx_photos.length) {
+      const rxSec = makeSec(isFr ? '📸 Ordonnances archivées' : '📸 Archived Prescriptions', 'border-violet-200 bg-violet-50/50');
+      const gal = document.createElement('div'); gal.className = 'flex gap-2 overflow-x-auto pb-1';
+      sp.rx_photos.slice(0, 8).forEach((item) => {
+        const a = document.createElement('a'); a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        const img = document.createElement('img'); img.src = item.url; img.alt = 'Rx';
+        img.className = 'h-20 w-20 shrink-0 rounded-xl border border-violet-200 object-cover shadow-sm';
+        a.appendChild(img); gal.appendChild(a);
+      });
+      rxSec.appendChild(gal);
+      body.appendChild(rxSec);
+    }
     });
     loadCareNotesForSenior();
 
@@ -5358,7 +5425,211 @@
     loadNurseProfileCard();
   };
   setTimeout(loadNurseProfileCard, 1300);
+
+  // Phase 2: Find Nearest Verified Nurse & Visit Requests
+  let cachedVerifiedNurses = [];
+  let userSearchLat = null, userSearchLng = null;
+
+  function renderFindNurseList() {
+    const box = $('fnNurseList');
+    if (!box) return;
+    const isFr = CG.getState().lang === 'fr';
+    const q = ($('fnSearchInput') ? $('fnSearchInput').value : '').trim().toLowerCase();
+    const availOnly = !!($('fnAvailOnlyCheck') && $('fnAvailOnlyCheck').checked);
+
+    let list = cachedVerifiedNurses.map((n) => {
+      let distKm = null;
+      if (userSearchLat && userSearchLng && n.base_lat && n.base_lng) {
+        distKm = Math.round(haversineMeters(userSearchLat, userSearchLng, n.base_lat, n.base_lng) / 100) / 10;
+      }
+      return Object.assign({}, n, { distKm });
+    }).filter((n) => {
+      if (availOnly && !n.is_available_now) return false;
+      if (!q) return true;
+      const hay = [n.full_name, n.credential, n.city_zip, n.region, n.languages, n.specialties].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+
+    list.sort((a, b) => {
+      if (a.is_available_now !== b.is_available_now) return a.is_available_now ? -1 : 1;
+      if (a.distKm !== null && b.distKm !== null) return a.distKm - b.distKm;
+      return 0;
+    });
+
+    box.replaceChildren();
+    if (!list.length) {
+      const emp = document.createElement('div');
+      emp.className = 'rounded-2xl border border-dashed border-[#D8CEBE] bg-white p-6 text-center text-xs font-bold text-[#5C6F63]';
+      emp.textContent = isFr
+        ? 'Aucun infirmier vérifié trouvé pour le moment.'
+        : 'No verified nurses found yet matching your filter.';
+      box.appendChild(emp);
+      return;
+    }
+
+    list.forEach((n) => {
+      const card = document.createElement('div');
+      card.className = 'rounded-2xl border border-[#DFD5C5] bg-white p-3.5 shadow-sm space-y-2';
+      const top = document.createElement('div'); top.className = 'flex items-start justify-between gap-2';
+      const left = document.createElement('div');
+      const nm = document.createElement('p'); nm.className = 'font-serif-brand text-lg font-extrabold text-[#163024]';
+      nm.textContent = (n.full_name || 'Nurse') + (n.credential ? ` • ${n.credential}` : '');
+      const loc = document.createElement('p'); loc.className = 'text-xs font-bold text-[#5C6F63]';
+      loc.textContent = [n.city_zip, n.region, n.country].filter(Boolean).join(', ') + (n.distKm !== null ? ` • 📍 ${n.distKm} km` : '');
+      left.append(nm, loc);
+      const badge = document.createElement('span');
+      badge.className = n.is_available_now
+        ? 'shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black text-emerald-900'
+        : 'shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black text-slate-600';
+      badge.textContent = n.is_available_now ? (isFr ? '🟢 Dispo' : '🟢 Available') : (isFr ? '⚪ Occupé' : '⚪ Busy');
+      top.append(left, badge);
+      card.appendChild(top);
+
+      const meta = document.createElement('p'); meta.className = 'text-[11px] font-bold text-[#3C5044]';
+      meta.textContent = [
+        n.hourly_rate ? `$${n.hourly_rate}/hr` : '',
+        n.years_exp ? `${n.years_exp} yrs exp` : '',
+        n.languages ? `🗣️ ${n.languages}` : '',
+        n.specialties ? `🩺 ${n.specialties}` : ''
+      ].filter(Boolean).join(' • ');
+      if (meta.textContent) card.appendChild(meta);
+
+      const btns = document.createElement('div'); btns.className = 'flex gap-2 pt-1';
+      if (n.phone && CG.safeTelHref(n.phone)) {
+        const callA = document.createElement('a'); callA.href = CG.safeTelHref(n.phone);
+        callA.className = 'tap-btn rounded-xl border border-[#D8CEBE] bg-[#FAF6EE] px-3 py-2 text-xs font-black text-[#163024]';
+        callA.textContent = isFr ? '📞 Appeler' : '📞 Call';
+        btns.appendChild(callA);
+      }
+      const reqBtn = document.createElement('button'); reqBtn.type = 'button';
+      reqBtn.className = 'tap-btn flex-1 rounded-xl bg-[#0E5A3E] px-3 py-2 text-xs font-black text-white';
+      reqBtn.textContent = isFr ? '📋 Demander une visite' : '📋 Request Visit';
+      reqBtn.addEventListener('click', async () => {
+        const client = CG.getClient(), user = CG.getCurrentUser();
+        const stEl = $('fnStatusMsg');
+        if (!client || !user) return;
+        const sid = CG.getSeniorId ? CG.getSeniorId() : null;
+        const { error } = await client.from('nurse_visit_requests').insert({
+          senior_id: sid,
+          requester_user_id: user.id,
+          requester_name: CG.getRealDisplayName(),
+          nurse_user_id: n.user_id,
+          nurse_name: n.full_name || 'Nurse',
+          status: 'pending'
+        });
+        if (stEl) {
+          stEl.classList.remove('hidden');
+          stEl.textContent = error
+            ? ('⚠️ ' + error.message)
+            : (isFr ? `✓ Demande envoyée à ${n.full_name || 'l\'infirmier'} !` : `✓ Visit request sent to ${n.full_name || 'nurse'}!`);
+        }
+      });
+      btns.appendChild(reqBtn);
+      card.appendChild(btns);
+      box.appendChild(card);
+    });
+  }
+
+  async function openFindNurseModal() {
+    const isFr = CG.getState().lang === 'fr';
+    if ($('fnModalTitle')) $('fnModalTitle').textContent = isFr ? '🩺 Trouver un infirmier' : '🩺 Find Nearest Nurse';
+    if ($('fnModalSub')) $('fnModalSub').textContent = isFr ? 'Infirmiers vérifiés (USA & Canada) triés par proximité' : 'Verified nurses (US & Canada) sorted by proximity';
+    if ($('fnAvailOnlyLbl')) $('fnAvailOnlyLbl').textContent = isFr ? '🟢 Dispo' : '🟢 Available';
+    if ($('fnStatusMsg')) $('fnStatusMsg').classList.add('hidden');
+    if ($('findNurseModal')) $('findNurseModal').classList.remove('hidden');
+
+    try {
+      const home = JSON.parse(localStorage.getItem('cg_home_gps') || 'null');
+      if (home && home.lat && home.lng) { userSearchLat = home.lat; userSearchLng = home.lng; }
+    } catch (_) {}
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        userSearchLat = pos.coords.latitude; userSearchLng = pos.coords.longitude;
+        renderFindNurseList();
+      }, () => {}, { timeout: 4000 });
+    }
+
+    const client = CG.getClient();
+    if (!client) return;
+    const { data, error } = await client
+      .from('nurse_profiles')
+      .select('user_id, full_name, credential, country, region, city_zip, phone, years_exp, hourly_rate, languages, specialties, is_available_now, base_lat, base_lng')
+      .eq('verification_status', 'verified')
+      .eq('directory_opt_in', true);
+    if (!error && data) {
+      cachedVerifiedNurses = data;
+      renderFindNurseList();
+    }
+  }
+
+  async function loadIncomingVisitRequests() {
+    const role = CG.getUserRole ? CG.getUserRole() : '';
+    const box = $('nurseVisitReqBox'), list = $('nurseVisitReqList');
+    if (!box || !list) return;
+    const isNurse = (role === 'nurse' || role === 'center');
+    box.classList.toggle('hidden', !isNurse);
+    if (!isNurse) return;
+    const client = CG.getClient(), user = CG.getCurrentUser();
+    const isFr = CG.getState().lang === 'fr';
+    if (!client || !user) return;
+    const { data, error } = await client
+      .from('nurse_visit_requests')
+      .select('id, requester_name, status, created_at')
+      .eq('nurse_user_id', user.id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if (error || !data || !data.length) { box.classList.add('hidden'); return; }
+    list.replaceChildren();
+    data.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center justify-between gap-2 rounded-2xl bg-white p-2.5 border border-emerald-200 text-xs';
+      const nm = document.createElement('span'); nm.className = 'font-black text-[#163024]';
+      nm.textContent = (r.requester_name || 'Patient') + (isFr ? ' demande une visite' : ' requested a visit');
+      const btns = document.createElement('div'); btns.className = 'flex gap-1.5';
+      const acc = document.createElement('button'); acc.type = 'button';
+      acc.className = 'rounded-xl bg-[#0E5A3E] px-2.5 py-1 text-[11px] font-black text-white'; acc.textContent = '✓';
+      acc.addEventListener('click', async () => { await client.from('nurse_visit_requests').update({ status: 'accepted' }).eq('id', r.id); loadIncomingVisitRequests(); });
+      const dec = document.createElement('button'); dec.type = 'button';
+      dec.className = 'rounded-xl border border-rose-300 bg-rose-50 px-2.5 py-1 text-[11px] font-black text-rose-800'; dec.textContent = '✕';
+      dec.addEventListener('click', async () => { await client.from('nurse_visit_requests').update({ status: 'declined' }).eq('id', r.id); loadIncomingVisitRequests(); });
+      btns.append(acc, dec); row.append(nm, btns); list.appendChild(row);
+    });
+  }
+
+  if ($('openFindNurseSeniorBtn')) $('openFindNurseSeniorBtn').addEventListener('click', openFindNurseModal);
+  if ($('openFindNurseCareBtn')) $('openFindNurseCareBtn').addEventListener('click', openFindNurseModal);
+  if ($('closeFindNurseBtn')) $('closeFindNurseBtn').addEventListener('click', () => $('findNurseModal').classList.add('hidden'));
+  if ($('fnSearchInput')) $('fnSearchInput').addEventListener('input', renderFindNurseList);
+  if ($('fnAvailOnlyCheck')) $('fnAvailOnlyCheck').addEventListener('change', renderFindNurseList);
+  const prevExtrasFn = CG.loadSereniteExtras;
+  CG.loadSereniteExtras = function () {
+    if (prevExtrasFn) prevExtrasFn();
+    loadIncomingVisitRequests();
+  };
+  setTimeout(loadIncomingVisitRequests, 1500);
 })();
 </script>
+
+<!-- Modal: Find Nearest Verified Nurse (Phase 2: Nurse Uber Directory) -->
+<div id="findNurseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-3">
+  <div class="flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-[#FFFDF9] p-5 shadow-2xl border border-[#E6DCCB]">
+    <div class="flex items-center justify-between border-b border-[#EAE0CF] pb-3">
+      <div>
+        <h3 id="fnModalTitle" class="font-serif-brand text-2xl font-extrabold text-[#0E5A3E]">🩺 Trouver un infirmier</h3>
+        <p id="fnModalSub" class="text-xs font-bold text-[#5C6F63]">Infirmiers vérifiés (USA & Canada) triés par proximité</p>
+      </div>
+      <button id="closeFindNurseBtn" type="button" class="rounded-xl px-3 py-1.5 text-xl font-black text-slate-600">✕</button>
+    </div>
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <input id="fnSearchInput" autocomplete="off" type="search" placeholder="🔍 Ville, code postal, langue ou spécialité..." class="w-full flex-1 rounded-2xl border border-[#D8CEBE] bg-white px-3.5 py-2 text-xs font-bold" />
+      <label class="flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-black text-[#0E5A3E]">
+        <input id="fnAvailOnlyCheck" type="checkbox" class="h-4 w-4 accent-[#0E5A3E]" />
+        <span id="fnAvailOnlyLbl">🟢 Dispo</span>
+      </label>
+    </div>
+    <div id="fnNurseList" class="my-3 flex-1 space-y-2.5 overflow-y-auto pr-1 min-h-[200px]"></div>
+    <p id="fnStatusMsg" class="hidden text-center text-xs font-extrabold text-[#0E5A3E]"></p>
+  </div>
+</div>
 </body>
 </html>
